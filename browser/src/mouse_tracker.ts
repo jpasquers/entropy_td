@@ -40,6 +40,10 @@ export class TowerSilhoutteRenderer implements MouseMovementListener {
         this.currentSilhoutteDisplay!.alpha = 0.3;
     }
 
+    synchronizeDisplay() {
+        
+    }
+
     destroy() {
         this.currentSilhoutteDisplay?.destroy();
         this.currentSilhoutteDisplay = undefined;
@@ -50,13 +54,10 @@ export class TowerSilhoutteRenderer implements MouseMovementListener {
         if (!this.terrainRenderer.isPixelRelated(newPosition)) return;
         let newCoord = this.terrainRenderer.getTileCoordForRenderedPixel(newPosition);
         if (!this.gameController.getBoard().isOpen(newCoord)) return;
-        if (!this.currentSilhoutte 
-            || this.currentSilhoutte.coord.col !== newCoord.col
-            || this.currentSilhoutte.coord.row !== newCoord.row) {
-            this.currentSilhoutte = {
-                coord: newCoord,
-                towerType: this.towerType
-            }
+    
+        this.currentSilhoutte = {
+            coord: newCoord,
+            towerType: this.towerType
         }
         
         if (!this.currentSilhoutteDisplay) {
