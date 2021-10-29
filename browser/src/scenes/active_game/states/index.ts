@@ -50,7 +50,6 @@ export class TowerSelection extends ActiveGameState<{}> {
         this.addToMouseTracker(this.towerSilhoutteRenderer);
         this.addTowerActor = new AddTowerActor(this.scene, towerType);
         this.addTowerActor?.onActionSuccess(() => {
-            console.log("here");
             this.wipeTowerSelection();
         });
         this.addToClickTracker(this.addTowerActor);

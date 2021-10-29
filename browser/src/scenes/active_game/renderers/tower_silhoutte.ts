@@ -3,7 +3,7 @@ import { TowerType } from "entropy-td-core/lib/friendly/tower";
 import { Coordinate, PixelCoordinate } from "entropy-td-core/lib/game_board";
 import { ActiveGameScene } from "..";
 import { MouseMovement, MouseMovementObserver } from "../../../common/publishers/input";
-import { TerrainRenderer } from "./board";
+import { TerrainRenderer, StaticTowerDisplay, TowerRenderer } from "./board";
 
 
 
@@ -17,27 +17,27 @@ export interface TowerSilhoutte {
 export class TowerSilhoutteRenderer implements MouseMovementObserver {
     id: string;
     towerType?: TowerType;
+    towerRenderer: TowerRenderer;
     terrainRenderer: TerrainRenderer;
-    currentSilhoutteDisplay?: Phaser.GameObjects.Image;
+    currentSilhoutteDisplay?: StaticTowerDisplay
     gameController: GameOrchestrator;
     
     constructor(scene: ActiveGameScene, towerType?: TowerType) {
         this.towerType = towerType;
         this.id = "tower_silhoutte_renderer";
+        this.towerRenderer = scene.towerRenderer;
         this.terrainRenderer = scene.terrainRenderer;
         this.gameController = scene.gameController;
     }
 
     createDisplay(silhoutte: TowerSilhoutte) {
-        this.currentSilhoutteDisplay = this.terrainRenderer.renderImageAtTileCoord(
-            silhoutte!.coord,
-            `tower_${this.towerType!.name}`
-        )
-        this.currentSilhoutteDisplay!.alpha = 0.3;
+        this.currentSilhoutteDisplay = this.towerRenderer.renderTowerSilhoutte(silhoutte!.coord, this.towerType!)
+        this.currentSilhoutteDisplay!.towerBackground.setAlpha(0.3);
+        this.currentSilhoutteDisplay!.towerSprite.setAlpha(0.3);
     }
 
     updateDisplay(silhoutte: TowerSilhoutte) {
-        this.terrainRenderer.updateImageToTileCoord(silhoutte.coord, this.currentSilhoutteDisplay!);
+        this.towerRenderer.updateTowerSilhoutte(silhoutte.coord, this.currentSilhoutteDisplay!);
 
     }
 

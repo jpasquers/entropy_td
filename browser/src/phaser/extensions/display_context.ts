@@ -12,15 +12,18 @@ export interface DisplayContext {
     addRectangle(relTopLeft: PixelCoordinate, width: number, height: number, fillColor?: number): Phaser.GameObjects.Rectangle;
     addCenteredText(topMargin: number, text: string): Phaser.GameObjects.Text;
     addTextStartingAt(relTopLeft: PixelCoordinate, text: string): Phaser.GameObjects.Text;
-    addImage(relTopLeft: PixelCoordinate, dim: number, imageKey: string): Phaser.GameObjects.Image;
+    addImage(relTopLeft: PixelCoordinate, dimX: number, dimY: number, imageKey: string): Phaser.GameObjects.Image;
     addCircle(center: PixelCoordinate, radius: number, color: number): Phaser.GameObjects.Arc;
     getCenter(): PixelCoordinate;
     addLine(px1: PixelCoordinate, px2: PixelCoordinate, color: number, alpha: number): Phaser.GameObjects.Line;
     scopeGlobalToContext(absolute: PixelCoordinate): PixelCoordinate;
     scopeToGlobal(relative: PixelCoordinate): PixelCoordinate;
-    addSprite(): Phaser.GameObjects.Sprite;
+    addSprite(relTopLeft: PixelCoordinate, dimX: number, dimY: number, spriteKey: string): Phaser.GameObjects.Sprite;
     setXPos(obj: CanSetPos,x: number): void;
     setYPos(obj: CanSetPos, y: number): void;
+    addTiledSprite(x: number,y: number, totalWidth: number, totalHeight: number, spriteKey: string): Phaser.GameObjects.TileSprite;
+    getInternalBoundWidth(): number;
+    getInternalBoundHeight(): number;
     //addTween(config: TweenBuilderConfig): Phaser.Tweens.Tween;
 }
 
@@ -34,6 +37,14 @@ export class GlobalSceneDisplayContext implements DisplayContext {
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
     }
+
+    
+    addTiledSprite(x: number, y: number, totalWidth: number, totalHeight: number, spriteKey: string): Phaser.GameObjects.TileSprite {
+        return this.scene.add.tileSprite(
+            x,y,totalWidth,totalHeight, spriteKey
+        );
+    }
+
     addLine(px1: PixelCoordinate, px2: PixelCoordinate, color: number, alpha: number): Phaser.GameObjects.Line {
         return this.scene.add.line(
             undefined,undefined,px1.pxCol,px1.pxRow,
@@ -47,10 +58,12 @@ export class GlobalSceneDisplayContext implements DisplayContext {
         obj.setY(y);
     }
 
-    addSprite(): Phaser.GameObjects.Sprite {
-        return this.scene.add.sprite(
-            400,400,'ant_01'
+    addSprite(relTopLeft: PixelCoordinate,dimX: number, dimY: number, spriteKey: string): Phaser.GameObjects.Sprite {
+        let sprite =  this.scene.add.sprite(
+            relTopLeft.pxCol+dimX/2,relTopLeft.pxRow+dimY/2,spriteKey
         )
+        sprite.setDisplaySize(dimX,dimY);
+        return sprite;
     }
 
 
@@ -95,19 +108,26 @@ export class GlobalSceneDisplayContext implements DisplayContext {
         )
     }
 
-    addImage(relTopLeft: PixelCoordinate, dim: number, imageKey: string): Phaser.GameObjects.Image {
+    addImage(relTopLeft: PixelCoordinate, dimX: number, dimY: number, imageKey: string): Phaser.GameObjects.Image {
         let image = this.scene.add.image(
-            relTopLeft.pxCol + dim/2,
-            relTopLeft.pxRow + dim/2,
+            relTopLeft.pxCol + dimX/2,
+            relTopLeft.pxRow + dimY/2,
             imageKey
         );
-        image.displayHeight = dim;
-        image.displayWidth = dim;
+        image.displayHeight = dimY;
+        image.displayWidth = dimX;
         return image;
     }
 
     getCenter(): PixelCoordinate {
         throw new Error("Center unavailable in base scene class");
+    }
+
+    getInternalBoundWidth(): number {
+        throw new Error("Method not implemented.");
+    }
+    getInternalBoundHeight(): number {
+        throw new Error("Method not implemented.");
     }
 }
 
@@ -122,6 +142,17 @@ export class SubSceneDisplayContext implements DisplayContext {
     constructor(borderedSubScene: BorderedSubScene) {
         this.borderedSubScene = borderedSubScene;
     }
+
+
+    addTiledSprite(x: number, y: number, totalWidth: number, totalHeight: number, spriteKey: string): Phaser.GameObjects.TileSprite {
+        return this.borderedSubScene.scene.add.tileSprite(
+            this.addColOffset(x),
+            this.addRowOffset(y),
+            totalWidth,totalHeight,
+            spriteKey
+        )
+    }
+
     setXPos(obj: CanSetPos, x: number): void {
         obj.setX(this.addColOffset(x));
     }
@@ -129,10 +160,14 @@ export class SubSceneDisplayContext implements DisplayContext {
         obj.setY(this.addRowOffset(y));
     }
 
-    addSprite(): Phaser.GameObjects.Sprite {
-        return this.borderedSubScene.scene.add.sprite(
-            400,400,'ant_01'
+    addSprite(relTopLeft: PixelCoordinate, dimX: number, dimY: number, spriteKey: string): Phaser.GameObjects.Sprite {
+        let sprite = this.borderedSubScene.scene.add.sprite(
+            this.addColOffset(relTopLeft.pxCol) + dimX/2,
+            this.addRowOffset(relTopLeft.pxRow) + dimY/2,
+            spriteKey
         )
+        sprite.setDisplaySize(dimX, dimY);
+        return sprite;
     }
 
     addLine(px1: PixelCoordinate, px2: PixelCoordinate, color: number, alpha: number): Phaser.GameObjects.Line {
@@ -204,14 +239,14 @@ export class SubSceneDisplayContext implements DisplayContext {
         )
     }
 
-    addImage(relTopLeft: PixelCoordinate, dim: number, imageKey: string): Phaser.GameObjects.Image {
+    addImage(relTopLeft: PixelCoordinate, dimX: number, dimY: number, imageKey: string): Phaser.GameObjects.Image {
         let image =  this.borderedSubScene.scene.add.image(
-            this.addColOffset(relTopLeft.pxCol) + dim/2,
-            this.addRowOffset(relTopLeft.pxRow) + dim/2,
+            this.addColOffset(relTopLeft.pxCol) + dimX/2,
+            this.addRowOffset(relTopLeft.pxRow) + dimY/2,
             imageKey
         );
-        image.displayHeight = dim;
-        image.displayWidth = dim;
+        image.displayHeight = dimY;
+        image.displayWidth = dimX;
         return image;
         
     }
@@ -220,5 +255,12 @@ export class SubSceneDisplayContext implements DisplayContext {
             pxCol: this.borderedSubScene.internalOffset.pxCol + this.borderedSubScene.internalWidth/2,
             pxRow: this.borderedSubScene.internalOffset.pxRow + this.borderedSubScene.internalHeight/2
         }
+    }
+
+    getInternalBoundWidth(): number {
+        return this.borderedSubScene.internalWidth;
+    }
+    getInternalBoundHeight(): number {
+        return this.borderedSubScene.internalHeight;
     }
 }

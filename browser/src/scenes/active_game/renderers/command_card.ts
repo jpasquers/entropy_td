@@ -21,7 +21,7 @@ export class CommandCardItemDisplay implements GameObjectLike {
         this.image = displayContext.addImage({
             pxCol: col*COMMAND_CARD_ITEM_WIDTH,
             pxRow: row*COMMAND_CARD_ITEM_WIDTH
-        }, COMMAND_CARD_ITEM_WIDTH, commandCardItem.assetKey);
+        }, COMMAND_CARD_ITEM_WIDTH, COMMAND_CARD_ITEM_WIDTH, commandCardItem.assetKey);
         this.image.setDepth(1);
         this.hotkey = displayContext.addTextStartingAt({
             pxCol: col*COMMAND_CARD_ITEM_WIDTH + 2,

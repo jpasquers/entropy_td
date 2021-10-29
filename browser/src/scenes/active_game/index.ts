@@ -70,14 +70,18 @@ export class ActiveGameScene extends BasicScene {
         this.load.image('checkpoint_3', '/assets/checkpoint_3.png');
         this.load.image('finish', '/assets/finish.jpeg');
         this.load.image('rock', '/assets/rock.jpeg');
-        this.load.image('grass', '/assets/grass.jpeg');
-        this.load.aseprite('ant_01','/assets/ant_01.aseprite');
-        this.load.image('tower_simple_1', '/assets/tower_simple_1.png');
-        this.load.image('tower_simple_1_card', '/assets/tower_simple_1.png');
+        this.load.image('empty', '/assets/empty.jpeg');
+        this.load.spritesheet("tower_simple_1", "/assets/tower_simple_1.png", {
+            frameWidth: 200,
+            frameHeight: 200
+        });
+        //this.load.image('tower_simple_1_card', '/assets/tower_simple_1.png');
+        this.load.image('space_background','/assets/Starfield-13.jpg');
     }
 
     public create() {
         super.create();
+        this.terrainRenderer.renderBackgroundTerrain();
         this.terrainRenderer.synchronizeItems(this.gameController.getBoard());
         this.sceneGridRenderer.synchronizeItems(...this.sceneGrid.getSections());
         getActiveGameStartingState(this).onEnterState();

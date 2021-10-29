@@ -19,6 +19,12 @@ export interface GameObjectLike {
     destroy: ()=>void;
 }
 
+//Probably a code smell? Hard to tell
+export class NoOp implements GameObjectLike {
+    destroy() {
+        
+    }
+}
 
 export abstract class SimpleRenderer<PhaserType extends GameObjectLike> {
     displayContext: DisplayContext;

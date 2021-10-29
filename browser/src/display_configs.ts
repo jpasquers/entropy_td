@@ -1,0 +1,1 @@
+export const TOWER_COLOR = 0x37946e;

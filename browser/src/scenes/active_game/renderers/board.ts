@@ -1,10 +1,12 @@
 import { GameBoard } from "entropy-td-core";
-import { Tower } from "entropy-td-core/lib/friendly/tower";
+import { Tower, TowerType } from "entropy-td-core/lib/friendly/tower";
 import { Coordinate, PixelCoordinate, Tile, TileType } from "entropy-td-core/lib/game_board";
 import { GameState } from "entropy-td-core/lib/orchestrator";
+import { Game } from "phaser";
 import { GameStateObjectRenderer } from ".";
-import { GameObjectLike, ObjectRendererWithSync } from "../../../common/renderer";
-import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
+import { GameObjectLike, NoOp, ObjectRendererWithSync } from "../../../common/renderer";
+import { TOWER_COLOR } from "../../../display_configs";
+import { CanSetPos, DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
 import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
 
 export class Terrain implements GameObjectLike {
@@ -29,6 +31,15 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
             alwaysCreate: false
         }, new SubSceneDisplayContext(subScene))
         this.tileDim = tileDim;
+    }
+
+    renderBackgroundTerrain() {
+        this.displayContext.addImage(
+            {pxCol: 0, pxRow: 0},
+            this.displayContext.getInternalBoundWidth(),
+            this.displayContext.getInternalBoundHeight(),
+            "space_background"
+        )
     }
     
     create(board: GameBoard): Terrain {
@@ -85,13 +96,19 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
         else if (tile.type === TileType.Checkpoint) return this.renderImageAtTileCoord(coord, `checkpoint_${tile.checkPointNum}`);
         else if (tile.type === TileType.Finish) return this.renderImageAtTileCoord(coord, 'finish');
         else if (tile.type === TileType.Rock) return this.renderImageAtTileCoord(coord, 'rock');
-        else return this.renderImageAtTileCoord(coord, 'grass');
+        else {
+            let image = this.renderImageAtTileCoord(coord, 'empty');
+            image.setAlpha(0.01);
+            return image;
+        }
     }
+
+
 
     renderImageAtTileCoord(coord: Coordinate,imageKey: string): Phaser.GameObjects.Image {
         return this.displayContext.addImage(
             tileTopLeft(coord.row, coord.col,this.tileDim ), 
-            this.tileDim, 
+            this.tileDim, this.tileDim,
             imageKey
         );
     }
@@ -103,7 +120,51 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
     
 }
 
-export class TowerRenderer extends GameStateObjectRenderer<Tower, Phaser.GameObjects.Image> {
+export class StaticTowerDisplay implements GameObjectLike, CanSetPos {
+    towerSprite: Phaser.GameObjects.Sprite;
+    towerBackground: Phaser.GameObjects.Rectangle;
+
+    constructor(coord: Coordinate,towerType: TowerType , displayContext: DisplayContext, towerDim: number) {
+        this.towerSprite = displayContext.addSprite(
+            tileTopLeft(coord.row,coord.col,towerDim),
+            towerDim, towerDim,
+            `tower_${towerType.name}`
+        );
+        this.towerBackground = displayContext.addRectangle(
+            tileTopLeft(coord.row,coord.col,towerDim),
+            towerDim, towerDim
+        );
+        this.towerBackground.setStrokeStyle(2, TOWER_COLOR);
+    }
+    setX(x: number): void {
+        this.towerBackground.setX(x);
+        this.towerSprite.setX(x);
+    }
+    setY(y: number): void {
+        this.towerBackground.setY(y);
+        this.towerSprite.setY(y);
+    }
+
+    destroy() {
+        this.towerBackground.destroy();
+        this.towerSprite.destroy();
+    }
+}
+
+export class LiveTowerDisplay extends StaticTowerDisplay {
+
+    constructor(tower: Tower, displayContext: DisplayContext, towerDim: number) {
+        super(tower.pos, tower.type, displayContext, towerDim);
+    }
+
+    destroy() {
+        this.towerBackground.destroy();
+        this.towerSprite.destroy();
+    }
+}
+
+//I should probably make a separate tower silhoutte renderer. But im lazy.
+export class TowerRenderer extends GameStateObjectRenderer<Tower, LiveTowerDisplay> {
     towerDim: number;
 
     constructor(subScene: BorderedSubScene, towerDim: number) {
@@ -117,16 +178,21 @@ export class TowerRenderer extends GameStateObjectRenderer<Tower, Phaser.GameObj
     getModels(gameState: GameState): Tower[] {
         return gameState.towers;
     }
-    
-    create(tower: Tower): Phaser.GameObjects.Image {
-        return this.displayContext.addImage(
-            tileTopLeft(tower.pos.row,tower.pos.col,this.towerDim),
-            this.towerDim,
-            `tower_${tower.type.name}`
-        );
+
+    renderTowerSilhoutte(coord: Coordinate, type: TowerType): StaticTowerDisplay {
+        return new StaticTowerDisplay(coord, type, this.displayContext,this.towerDim);
     }
 
-    update(item: Tower, phaserObj: Phaser.GameObjects.Image): void {
+    updateTowerSilhoutte(coord: Coordinate, display: StaticTowerDisplay): void {
+        this.displayContext.setXPos(display, tileCenterX(coord.col,this.towerDim));
+        this.displayContext.setYPos(display, tileCenterY(coord.row,this.towerDim));
+    }
+    
+    create(tower: Tower): LiveTowerDisplay {
+        return new LiveTowerDisplay(tower, this.displayContext, this.towerDim);
+    }
+
+    update(item: Tower, phaserObj: LiveTowerDisplay): void {
         //No op for now;
     }
     
