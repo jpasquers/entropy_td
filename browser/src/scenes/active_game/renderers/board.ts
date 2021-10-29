@@ -1,7 +1,11 @@
 import { GameBoard } from "entropy-td-core";
 import { Tower } from "entropy-td-core/lib/friendly/tower";
 import { Coordinate, PixelCoordinate, Tile, TileType } from "entropy-td-core/lib/game_board";
-import { GameObjectLike, RenderWithOffset, BorderedSceneSubSection, SubSectionRenderer } from ".";
+import { GameState } from "entropy-td-core/lib/orchestrator";
+import { GameStateObjectRenderer } from ".";
+import { GameObjectLike, ObjectRendererWithSync } from "../../../common/renderer";
+import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
+import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
 
 export class Terrain implements GameObjectLike {
     terrainTiles: Phaser.GameObjects.Image[][];
@@ -16,15 +20,14 @@ export class Terrain implements GameObjectLike {
     }
 }
 
-export class TerrainRenderer extends SubSectionRenderer<GameBoard, Terrain> {
-
+export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> {
     tileDim: number;
     
-    constructor(sceneSection: BorderedSceneSubSection, tileDim: number) {
-        super(sceneSection, {
+    constructor(subScene: BorderedSubScene, tileDim: number) {
+        super( {
             withCleanup: false,
             alwaysCreate: false
-        })
+        }, new SubSceneDisplayContext(subScene))
         this.tileDim = tileDim;
     }
     
@@ -46,11 +49,12 @@ export class TerrainRenderer extends SubSectionRenderer<GameBoard, Terrain> {
         throw new Error("Terrain creation is one off. Should not execute.");
     }
 
-    getTileCoordForRenderedPixel(pixel: PixelCoordinate): Coordinate {
+    getTileCoordForRenderedPixel(globalPixel: PixelCoordinate): Coordinate {
+        let pixelsWithinContext = this.displayContext.scopeGlobalToContext(globalPixel);
         let coord = {
-            row: Math.floor((pixel.pxRow - this.sceneSection.internalOffset.pxRow) / this.tileDim),
-            col: Math.floor((pixel.pxCol - this.sceneSection.internalOffset.pxCol) / this.tileDim)
-        }
+            row: Math.floor(pixelsWithinContext.pxRow / this.tileDim),
+            col: Math.floor(pixelsWithinContext.pxCol / this.tileDim)
+        };
         if (coord.row < 0 
             || coord.col < 0 
             || coord.col >= this.currentModels[0].numCols()
@@ -68,12 +72,12 @@ export class TerrainRenderer extends SubSectionRenderer<GameBoard, Terrain> {
         catch(e) { return false;}
     }
 
-    tileCenterX(colNum: number): number {
-        return this.sceneSection.internalOffset.pxCol + colNum*this.tileDim + 0.5*this.tileDim;
+    tileCenterX (colNum: number): number {
+        return colNum*this.tileDim + 0.5*this.tileDim;
     }
 
-    tileCenterY(rowNum: number): number {
-        return this.sceneSection.internalOffset.pxRow + rowNum*this.tileDim + 0.5*this.tileDim; 
+    tileCenterY (rowNum: number): number {
+        return rowNum*this.tileDim + 0.5*this.tileDim;
     }
     
     renderTile(coord: Coordinate, tile: Tile): Phaser.GameObjects.Image {
@@ -85,38 +89,41 @@ export class TerrainRenderer extends SubSectionRenderer<GameBoard, Terrain> {
     }
 
     renderImageAtTileCoord(coord: Coordinate,imageKey: string): Phaser.GameObjects.Image {
-        let image = this.sceneSection.scene.add.image(
-            tileCenterX(coord.col, this.tileDim, this.sceneSection.internalOffset.pxCol), 
-            tileCenterY(coord.row, this.tileDim, this.sceneSection.internalOffset.pxRow), 
+        return this.displayContext.addImage(
+            tileTopLeft(coord.row, coord.col,this.tileDim ), 
+            this.tileDim, 
             imageKey
         );
-       image.displayHeight = this.tileDim;
-       image.displayWidth = this.tileDim;
-       return image;
+    }
+
+    updateImageToTileCoord(coord: Coordinate, image: Phaser.GameObjects.Image): void {
+        this.displayContext.setXPos(image, tileCenterX(coord.col,this.tileDim));
+        this.displayContext.setYPos(image, tileCenterY(coord.row,this.tileDim));
     }
     
 }
 
-export class TowerRenderer extends SubSectionRenderer<Tower, Phaser.GameObjects.Image> {
+export class TowerRenderer extends GameStateObjectRenderer<Tower, Phaser.GameObjects.Image> {
     towerDim: number;
 
-    constructor(scene: BorderedSceneSubSection, towerDim: number) {
-        super(scene, {
+    constructor(subScene: BorderedSubScene, towerDim: number) {
+        super({
             alwaysCreate: false,
             withCleanup: true
-        });
+        }, new SubSceneDisplayContext(subScene), "tower_renderer");
         this.towerDim = towerDim;
+    }
+
+    getModels(gameState: GameState): Tower[] {
+        return gameState.towers;
     }
     
     create(tower: Tower): Phaser.GameObjects.Image {
-        let towerGameObj = this.sceneSection.scene.add.image(
-            tileCenterX(tower.pos.col, this.towerDim, this.sceneSection.internalOffset.pxCol),
-            tileCenterY(tower.pos.row, this.towerDim, this.sceneSection.internalOffset.pxRow),
+        return this.displayContext.addImage(
+            tileTopLeft(tower.pos.row,tower.pos.col,this.towerDim),
+            this.towerDim,
             `tower_${tower.type.name}`
         );
-        towerGameObj.displayHeight = this.towerDim;
-        towerGameObj.displayWidth = this.towerDim;
-        return towerGameObj;
     }
 
     update(item: Tower, phaserObj: Phaser.GameObjects.Image): void {
@@ -125,10 +132,20 @@ export class TowerRenderer extends SubSectionRenderer<Tower, Phaser.GameObjects.
     
 }
 
-const tileCenterX = (colNum: number, dim: number, colOffset: number): number => {
-    return colOffset + colNum*dim + 0.5*dim;
+//Without offset, assumes a display context.
+const tileTopLeft = (rowNum: number, colNum: number, dim: number): PixelCoordinate => {
+    return {
+        pxCol: colNum*dim,
+        pxRow: rowNum*dim
+    }
 }
 
-const tileCenterY = (rowNum: number, dim: number, rowOffset: number): number => {
-    return rowOffset + rowNum*dim + 0.5*dim;
+//Without offset, assumes a display context.
+const tileCenterX = (colNum: number, dim: number): number => {
+    return colNum*dim + 0.5*dim;
+}
+
+//Without offset, assumes a display context.
+const tileCenterY = (rowNum: number, dim: number): number => {
+    return rowNum*dim + 0.5*dim;
 }
