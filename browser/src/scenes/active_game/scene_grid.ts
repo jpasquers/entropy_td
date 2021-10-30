@@ -1,11 +1,10 @@
 import { GameConfiguration } from "entropy-td-core/lib/orchestrator";
 import { ActiveGameScene } from ".";
+import { COMMAND_CARD_HEIGHT, COMMAND_CARD_WIDTH } from "../../display_configs";
 import { SceneGrid, GRID_BORDER_THICKNESS, toExternalDim } from "../../phaser/extensions/scene_grid";
 import { BorderedSubScene } from "../../phaser/extensions/sub_scene";
 
 export const NAVIGATION_INTERNAL_HEIGHT = 100;
-export const COMMAND_CARD_INTERNAL_HEIGHT = 100;
-export const COMMAND_CARD_INTERNAL_WIDTH = 200;
 
 export class ActiveGameSceneGrid implements SceneGrid {
     gameplaySection: BorderedSubScene;
@@ -46,11 +45,11 @@ export class ActiveGameSceneGrid implements SceneGrid {
             id: "activegame_commandcard",
             scene: scene,
             internalOffset: {
-                pxCol: toExternalDim(this.GAMEPLAY_INTERNAL_WIDTH) - toExternalDim(COMMAND_CARD_INTERNAL_WIDTH) + GRID_BORDER_THICKNESS,
+                pxCol: toExternalDim(this.GAMEPLAY_INTERNAL_WIDTH) - toExternalDim(COMMAND_CARD_WIDTH) + GRID_BORDER_THICKNESS,
                 pxRow: toExternalDim(this.GAMEPLAY_INTERNAL_HEIGHT) + toExternalDim(NAVIGATION_INTERNAL_HEIGHT) + GRID_BORDER_THICKNESS
             },
-            internalHeight: COMMAND_CARD_INTERNAL_HEIGHT,
-            internalWidth: COMMAND_CARD_INTERNAL_WIDTH
+            internalHeight: COMMAND_CARD_HEIGHT,
+            internalWidth: COMMAND_CARD_WIDTH
         }
     }
 
@@ -83,7 +82,7 @@ export const getExternalGameplayWidth = (config: GameConfiguration): number => {
 export const getActiveGameExternalHeight = (config: GameConfiguration): number => {
     return getExternalGameplayHeight(config) + 
         toExternalDim(NAVIGATION_INTERNAL_HEIGHT) + 
-        toExternalDim(COMMAND_CARD_INTERNAL_HEIGHT)
+        toExternalDim(COMMAND_CARD_HEIGHT)
 }
 
 export const getActiveGameExternalWidth = (config: GameConfiguration): number => {

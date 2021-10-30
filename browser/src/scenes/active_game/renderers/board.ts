@@ -1,10 +1,12 @@
 import { GameBoard } from "entropy-td-core";
+import { ActiveCreep } from "entropy-td-core/lib/enemy/creep";
 import { Tower, TowerType } from "entropy-td-core/lib/friendly/tower";
 import { Coordinate, PixelCoordinate, Tile, TileType } from "entropy-td-core/lib/game_board";
 import { GameState } from "entropy-td-core/lib/orchestrator";
 import { Game } from "phaser";
 import { GameStateObjectRenderer } from ".";
 import { GameObjectLike, NoOp, ObjectRendererWithSync } from "../../../common/renderer";
+import { calculateAngleRad } from "../../../common/util";
 import { TOWER_COLOR } from "../../../display_configs";
 import { CanSetPos, DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
 import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
@@ -123,8 +125,13 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
 export class StaticTowerDisplay implements GameObjectLike, CanSetPos {
     towerSprite: Phaser.GameObjects.Sprite;
     towerBackground: Phaser.GameObjects.Rectangle;
+    pos: PixelCoordinate;
 
     constructor(coord: Coordinate,towerType: TowerType , displayContext: DisplayContext, towerDim: number) {
+        this.pos = {
+            pxCol: tileCenterX(coord.col, towerDim),
+            pxRow: tileCenterY(coord.row, towerDim)
+        }
         this.towerSprite = displayContext.addSprite(
             tileTopLeft(coord.row,coord.col,towerDim),
             towerDim, towerDim,
@@ -155,7 +162,11 @@ export class LiveTowerDisplay extends StaticTowerDisplay {
 
     constructor(tower: Tower, displayContext: DisplayContext, towerDim: number) {
         super(tower.pos, tower.type, displayContext, towerDim);
-        this.towerSprite.play("shoot_tower");
+        
+    }
+
+    orientToCreep(creep: ActiveCreep): void {
+        this.towerSprite.setRotation(calculateAngleRad(this.pos,creep.pxPos));
     }
 
     destroy() {
@@ -193,8 +204,12 @@ export class TowerRenderer extends GameStateObjectRenderer<Tower, LiveTowerDispl
         return new LiveTowerDisplay(tower, this.displayContext, this.towerDim);
     }
 
-    update(item: Tower, phaserObj: LiveTowerDisplay): void {
-        //No op for now;
+    update(tower: Tower, phaserObj: LiveTowerDisplay): void {
+        let orientingCreep = tower.targettedCreep ?? this.mostRecentGameState?.activeCreeps?.[0];
+        if (orientingCreep) {
+            phaserObj.orientToCreep(orientingCreep);
+        } 
+            
     }
     
 }

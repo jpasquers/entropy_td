@@ -32,6 +32,6 @@ let gameDelegate = new PhaserGameDelegate(GameOrchestrator.newGame({
     tilesColCount: 45,
     tilesRowCount: 20,
     checkpointCount: 3,
-    timeBeforeFirstWaveSec: 5,
-    timeBetweenWavesSec: 2
+    timeBeforeFirstWaveSec: 15,
+    timeBetweenWavesSec: 10
 }));

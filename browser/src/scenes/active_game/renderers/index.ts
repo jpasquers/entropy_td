@@ -6,6 +6,7 @@ import { GameStateObserver } from "../gamestate_publisher";
 export abstract class GameStateObjectRenderer<Model extends WithIdentifier, PhaserObj extends GameObjectLike>
     extends ObjectRendererWithSync<Model,PhaserObj> implements GameStateObserver {
     id: string;
+    mostRecentGameState?: GameState;
 
     constructor(config: RendererConfig,displayContext: DisplayContext, id: string) {
         super(config, displayContext);
@@ -15,6 +16,7 @@ export abstract class GameStateObjectRenderer<Model extends WithIdentifier, Phas
     abstract getModels(gameState: GameState): Model[];
 
     onEvent(event: GameState): void {
+        this.mostRecentGameState = event;
         this.synchronizeItems(...this.getModels(event));
     }
 

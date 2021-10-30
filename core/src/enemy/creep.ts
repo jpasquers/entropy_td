@@ -23,7 +23,7 @@ export const simpleGroundCreep = (): Creep => {
     return {
         type: CreepType.SimpleGround,
         maxHealth: 100,
-        velocityPxPerFrame: 6,
+        velocityPxPerFrame: 2,
         id: (GLOBAL_ID++).toString()
     }
 }

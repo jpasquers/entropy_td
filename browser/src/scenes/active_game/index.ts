@@ -3,7 +3,7 @@ import { GameOrchestrator } from "entropy-td-core";
 import { TerrainRenderer, TowerRenderer } from "./renderers/board";
 import { CreepRenderer } from "./renderers/creep";
 import { ProjectileRenderer } from "./renderers/projectile";
-import { CommandCardRenderer, COMMAND_CARD_WIDTH } from "./renderers/command_card";
+import { CommandCardRenderer } from "./renderers/command_card";
 import { SceneGridRenderer } from "./renderers/scene_grid";
 import { CommandCard, TowerListCommandCard } from "./command_card";
 import { ActionError } from "entropy-td-core/lib/actions/action_handler";
@@ -15,6 +15,7 @@ import { TowerSilhoutteRenderer } from "./renderers/tower_silhoutte";
 import { getActiveGameStartingState } from "./states";
 import { MoneyRenderer, TimeRenderer } from "./renderers/timer";
 import { PathRenderer } from "./renderers/path";
+import { TOWER_SHOOT_ANIM_FRAMES } from "../../display_configs";
 
 
 export class ActiveGameScene extends BasicScene {
@@ -83,19 +84,13 @@ export class ActiveGameScene extends BasicScene {
         this.terrainRenderer.renderBackgroundTerrain();
         this.terrainRenderer.synchronizeItems(this.gameController.getBoard());
         this.sceneGridRenderer.synchronizeItems(...this.sceneGrid.getSections());
-        console.log(this.anims.generateFrameNames('tower_simple_1', {
-            prefix: 'tower_simple_1 ',
-            suffix: '.aseprite',
-            start: 0,
-            end: 9
-        }));
         this.anims.create({
             key: 'shoot_tower',
             frames: this.anims.generateFrameNames('tower_simple_1', {
                 prefix: 'tower_simple_1 ',
                 suffix: '.aseprite',
                 start: 0,
-                end: 9
+                end: TOWER_SHOOT_ANIM_FRAMES-1
             }),
             frameRate: 30,
             repeat: -1
