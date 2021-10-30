@@ -16,6 +16,7 @@ import { getActiveGameStartingState } from "./states";
 import { MoneyRenderer, TimeRenderer } from "./renderers/timer";
 import { PathRenderer } from "./renderers/path";
 
+
 export class ActiveGameScene extends BasicScene {
     gameController: GameOrchestrator
     sceneGrid: ActiveGameSceneGrid;
@@ -71,12 +72,10 @@ export class ActiveGameScene extends BasicScene {
         this.load.image('finish', '/assets/finish.jpeg');
         this.load.image('rock', '/assets/rock.jpeg');
         this.load.image('empty', '/assets/empty.jpeg');
-        this.load.spritesheet("tower_simple_1", "/assets/tower_simple_1.png", {
-            frameWidth: 200,
-            frameHeight: 200
-        });
+        this.load.atlas("tower_simple_1", "/assets/tower_simple_1.png", "/assets/tower_simple_1.json");
         //this.load.image('tower_simple_1_card', '/assets/tower_simple_1.png');
         this.load.image('space_background','/assets/Starfield-13.jpg');
+
     }
 
     public create() {
@@ -84,6 +83,23 @@ export class ActiveGameScene extends BasicScene {
         this.terrainRenderer.renderBackgroundTerrain();
         this.terrainRenderer.synchronizeItems(this.gameController.getBoard());
         this.sceneGridRenderer.synchronizeItems(...this.sceneGrid.getSections());
+        console.log(this.anims.generateFrameNames('tower_simple_1', {
+            prefix: 'tower_simple_1 ',
+            suffix: '.aseprite',
+            start: 0,
+            end: 9
+        }));
+        this.anims.create({
+            key: 'shoot_tower',
+            frames: this.anims.generateFrameNames('tower_simple_1', {
+                prefix: 'tower_simple_1 ',
+                suffix: '.aseprite',
+                start: 0,
+                end: 9
+            }),
+            frameRate: 30,
+            repeat: -1
+        })
         getActiveGameStartingState(this).onEnterState();
     }
 

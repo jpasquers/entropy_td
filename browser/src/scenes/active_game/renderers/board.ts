@@ -155,6 +155,7 @@ export class LiveTowerDisplay extends StaticTowerDisplay {
 
     constructor(tower: Tower, displayContext: DisplayContext, towerDim: number) {
         super(tower.pos, tower.type, displayContext, towerDim);
+        this.towerSprite.play("shoot_tower");
     }
 
     destroy() {
