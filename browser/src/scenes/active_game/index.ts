@@ -74,6 +74,7 @@ export class ActiveGameScene extends BasicScene {
         this.load.image('rock', '/assets/rock.jpeg');
         this.load.image('empty', '/assets/empty.jpeg');
         this.load.atlas("tower_simple_1", "/assets/tower_simple_1.png", "/assets/tower_simple_1.json");
+        this.load.atlas("tower_simple_1_command_card", "/assets/tower_simple_1_command_card.png", "/assets/tower_simple_1_command_card.json");
         //this.load.image('tower_simple_1_card', '/assets/tower_simple_1.png');
         this.load.image('space_background','/assets/Starfield-13.jpg');
 

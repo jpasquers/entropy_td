@@ -8,18 +8,18 @@ import { CommandCard, CommandCardItem } from "../command_card";
 
 
 export class CommandCardItemDisplay implements GameObjectLike {
-    image: Phaser.GameObjects.Image;
+    sprite: Phaser.GameObjects.Sprite;
     hotkey: Phaser.GameObjects.Text;
 
     constructor(commandCardItem: CommandCardItem, displayContext: DisplayContext, idx: number) {
         let numCols = Math.floor(COMMAND_CARD_WIDTH / COMMAND_CARD_ITEM_DIM);
         let col = idx % numCols;
         let row = Math.floor(idx / numCols);
-        this.image = displayContext.addImage({
+        this.sprite = displayContext.addSprite({
             pxCol: col*COMMAND_CARD_ITEM_DIM,
             pxRow: row*COMMAND_CARD_ITEM_DIM
         }, COMMAND_CARD_ITEM_DIM, COMMAND_CARD_ITEM_DIM, commandCardItem.assetKey);
-        this.image.setDepth(1);
+        this.sprite.setDepth(1);
         this.hotkey = displayContext.addTextStartingAt({
             pxCol: col*COMMAND_CARD_ITEM_DIM + 2,
             pxRow: row*COMMAND_CARD_ITEM_DIM + 2
@@ -32,7 +32,7 @@ export class CommandCardItemDisplay implements GameObjectLike {
     }
 
     destroy() {
-        this.image.destroy();
+        this.sprite.destroy();
         this.hotkey.destroy();
     }
 }

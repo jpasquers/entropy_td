@@ -47,6 +47,6 @@ export const towerCommandCardItem = (tower: TowerType): CommandCardItem => {
     return {
         id: `tower_${tower.name}`,
         hotkey: tower.hotkey,
-        assetKey: `tower_${tower.name}_card`
+        assetKey: `tower_${tower.name}_command_card`
     }
 }
