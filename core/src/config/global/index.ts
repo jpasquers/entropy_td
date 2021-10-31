@@ -1,24 +1,19 @@
+import { ConfigType, ScalingCostConfig, TowerType } from "..";
 import { ProjectileConfig } from "../../friendly/projectile";
+import { GameConfiguration } from "../../orchestrator";
 import { RandomizableRange } from "../calc";
 
-export interface GlobalGameConfiguration {
-    tileColumnCount: RandomizableRange;
-    towerTypes: Record<string, GlobalTowerTypeConfig>;
+
+export type Randomizable<T> = {
+    [K in keyof T]: T[K] extends number ? RandomizableRange : 
+        T[K] extends ConfigType ? Randomizable<T[K]> : K;
 }
 
-export interface GLobalUpgradeCostConfig {
-    base: RandomizableRange;
-    mult: RandomizableRange;
-    exp: RandomizableRange;
+export type GlobalScalingCostConfig = Randomizable<ScalingCostConfig>;
+
+
+export interface GlobalGameConfiguration extends Randomizable<GameConfiguration> {
+    towerTypes: Record<string, GlobalTowerType>;
 }
 
-export interface GlobalTowerTypeConfig {
-    name: string;
-    enabled: boolean;
-    hotkey: string;
-    baseCost: RandomizableRange;
-    baseDamage: RandomizableRange;
-    baseFramesPerAttk: number;
-    baseRangePx: number;
-    projectileConfig: ProjectileConfig;
-}
+export type GlobalTowerType = Randomizable<TowerType>;

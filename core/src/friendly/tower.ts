@@ -1,4 +1,5 @@
 import { getTileCenterPx } from "../common/utils";
+import { ConfigType, TowerType } from "../config";
 import { ActiveCreep } from "../enemy/creep";
 import { Coordinate, PixelCoordinate } from "../game_board";
 import { ProjectileConfig, SimpleProjectile } from "./projectile";
@@ -12,17 +13,7 @@ export interface Tower {
     targettedCreep?: ActiveCreep;
 }
 
-export interface TowerType {
-    name: string;
-    enabled: boolean;
-    hotkey: string;
-    baseCost: number;
-    baseDamage: number;
-    baseFramesPerAttk: number;
-    baseRangePx: number;
-    projectileConfig: ProjectileConfig;
 
-}
 
 export const fromTowerType = (pos: Coordinate, tileDim: number, towerType: TowerType): Tower => {
     return {
