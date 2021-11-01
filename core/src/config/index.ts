@@ -30,6 +30,20 @@ export interface TowerType extends ConfigType{
     framesPerAttkUpgradeCostConfig: ScalingCostConfig;
 }
 
+
+export interface PotentialUpgrades {
+    canPurchase: boolean;
+    cost: number | undefined;
+}
+
+export interface OneoffUpgrade extends Upgrade {
+    purchased: boolean;
+}
+
+export interface ConsistentUpgrade {
+    currentLevel: number;
+}
+
 export const ScalingCostCalculator = ({base,mult,exp}: ScalingCostConfig): CostCalculator => {
     return (instance: number) => {
         return base + Math.pow(mult*instance, exp);

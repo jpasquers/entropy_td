@@ -1,4 +1,4 @@
-import { TowerType } from "entropy-td-core";
+import { Tower, TowerType } from "entropy-td-core";
 import { ActiveGameScene } from "..";
 import { State, StateMap } from "../../../common/state";
 import { AddTowerActor } from "../actors/add_tower_actor";
@@ -6,14 +6,22 @@ import { CommandCard, TowerListCommandCard } from "../command_card";
 import { TowerSilhoutteRenderer } from "../renderers/tower_silhoutte";
 
 export const getActiveGameStartingState = (scene: ActiveGameScene) => {
-    return new TowerSelection(scene);
+    return new NewTowerConsideration(scene);
 }
 
 export abstract class ActiveGameState<Props> extends State<ActiveGameScene, Props> {
     
 }
 
-export class TowerSelection extends ActiveGameState<{}> {
+export interface ExistingTowerSelectedProps {
+    tower: Tower;
+}
+
+export class ExistingTowerSelected extends ActiveGameState<ExistingTowerSelectedProps> {
+    
+}
+
+export class NewTowerConsideration extends ActiveGameState<{}> {
     commandCard?: CommandCard;
     towerSilhoutteRenderer?: TowerSilhoutteRenderer;
     addTowerActor?: AddTowerActor;

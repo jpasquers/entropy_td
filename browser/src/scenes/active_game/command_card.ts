@@ -1,4 +1,4 @@
-import { TowerType } from "entropy-td-core";
+import { Tower, TowerType } from "entropy-td-core";
 import { KeyDownEvent, KeyDownObserver } from "../../common/publishers/input";
 import { TowerSilhoutteRenderer } from "./renderers/tower_silhoutte";
 
@@ -13,6 +13,13 @@ export abstract class CommandCard implements KeyDownObserver{
 
     abstract onEvent(event: KeyDownEvent): void;
 
+}
+
+export class UpgradeTowerCommandCard extends CommandCard {
+    tower: Tower;
+    constructor(tower: Tower) {
+        this.tower = tower;
+    }
 }
 
 export class TowerListCommandCard extends CommandCard {
