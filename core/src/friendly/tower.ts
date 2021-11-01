@@ -1,5 +1,5 @@
 import { getTileCenterPx } from "../common/utils";
-import { ConfigType, TowerType } from "../config";
+import { ConfigType, TowerType, UpgradeConfig } from "../config";
 import { ActiveCreep } from "../enemy/creep";
 import { Coordinate, PixelCoordinate } from "../game_board";
 let GLOBAL_ID = 0;
@@ -10,20 +10,20 @@ export interface TowerSummary {
     id: string;
     framesReloading: number;
     targettedCreep?: ActiveCreep;
+    effectiveDamage: number;
 }
 
 export type DamageModifier = (input: number) => number;
 
 export interface Upgrade {
-    canPurchase: boolean;
-    cost: number | undefined;
+    config: UpgradeConfig;
 }
 
-export interface OneoffUpgrade extends Upgrade {
+export interface OneTimeUpgrade extends Upgrade {
     purchased: boolean;
 }
 
-export interface ConsistentUpgrade {
+export interface IncrementalUpgrade extends Upgrade {
     currentLevel: number;
 }
 
@@ -34,6 +34,7 @@ export class LiveTower implements TowerSummary {
     id: string;
     framesReloading: number;
     targettedCreep?: ActiveCreep;
+    effectiveDamage: number;
 
     constructor(pos: Coordinate, tileDim: number, towerType: TowerType) {
         this.type = towerType;
@@ -41,6 +42,7 @@ export class LiveTower implements TowerSummary {
         this.pxCenter = getTileCenterPx(pos,tileDim);
         this.id = (GLOBAL_ID++).toString();
         this.framesReloading = 0;
+        this.effectiveDamage = towerType.baseDamage;
     }
 }
 

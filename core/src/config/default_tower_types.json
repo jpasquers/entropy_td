@@ -1,21 +1,34 @@
 {   
     "simple_1": {
         "name": "simple_1",
-        "damageUpgradeCostConfig": {
-            "base": 1,
-            "mult": 1,
-            "exp": 1
-        },
-        "rangeUpgradeCostConfig": {
-            "base": 1,
-            "mult": 1,
-            "exp": 1
-        }, 
-        "framesPerAttkUpgradeCostConfig": {
-            "base": 1,
-            "mult": 1,
-            "exp": 1
-        },
+        "upgrades": [{
+            "type": "DAMAGE",
+            "mode": "INCREMENTAL",
+            "cost": {
+                "base": 1,
+                "mult": 1,
+                "exp": 1
+            },
+            "canPurchase": true
+        }, {
+            "type": "RANGE",
+            "mode": "INCREMENTAL",
+            "cost": {
+                "base": 1,
+                "mult": 1,
+                "exp": 2
+            },
+            "canPurchase": true
+        }, {
+            "type": "ATTK_SPEED",
+            "mode": "INCREMENTAL",
+            "cost": {
+                "base": 1,
+                "mult": 1,
+                "exp": 2
+            },
+            "canPurchase": true
+        }],
         "enabled": true,
         "hotkey": "a",
         "baseCost": 10,

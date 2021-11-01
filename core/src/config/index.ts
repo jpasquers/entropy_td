@@ -25,23 +25,15 @@ export interface TowerType extends ConfigType{
     baseFramesPerAttk: number;
     baseRangePx: number;
     projectileConfig: ProjectileConfig;
-    damageUpgradeCostConfig: ScalingCostConfig;
-    rangeUpgradeCostConfig: ScalingCostConfig;
-    framesPerAttkUpgradeCostConfig: ScalingCostConfig;
+    potentialUpgrades: UpgradeConfig[];
 }
 
 
-export interface PotentialUpgrades {
+export interface UpgradeConfig {
     canPurchase: boolean;
-    cost: number | undefined;
-}
-
-export interface OneoffUpgrade extends Upgrade {
-    purchased: boolean;
-}
-
-export interface ConsistentUpgrade {
-    currentLevel: number;
+    cost: ScalingCostConfig;
+    mode: "ONE_TIME" | "INCREMENTAL";
+    type: "DAMAGE" | "RANGE" | "ATTK_SPEED";
 }
 
 export const ScalingCostCalculator = ({base,mult,exp}: ScalingCostConfig): CostCalculator => {
