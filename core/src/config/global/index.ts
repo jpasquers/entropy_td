@@ -1,6 +1,5 @@
-import { ConfigType, ScalingCostConfig, TowerType } from "..";
+import { ConfigType, GameInstanceConfiguration, ScalingCostConfig, TowerType } from "..";
 import { ProjectileConfig } from "../../friendly/projectile";
-import { GameConfiguration } from "../../orchestrator";
 import { RandomizableRange } from "../calc";
 
 
@@ -12,7 +11,7 @@ export type Randomizable<T> = {
 export type GlobalScalingCostConfig = Randomizable<ScalingCostConfig>;
 
 
-export interface GlobalGameConfiguration extends Randomizable<GameConfiguration> {
+export interface GlobalGameConfiguration extends Randomizable<GameInstanceConfiguration> {
     towerTypes: Record<string, GlobalTowerType>;
 }
 

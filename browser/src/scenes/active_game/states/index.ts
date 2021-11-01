@@ -1,4 +1,4 @@
-import { TowerType } from "entropy-td-core/lib/friendly/tower";
+import { TowerType } from "entropy-td-core";
 import { ActiveGameScene } from "..";
 import { State, StateMap } from "../../../common/state";
 import { AddTowerActor } from "../actors/add_tower_actor";

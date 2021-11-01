@@ -8,14 +8,11 @@ import { createAndStartTimeline, Timeline, TimelineConfiguration } from "./timel
 import { Tower } from "./friendly/tower";
 import defaultTowersMap from "./config/default_tower_types.json";
 import { Projectile, ProjectileSummary } from "./friendly/projectile";
-import { TowerType } from "./config";
+import { GameInstanceConfiguration, TowerType } from "./config";
 
-export type CustomGameConfiguration = Partial<GameConfiguration>;
+export type CustomGameConfiguration = Partial<GameInstanceConfiguration>;
 
-export interface GameConfiguration extends GameBoardConfiguration, TimelineConfiguration, PlayerStateConfiguration {
-}
-
-const DEFAULT_GAME_CONFIGURATION: GameConfiguration = {
+const DEFAULT_GAME_CONFIGURATION: GameInstanceConfiguration = {
     tilesRowCount: 30,
     tilesColCount: 30,
     tilePixelDim: 20,
@@ -23,7 +20,8 @@ const DEFAULT_GAME_CONFIGURATION: GameConfiguration = {
     checkpointCount: 3,
     timeBeforeFirstWaveSec: 2,
     timeBetweenWavesSec: 20,
-    startingMoney: 5000
+    startingMoney: 5000,
+    towerTypes: {}
 }
 
 export interface GameState {
@@ -36,7 +34,7 @@ export interface GameState {
 }
 
 export class GameOrchestrator {
-    config: GameConfiguration;
+    config: GameInstanceConfiguration;
     gameBoard: GameBoard;
     timeline: Timeline;
     currentWaveExecutor: WaveExecutor | undefined;

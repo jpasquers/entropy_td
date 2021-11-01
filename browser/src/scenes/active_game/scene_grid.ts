@@ -1,4 +1,4 @@
-import { GameConfiguration } from "entropy-td-core/lib/orchestrator";
+import { GameInstanceConfiguration } from "entropy-td-core";
 import { ActiveGameScene } from ".";
 import { COMMAND_CARD_HEIGHT, COMMAND_CARD_WIDTH } from "../../display_configs";
 import { SceneGrid, GRID_BORDER_THICKNESS, toExternalDim } from "../../phaser/extensions/scene_grid";
@@ -63,28 +63,28 @@ export class ActiveGameSceneGrid implements SceneGrid {
 }
 
 
-export const getInternalGameplayHeight = (config: GameConfiguration): number => {
+export const getInternalGameplayHeight = (config: GameInstanceConfiguration): number => {
     return config.tilePixelDim * config.tilesRowCount
 }
 
-export const getExternalGameplayHeight = (config: GameConfiguration): number => {
+export const getExternalGameplayHeight = (config: GameInstanceConfiguration): number => {
     return getInternalGameplayHeight(config) + 2*GRID_BORDER_THICKNESS;
 }
 
-export const getInternalGameplayWidth = (config: GameConfiguration): number => {
+export const getInternalGameplayWidth = (config: GameInstanceConfiguration): number => {
     return config.tilePixelDim * config.tilesColCount;
 }
 
-export const getExternalGameplayWidth = (config: GameConfiguration): number => {
+export const getExternalGameplayWidth = (config: GameInstanceConfiguration): number => {
     return getInternalGameplayWidth(config) + 2*GRID_BORDER_THICKNESS;
 }
 
-export const getActiveGameExternalHeight = (config: GameConfiguration): number => {
+export const getActiveGameExternalHeight = (config: GameInstanceConfiguration): number => {
     return getExternalGameplayHeight(config) + 
         toExternalDim(NAVIGATION_INTERNAL_HEIGHT) + 
         toExternalDim(COMMAND_CARD_HEIGHT)
 }
 
-export const getActiveGameExternalWidth = (config: GameConfiguration): number => {
+export const getActiveGameExternalWidth = (config: GameInstanceConfiguration): number => {
     return getExternalGameplayWidth(config);
 }

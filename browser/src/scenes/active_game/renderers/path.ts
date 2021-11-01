@@ -1,5 +1,5 @@
-import { PixelCoordinate } from "entropy-td-core/lib/game_board";
-import { GameState } from "entropy-td-core/lib/orchestrator";
+import { PixelCoordinate } from "entropy-td-core";
+import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
 import { GameObjectLike, RenderWithOffset, SimpleRenderer } from "../../../common/renderer";
 import { WALKING_PATH_LAYER } from "../../../common/z_layers";

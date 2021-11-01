@@ -4,7 +4,7 @@ import { GameBoardConfiguration } from "../game_board";
 import { TimelineConfiguration } from "../timeline";
 export interface ConfigType {}
 
-export interface InstanceGameConfiguration extends GameBoardConfiguration, TimelineConfiguration, PlayerStateConfiguration {
+export interface GameInstanceConfiguration extends GameBoardConfiguration, TimelineConfiguration, PlayerStateConfiguration {
     towerTypes: Record<string, TowerType>;
 }
 

@@ -1,4 +1,4 @@
-import { PixelCoordinate } from "entropy-td-core/lib/game_board";
+import { PixelCoordinate } from "entropy-td-core";
 
 
 //I am sure there are libraries for this. But personal project, good experience. :)

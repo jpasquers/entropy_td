@@ -1,4 +1,4 @@
-import { ActionError, ActionHandler } from "entropy-td-core/lib/actions/action_handler";
+import { ActionError, ActionHandler } from "entropy-td-core";
 import { BasicScene } from "../../scenes";
 import { ErrorRenderer } from "../../scenes/active_game/renderers/error";
 

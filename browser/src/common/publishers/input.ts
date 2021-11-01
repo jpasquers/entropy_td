@@ -1,4 +1,4 @@
-import { PixelCoordinate } from "entropy-td-core/lib/game_board";
+import { PixelCoordinate } from "entropy-td-core";
 import { Observer, Publisher } from "./";
 import { FrameDeltaEvent, FrameDeltaObserver } from "./frame_delta";
 

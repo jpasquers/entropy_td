@@ -1,4 +1,4 @@
-import { ActionError } from "entropy-td-core/lib/actions/action_handler";
+import { ActionError } from "entropy-td-core";
 import { FrameDeltaPublisher } from "../common/publishers/frame_delta";
 import { ClickPublisher, KeyDownPublisher, MouseMovementPublisher } from "../common/publishers/input";
 import { SceneGrid } from "../phaser/extensions/scene_grid";

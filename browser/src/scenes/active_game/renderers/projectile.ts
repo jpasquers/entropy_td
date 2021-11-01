@@ -1,5 +1,5 @@
-import {  ProjectileSummary } from "entropy-td-core/lib/friendly/projectile";
-import { GameState } from "entropy-td-core/lib/orchestrator";
+import {  ProjectileSummary } from "entropy-td-core";
+import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
 import { SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
 import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";

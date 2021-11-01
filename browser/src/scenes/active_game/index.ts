@@ -6,7 +6,7 @@ import { ProjectileRenderer } from "./renderers/projectile";
 import { CommandCardRenderer } from "./renderers/command_card";
 import { SceneGridRenderer } from "./renderers/scene_grid";
 import { CommandCard, TowerListCommandCard } from "./command_card";
-import { ActionError } from "entropy-td-core/lib/actions/action_handler";
+import { ActionError } from "entropy-td-core";
 import { ErrorRenderer } from "./renderers/error";
 import { ActiveGameSceneGrid } from "./scene_grid";
 import { GameStatePublisher } from "./gamestate_publisher";

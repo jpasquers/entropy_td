@@ -1,4 +1,4 @@
-import { PixelCoordinate } from "entropy-td-core/lib/game_board";
+import { PixelCoordinate } from "entropy-td-core";
 import { BorderedSubScene } from "./sub_scene";
 
 export interface SceneGrid {

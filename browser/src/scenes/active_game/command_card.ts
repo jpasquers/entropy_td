@@ -1,4 +1,4 @@
-import { TowerType } from "entropy-td-core/lib/friendly/tower";
+import { TowerType } from "entropy-td-core";
 import { KeyDownEvent, KeyDownObserver } from "../../common/publishers/input";
 import { TowerSilhoutteRenderer } from "./renderers/tower_silhoutte";
 

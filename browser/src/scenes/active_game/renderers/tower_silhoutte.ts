@@ -1,6 +1,6 @@
 import { GameOrchestrator } from "entropy-td-core";
-import { TowerType } from "entropy-td-core/lib/friendly/tower";
-import { Coordinate, PixelCoordinate } from "entropy-td-core/lib/game_board";
+import { TowerType } from "entropy-td-core";
+import { Coordinate, PixelCoordinate } from "entropy-td-core";
 import { ActiveGameScene } from "..";
 import { MouseMovement, MouseMovementObserver } from "../../../common/publishers/input";
 import { TerrainRenderer, StaticTowerDisplay, TowerRenderer } from "./board";

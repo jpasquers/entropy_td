@@ -1,6 +1,6 @@
 import { GameBoard } from "entropy-td-core";
-import { ActiveCreep, Creep } from "entropy-td-core/lib/enemy/creep";
-import { GameState } from "entropy-td-core/lib/orchestrator";
+import { ActiveCreep, Creep } from "entropy-td-core";
+import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
 import {  GameObjectLike } from "../../../common/renderer";
 import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";

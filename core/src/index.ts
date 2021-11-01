@@ -1,10 +1,11 @@
 export {GameOrchestrator} from "./orchestrator";
 
-export { GameBoard, PixelCoordinate, Coordinate } from "./game_board";
+export { GameBoard, PixelCoordinate, Coordinate, Tile, TileType} from "./game_board";
 
-export {TowerType} from "./config/index";
+export {TowerType, GameInstanceConfiguration} from "./config/index";
 
 export {Tower} from "./friendly/tower";
-
-
+export {ProjectileSummary} from "./friendly/projectile";
+export {ActiveCreep, Creep} from "./enemy/creep";
+export {GameState} from "./orchestrator";
 export {ActionError, ActionHandler} from "./actions/action_handler";

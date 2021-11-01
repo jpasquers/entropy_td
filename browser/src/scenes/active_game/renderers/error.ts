@@ -1,5 +1,5 @@
-import { ActionError } from "entropy-td-core/lib/actions/action_handler";
-import { GameState } from "entropy-td-core/lib/orchestrator";
+import { ActionError } from "entropy-td-core";
+import { GameState } from "entropy-td-core";
 import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
 import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
 import { GameStateObserver } from "../gamestate_publisher";

@@ -1,4 +1,4 @@
-import { GameState } from "entropy-td-core/lib/orchestrator";
+import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
 import { SimpleRenderer, WithIdentifier } from "../../../common/renderer";
 import { SubSceneDisplayContext } from "../../../phaser/extensions/display_context";

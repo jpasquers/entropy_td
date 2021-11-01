@@ -1,8 +1,8 @@
 import { GameBoard } from "entropy-td-core";
-import { ActiveCreep } from "entropy-td-core/lib/enemy/creep";
-import { Tower, TowerType } from "entropy-td-core/lib/friendly/tower";
-import { Coordinate, PixelCoordinate, Tile, TileType } from "entropy-td-core/lib/game_board";
-import { GameState } from "entropy-td-core/lib/orchestrator";
+import { ActiveCreep } from "entropy-td-core";
+import { Tower, TowerType } from "entropy-td-core";
+import { Coordinate, PixelCoordinate, Tile, TileType } from "entropy-td-core";
+import { GameState } from "entropy-td-core";
 import { Game } from "phaser";
 import { GameStateObjectRenderer } from ".";
 import { GameObjectLike, NoOp, ObjectRendererWithSync } from "../../../common/renderer";

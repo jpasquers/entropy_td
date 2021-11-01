@@ -1,5 +1,6 @@
-import { TowerType } from "entropy-td-core/";
-import { PixelCoordinate } from "entropy-td-core/lib/game_board";
+
+import { TowerType } from "entropy-td-core";
+import { PixelCoordinate } from "entropy-td-core";
 import { ActiveGameScene } from "..";
 import { ActionBridge } from "../../../common/actor";
 import { ClickEvent, ClickObserver } from "../../../common/publishers/input";

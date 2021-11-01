@@ -1,11 +1,11 @@
-import { PixelCoordinate } from "entropy-td-core/lib/game_board";
-import { GameConfiguration } from "entropy-td-core/lib/orchestrator";
+import { PixelCoordinate } from "entropy-td-core";
+import { GameInstanceConfiguration } from "entropy-td-core";
 import { getActiveGameExternalHeight, getActiveGameExternalWidth } from "./active_game/scene_grid";
 
-export const getEffectiveGameHeight = (config: GameConfiguration) => {
+export const getEffectiveGameHeight = (config: GameInstanceConfiguration) => {
     return getActiveGameExternalHeight(config);
 }
 
-export const getEffectiveGameWidth = (config: GameConfiguration) => {
+export const getEffectiveGameWidth = (config: GameInstanceConfiguration) => {
     return getActiveGameExternalWidth(config);
 }
