@@ -1,8 +1,8 @@
 import { calculateDistance, getTileCenterPx } from "./common/utils";
 import { ActiveCreep } from "./enemy/creep";
 import { getSearchAlgorithmInclusive } from "./pathfinder";
-import { fromTowerType, Tower, TowerType } from "./friendly/tower";
-import { GameOrchestrator } from ".";
+import { fromTowerType, Tower } from "./friendly/tower";
+import { GameOrchestrator, TowerType } from ".";
 import { Projectile } from "./friendly/projectile";
 
 export enum TileType {

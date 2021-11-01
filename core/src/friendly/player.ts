@@ -1,4 +1,4 @@
-export class PlayerState {
+export class PlayerGameState {
     money: number;
     constructor(config: PlayerStateConfiguration) {
         this.money = config.startingMoney;

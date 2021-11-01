@@ -2,7 +2,6 @@ import { PlayerStateConfiguration } from "../friendly/player";
 import { ProjectileConfig } from "../friendly/projectile";
 import { GameBoardConfiguration } from "../game_board";
 import { TimelineConfiguration } from "../timeline";
-
 export interface ConfigType {}
 
 export interface InstanceGameConfiguration extends GameBoardConfiguration, TimelineConfiguration, PlayerStateConfiguration {

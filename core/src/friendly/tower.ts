@@ -17,16 +17,7 @@ export interface Tower {
 
 export const fromTowerType = (pos: Coordinate, tileDim: number, towerType: TowerType): Tower => {
     return {
-        type: {
-            name: "simple_1",
-            enabled: true,
-            hotkey: "a",
-            baseCost: 10,
-            baseDamage: 25,
-            baseFramesPerAttk: 25,
-            baseRangePx: 150,
-            projectileConfig: SimpleProjectile
-        },
+        type: towerType,
         framesReloading: 0,
         id: (GLOBAL_ID++).toString(),
         pos: pos,

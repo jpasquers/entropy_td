@@ -1,8 +1,7 @@
-import Phaser, { Scene } from "phaser";
+import Phaser from "phaser";
 import { GameOrchestrator } from "entropy-td-core";
 import { ActiveGameScene } from "./scenes/active_game";
 import { getEffectiveGameWidth, getEffectiveGameHeight } from "./scenes/scene_grid";
-import { BasicScene } from "./scenes";
 
 
 class PhaserGameDelegate {

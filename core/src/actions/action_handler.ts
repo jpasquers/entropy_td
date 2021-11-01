@@ -1,8 +1,7 @@
-import { GameBoard } from "..";
+import { GameBoard, TowerType } from "..";
 import { Coordinate } from "../game_board";
-import { PlayerState } from "../friendly/player";
+import { PlayerGameState } from "../friendly/player";
 import { Timeline } from "../timeline";
-import { TowerType } from "../friendly/tower";
 
 let GLOBAL_ID = 0;
 export class ActionError extends Error {
@@ -16,11 +15,11 @@ export class ActionError extends Error {
 }
 
 export class ActionHandler {
-    playerState: PlayerState;
+    playerState: PlayerGameState;
     gameBoard: GameBoard;
     timeline: Timeline;
     
-    constructor(playerState: PlayerState, gameBoard: GameBoard, timeline: Timeline) {
+    constructor(playerState: PlayerGameState, gameBoard: GameBoard, timeline: Timeline) {
         this.playerState = playerState;
         this.gameBoard = gameBoard;
         this.timeline = timeline;

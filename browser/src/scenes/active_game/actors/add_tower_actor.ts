@@ -1,11 +1,8 @@
-import { ActionHandler } from "entropy-td-core/lib/actions/action_handler";
-import { TowerType } from "entropy-td-core/lib/friendly/tower";
+import { TowerType } from "entropy-td-core/";
 import { PixelCoordinate } from "entropy-td-core/lib/game_board";
 import { ActiveGameScene } from "..";
 import { ActionBridge } from "../../../common/actor";
 import { ClickEvent, ClickObserver } from "../../../common/publishers/input";
-import { TerrainRenderer } from "../renderers/board";
-import { ErrorRenderer } from "../renderers/error";
 
 
 export class AddTowerActor extends ActionBridge<ActiveGameScene> implements ClickObserver {

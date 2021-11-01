@@ -3,11 +3,12 @@ import { ActiveCreep } from "./enemy/creep";
 import { Wave } from "./enemy/wave";
 import { WaveExecutor } from "./enemy/wave_executor";
 import { GameBoard, GameBoardConfiguration, PixelCoordinate } from "./game_board";
-import { PlayerState, PlayerStateConfiguration } from "./friendly/player";
+import { PlayerGameState, PlayerStateConfiguration } from "./friendly/player";
 import { createAndStartTimeline, Timeline, TimelineConfiguration } from "./timeline";
-import { Tower, TowerType } from "./friendly/tower";
+import { Tower } from "./friendly/tower";
+import defaultTowersMap from "./config/default_tower_types.json";
 import { Projectile, ProjectileSummary } from "./friendly/projectile";
-import defaultTowersMap from "./config/tower_types.json";
+import { TowerType } from "./config";
 
 export type CustomGameConfiguration = Partial<GameConfiguration>;
 
@@ -34,22 +35,12 @@ export interface GameState {
     money: number;
 }
 
-
-
-export interface PlayerAction {
-
-}
-
-export type GameStateSubscriber = (state: GameState) => void;
-
-
-
 export class GameOrchestrator {
     config: GameConfiguration;
     gameBoard: GameBoard;
     timeline: Timeline;
     currentWaveExecutor: WaveExecutor | undefined;
-    playerState: PlayerState;
+    playerState: PlayerGameState;
     playerActionHandler: ActionHandler;
 
     constructor(customConfigs: CustomGameConfiguration) {
@@ -59,7 +50,7 @@ export class GameOrchestrator {
         }
         this.gameBoard = new GameBoard(this.config, this);
         this.timeline = createAndStartTimeline(this.config, this);
-        this.playerState = new PlayerState(this.config);
+        this.playerState = new PlayerGameState(this.config);
         this.playerActionHandler = new ActionHandler(this.playerState, this.gameBoard, this.timeline);
     }
 
