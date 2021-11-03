@@ -1,5 +1,5 @@
 import { getTileCenterPx } from "../common/utils";
-import { ConfigType, TowerType, UpgradeConfig } from "../config";
+import { ConfigType, IncrementalUpgradeConfig, isIncremental, OneTimeUpgradeConfig, TowerType, UpgradeConfig } from "../config";
 import { ActiveCreep } from "../enemy/creep";
 import { Coordinate, PixelCoordinate } from "../game_board";
 let GLOBAL_ID = 0;
@@ -10,21 +10,33 @@ export interface TowerSummary {
     id: string;
     framesReloading: number;
     targettedCreep?: ActiveCreep;
-    effectiveDamage: number;
 }
 
-export type DamageModifier = (input: number) => number;
+export type Upgrade = OneTimeUpgrade | IncrementalUpgrade;
 
-export interface Upgrade {
-    config: UpgradeConfig;
-}
-
-export interface OneTimeUpgrade extends Upgrade {
+export interface OneTimeUpgrade {
     purchased: boolean;
+    config: OneTimeUpgradeConfig;
 }
 
-export interface IncrementalUpgrade extends Upgrade {
+export interface IncrementalUpgrade {
     currentLevel: number;
+    config: IncrementalUpgradeConfig;
+}
+
+const availableUpgradesFromConfig = (upgradeConfigs: (OneTimeUpgradeConfig | IncrementalUpgradeConfig)[]): Upgrade[] => {
+    return upgradeConfigs.map((config) => {
+        if (isIncremental(config)) return {
+            currentLevel: 0,
+            config: config
+        }
+        else {
+            return {
+                purchased: false,
+                config: config
+            }
+        }
+    })
 }
 
 export class LiveTower implements TowerSummary {
@@ -34,7 +46,8 @@ export class LiveTower implements TowerSummary {
     id: string;
     framesReloading: number;
     targettedCreep?: ActiveCreep;
-    effectiveDamage: number;
+    currentUpgrades: Upgrade[];
+    availableUpgrades: Upgrade[];
 
     constructor(pos: Coordinate, tileDim: number, towerType: TowerType) {
         this.type = towerType;
@@ -42,17 +55,11 @@ export class LiveTower implements TowerSummary {
         this.pxCenter = getTileCenterPx(pos,tileDim);
         this.id = (GLOBAL_ID++).toString();
         this.framesReloading = 0;
-        this.effectiveDamage = towerType.baseDamage;
+        this.currentUpgrades = [];
+        this.availableUpgrades = availableUpgradesFromConfig(towerType.potentialUpgrades);
     }
-}
 
-
-export const fromTowerType = (pos: Coordinate, tileDim: number, towerType: TowerType): Tower => {
-    return {
-        type: towerType,
-        framesReloading: 0,
-        id: (GLOBAL_ID++).toString(),
-        pos: pos,
-        pxCenter: getTileCenterPx(pos, tileDim)
+    public getOutboundDamageInstance(): number {
+        return this.type.baseDamage;
     }
 }

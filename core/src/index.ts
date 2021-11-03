@@ -4,7 +4,7 @@ export { GameBoard, PixelCoordinate, Coordinate, Tile, TileType} from "./game_bo
 
 export {TowerType, GameInstanceConfiguration} from "./config/index";
 
-export {Tower} from "./friendly/tower";
+export {LiveTower} from "./friendly/tower";
 export {ProjectileSummary} from "./friendly/projectile";
 export {ActiveCreep, Creep} from "./enemy/creep";
 export {GameState} from "./orchestrator";

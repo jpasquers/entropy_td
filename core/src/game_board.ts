@@ -1,7 +1,7 @@
 import { calculateDistance, getTileCenterPx } from "./common/utils";
 import { ActiveCreep } from "./enemy/creep";
 import { getSearchAlgorithmInclusive } from "./pathfinder";
-import { fromTowerType, Tower } from "./friendly/tower";
+import { LiveTower } from "./friendly/tower";
 import { GameOrchestrator, TowerType } from ".";
 import { Projectile } from "./friendly/projectile";
 
@@ -29,7 +29,7 @@ export class NoPathAvailable extends Error {}
 export class GameBoard {
     config: GameBoardConfiguration;
     terrain!: Tile[][];
-    towers: Tower[];
+    towers: LiveTower[];
     start!: Coordinate;
     checkpoints!: Coordinate[];
     finish!: Coordinate;
@@ -52,7 +52,7 @@ export class GameBoard {
     }
 
     addTowerWithRollback(pos: Coordinate, towerType: TowerType) {
-        let newTower = fromTowerType(pos, this.config.tilePixelDim, towerType);
+        let newTower = new LiveTower(pos, this.config.tilePixelDim, towerType);
         let towerId = newTower.id;
         this.towers.push(newTower);
         try {
@@ -256,7 +256,7 @@ const randomSpotInArray = (size: number): number => {
 
 const BLOCKED = 1;
 const FREE = 0;
-const generatePathfindingGrid = (terrain: Tile[][], towers: Tower[]): number[][] => {
+const generatePathfindingGrid = (terrain: Tile[][], towers: LiveTower[]): number[][] => {
     return terrain.map((row, rowNum) => {
         return row.map((terrain, colNum) => {
             if (towers.find(tower => tower.pos.col === colNum && tower.pos.row === rowNum)) {

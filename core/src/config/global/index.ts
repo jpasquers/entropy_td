@@ -1,6 +1,7 @@
-import { ConfigType, GameInstanceConfiguration, ScalingCostConfig, TowerType } from "..";
+import { ConfigType, GameInstanceConfiguration, ScalingValue, TowerType } from "..";
 import { ProjectileConfig } from "../../friendly/projectile";
 import { RandomizableRange } from "../calc";
+import defaults from "./defaults.json";
 
 
 export type Randomizable<T> = {
@@ -8,7 +9,7 @@ export type Randomizable<T> = {
         T[K] extends ConfigType ? Randomizable<T[K]> : K;
 }
 
-export type GlobalScalingCostConfig = Randomizable<ScalingCostConfig>;
+export type RandomizableScalingValue = Randomizable<ScalingValue>;
 
 
 export interface GlobalGameConfiguration extends Randomizable<GameInstanceConfiguration> {
@@ -16,3 +17,5 @@ export interface GlobalGameConfiguration extends Randomizable<GameInstanceConfig
 }
 
 export type GlobalTowerType = Randomizable<TowerType>;
+
+export const ALL_TOWER_TYPES = Object.keys(defaults.towerTypes);

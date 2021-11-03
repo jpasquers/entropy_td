@@ -5,7 +5,7 @@ import { WaveExecutor } from "./enemy/wave_executor";
 import { GameBoard, GameBoardConfiguration, PixelCoordinate } from "./game_board";
 import { PlayerGameState, PlayerStateConfiguration } from "./friendly/player";
 import { createAndStartTimeline, Timeline, TimelineConfiguration } from "./timeline";
-import { Tower } from "./friendly/tower";
+import { LiveTower } from "./friendly/tower";
 import defaultTowersMap from "./config/default_tower_types.json";
 import { Projectile, ProjectileSummary } from "./friendly/projectile";
 import { GameInstanceConfiguration, TowerType } from "./config";
@@ -28,7 +28,7 @@ export interface GameState {
     activeCreeps: ActiveCreep[];
     timeBeforeWaveSec: number;
     optimalPathSegmentsPx: PixelCoordinate[][];
-    towers: Tower[];
+    towers: LiveTower[];
     projectiles: ProjectileSummary[];
     money: number;
 }

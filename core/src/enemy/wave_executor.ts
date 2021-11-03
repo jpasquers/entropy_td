@@ -4,7 +4,7 @@ import { Coordinate, PixelCoordinate, Tile, TileType } from "../game_board";
 import { ActiveCreep, Creep } from "./creep";
 import { Wave } from "./wave";
 import { calculateDistance, findNewPosition, getCurrentTile, getTileCenterPx } from "../common/utils";
-import { Tower } from "../friendly/tower";
+import { LiveTower } from "../friendly/tower";
 import { Projectile } from "../friendly/projectile";
 import { ProjectileTracker } from "../friendly/projectile_tracker";
 
@@ -127,7 +127,7 @@ export class WaveExecutor {
         return this.wave.activeCreeps.some(activeCreep => id === activeCreep.id);
     }
 
-    public creepIsTargettable(tower: Tower, creep: ActiveCreep, dim: number) {
+    public creepIsTargettable(tower: LiveTower, creep: ActiveCreep, dim: number) {
         return creepIsInRange(tower, creep, dim) && this.creepIsInWave(creep.id);
     }
 
@@ -150,20 +150,20 @@ export class WaveExecutor {
         });
     }
 
-    tryToTargetCreep(tower: Tower, activeCreeps: ActiveCreep[]) {
+    tryToTargetCreep(tower: LiveTower, activeCreeps: ActiveCreep[]) {
         let targetableCreep: ActiveCreep | undefined = firstInRange(tower, activeCreeps, this.board.config.tilePixelDim);
         if (targetableCreep) tower.targettedCreep = targetableCreep;
     }
 }
 
-export const creepIsInRange = (tower: Tower, creep: ActiveCreep, dim: number): boolean => {
+export const creepIsInRange = (tower: LiveTower, creep: ActiveCreep, dim: number): boolean => {
     //TODO effective.
     return calculateDistance(getTileCenterPx(tower.pos,dim),creep.pxPos) 
         <= tower.type.baseRangePx;
 }
 
 
-export const firstInRange = (tower: Tower, activeCreeps: ActiveCreep[], dim: number): ActiveCreep | undefined => {
+export const firstInRange = (tower: LiveTower, activeCreeps: ActiveCreep[], dim: number): ActiveCreep | undefined => {
     return activeCreeps.filter((creep) => creepIsInRange(tower,creep,dim))
         ?.[0];
 }

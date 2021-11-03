@@ -1,7 +1,7 @@
 import { findNewPosition } from "../common/utils";
 import { ActiveCreep } from "../enemy/creep";
 import { PixelCoordinate } from "../game_board";
-import { Tower } from "./tower";
+import { LiveTower } from "./tower";
 
 export interface ProjectileSummary {
     id: string;
@@ -11,13 +11,13 @@ export interface ProjectileSummary {
 
 let GLOBAL_ID=0;
 export class Projectile implements ProjectileSummary {
-    srcTower: Tower;
+    srcTower: LiveTower;
     targetCreep: ActiveCreep;
     pxPos: PixelCoordinate;
     config: ProjectileConfig;
     id: string;
 
-    constructor(tower: Tower, activeCreep: ActiveCreep, config: ProjectileConfig) {
+    constructor(tower: LiveTower, activeCreep: ActiveCreep, config: ProjectileConfig) {
         this.config = config;
         this.srcTower = tower;
         this.targetCreep = activeCreep;

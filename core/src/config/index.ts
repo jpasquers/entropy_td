@@ -10,7 +10,7 @@ export interface GameInstanceConfiguration extends GameBoardConfiguration, Timel
 
 export type CostCalculator = (instance: number) => number;
 
-export interface ScalingCostConfig extends ConfigType {
+export interface ScalingValue extends ConfigType {
     base: number;
     mult: number;
     exp: number;
@@ -25,18 +25,46 @@ export interface TowerType extends ConfigType{
     baseFramesPerAttk: number;
     baseRangePx: number;
     projectileConfig: ProjectileConfig;
-    potentialUpgrades: UpgradeConfig[];
+    potentialUpgrades: (OneTimeUpgradeConfig | IncrementalUpgradeConfig)[];
+}
+
+export interface PctEffectiveness {
+    pct: number;
+}
+
+export interface FlatEffectiveness {
+    flat: number;
+}
+
+export interface ScalingEffectiveness {
+    scale: ScalingValue;
 }
 
 
 export interface UpgradeConfig {
-    canPurchase: boolean;
-    cost: ScalingCostConfig;
-    mode: "ONE_TIME" | "INCREMENTAL";
+    purchasable: boolean;
     type: "DAMAGE" | "RANGE" | "ATTK_SPEED";
+    //Effectiveness is per upgrade if incremental.
+    effectiveness: PctEffectiveness | FlatEffectiveness | ScalingEffectiveness;
 }
 
-export const ScalingCostCalculator = ({base,mult,exp}: ScalingCostConfig): CostCalculator => {
+export interface OneTimeUpgradeConfig extends UpgradeConfig {
+    cost: number;
+}
+
+export interface IncrementalUpgradeConfig extends UpgradeConfig{
+    cost: ScalingValue;
+}
+
+export const isScalingCost = (val: number | ScalingValue): val is ScalingValue => {
+    return !(typeof val === "number");
+}
+
+export const isIncremental = (val: OneTimeUpgradeConfig | IncrementalUpgradeConfig): val is IncrementalUpgradeConfig => {
+    return isScalingCost(val.cost);
+}
+
+export const ScalingCostCalculator = ({base,mult,exp}: ScalingValue): CostCalculator => {
     return (instance: number) => {
         return base + Math.pow(mult*instance, exp);
     }
