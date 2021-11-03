@@ -43,7 +43,7 @@ export interface ScalingEffectiveness {
 
 export interface UpgradeConfig {
     purchasable: boolean;
-    type: "DAMAGE" | "RANGE" | "ATTK_SPEED";
+    type: string;
     //Effectiveness is per upgrade if incremental.
     effectiveness: PctEffectiveness | FlatEffectiveness | ScalingEffectiveness;
 }

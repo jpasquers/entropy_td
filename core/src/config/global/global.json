@@ -1,0 +1,92 @@
+{
+    "towerTypes": {
+        "simple_1": {
+            "name": "simple_1",
+            "potentialUpgrades": [{
+                "type": "DAMAGE",
+                "mode": "INCREMENTAL",
+                "cost": {
+                    "base": 1,
+                    "mult": 1,
+                    "exp": 1
+                },
+                "effectiveness": {
+                    "flat": 1
+                },
+                "purchasable": true
+            }, {
+                "type": "RANGE",
+                "mode": "INCREMENTAL",
+                "cost": {
+                    "base": 1,
+                    "mult": 1,
+                    "exp": 2
+                },
+                "effectiveness": {
+                    "flat": 1
+                },
+                "purchasable": true
+            }, {
+                "type": "ATTK_SPEED",
+                "mode": "INCREMENTAL",
+                "cost": {
+                    "base": 1,
+                    "mult": 1,
+                    "exp": 2
+                },
+                "effectiveness": {
+                    "flat": 1
+                },
+                "purchasable": true
+            }],
+            "enabled": true,
+            "hotkey": "a",
+            "baseCost": 10,
+            "baseDamage": 10,
+            "baseFramesPerAttk": 30,
+            "baseRangePx": 250,
+            "projectileConfig": {
+                "speedPxPerFrame": 15,
+                "projectileType": "simple_circle"
+            }
+        }
+    },
+    "tilesColCount": {
+        "minValIncl": 15,
+        "maxValIncl": 50,
+        "stepper": 1,
+        "weightFnKey": "EVEN"
+    },
+    "tilesRowCount": {
+        "minValIncl": 15,
+        "maxValIncl": 50,
+        "stepper": 1,
+        "weightFnKey": "EVEN"
+    },
+    "tilePixelDim": {
+        "minValIncl": 20,
+        "maxValIncl": 20,
+        "stepper": 1,
+        "weightFnKey": "EVEN"
+    },
+    "density": {
+        "minValIncl": 0.2,
+        "maxValIncl":0.6,
+        "stepper": 0.1,
+        "weightFnKey": "EVEN"
+    },
+    "checkpointCount": {
+        "minValIncl": 1,
+        "maxValIncl": 4,
+        "stepper": 1,
+        "weightFnKey": "EVEN"
+    },
+    "timeBeforeFirstWaveSec": 60,
+    "timeBetweenWavesSec": 30,
+    "startingMoney": {
+        "minValIncl": 50,
+        "maxValIncl": 100,
+        "stepper": 1,
+        "weightFnKey": "EVEN"
+    }
+}

@@ -11,7 +11,7 @@ export interface RandomizableRange {
 export const Even: WeightFn = (x:number) => 10;
 
 export const weightFns: Record<string,WeightFn> = {
-    even: Even
+    EVEN: Even
 }
 
 export const getWeightFn = (weightFnKey: string): WeightFn => {
