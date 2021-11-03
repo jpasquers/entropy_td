@@ -8,6 +8,10 @@ export interface RandomizableRange {
     weightFnKey: string;
 }
 
+export const isRandomizableRange = (val: unknown): val is RandomizableRange => {
+    //return Object.has
+}
+
 export const Even: WeightFn = (x:number) => 10;
 
 export const weightFns: Record<string,WeightFn> = {
