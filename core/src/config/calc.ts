@@ -9,7 +9,11 @@ export interface RandomizableRange {
 }
 
 export const isRandomizableRange = (val: unknown): val is RandomizableRange => {
-    //return Object.has
+    return typeof val === "object" && !(!val) &&
+        "maxValIncl" in val &&
+        "minValIncl" in val &&
+        "stepper" in val &&
+        "weightFnKey" in val;
 }
 
 export const Even: WeightFn = (x:number) => 10;
@@ -43,7 +47,7 @@ const getWeightSum = (valueSet: number[], weightFn: WeightFn): number => {
         .reduce((prev,curr) => prev+curr, 0);
 }
 
-export const decide = (randomizableRange: RandomizableRange): number => {
+export const choose = (randomizableRange: RandomizableRange): number => {
     let weightFn = weightFns[randomizableRange.weightFnKey];
     let valueSet = getValueSet(randomizableRange);
     let weightSum = getWeightSum(valueSet, weightFn);

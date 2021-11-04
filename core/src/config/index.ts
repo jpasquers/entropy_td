@@ -2,9 +2,10 @@ import { PlayerStateConfiguration } from "../friendly/player";
 import { ProjectileConfig } from "../friendly/projectile";
 import { GameBoardConfiguration } from "../game_board";
 import { TimelineConfiguration } from "../timeline";
-export interface ConfigType {}
+export interface ConfigType {
+}
 
-export interface GameInstanceConfiguration extends GameBoardConfiguration, TimelineConfiguration, PlayerStateConfiguration {
+export interface GameInstanceConfiguration extends GameBoardConfiguration, TimelineConfiguration, PlayerStateConfiguration, ConfigType {
     towerTypes: Record<string, TowerType>;
 }
 
