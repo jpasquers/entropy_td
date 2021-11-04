@@ -1,6 +1,6 @@
 import { GameBoard } from "entropy-td-core";
 import { ActiveCreep } from "entropy-td-core";
-import { Tower, TowerType } from "entropy-td-core";
+import { LiveTower, TowerType } from "entropy-td-core";
 import { Coordinate, PixelCoordinate, Tile, TileType } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { Game } from "phaser";
@@ -160,7 +160,7 @@ export class StaticTowerDisplay implements GameObjectLike, CanSetPos {
 
 export class LiveTowerDisplay extends StaticTowerDisplay {
 
-    constructor(tower: Tower, displayContext: DisplayContext, towerDim: number) {
+    constructor(tower: LiveTower, displayContext: DisplayContext, towerDim: number) {
         super(tower.pos, tower.type, displayContext, towerDim);
         
     }
@@ -176,7 +176,7 @@ export class LiveTowerDisplay extends StaticTowerDisplay {
 }
 
 //I should probably make a separate tower silhoutte renderer. But im lazy.
-export class TowerRenderer extends GameStateObjectRenderer<Tower, LiveTowerDisplay> {
+export class TowerRenderer extends GameStateObjectRenderer<LiveTower, LiveTowerDisplay> {
     towerDim: number;
 
     constructor(subScene: BorderedSubScene, towerDim: number) {
@@ -187,7 +187,7 @@ export class TowerRenderer extends GameStateObjectRenderer<Tower, LiveTowerDispl
         this.towerDim = towerDim;
     }
 
-    getModels(gameState: GameState): Tower[] {
+    getModels(gameState: GameState): LiveTower[] {
         return gameState.towers;
     }
 
@@ -200,11 +200,11 @@ export class TowerRenderer extends GameStateObjectRenderer<Tower, LiveTowerDispl
         this.displayContext.setYPos(display, tileCenterY(coord.row,this.towerDim));
     }
     
-    create(tower: Tower): LiveTowerDisplay {
+    create(tower: LiveTower): LiveTowerDisplay {
         return new LiveTowerDisplay(tower, this.displayContext, this.towerDim);
     }
 
-    update(tower: Tower, phaserObj: LiveTowerDisplay): void {
+    update(tower: LiveTower, phaserObj: LiveTowerDisplay): void {
         let orientingCreep = tower.targettedCreep ?? this.mostRecentGameState?.activeCreeps?.[0];
         if (orientingCreep) {
             phaserObj.orientToCreep(orientingCreep);

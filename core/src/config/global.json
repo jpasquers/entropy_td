@@ -52,14 +52,14 @@
         }
     },
     "tilesColCount": {
-        "minValIncl": 15,
+        "minValIncl": 30,
         "maxValIncl": 50,
         "stepper": 1,
         "weightFnKey": "EVEN"
     },
     "tilesRowCount": {
         "minValIncl": 15,
-        "maxValIncl": 50,
+        "maxValIncl": 30,
         "stepper": 1,
         "weightFnKey": "EVEN"
     },
@@ -71,7 +71,7 @@
     },
     "density": {
         "minValIncl": 0.2,
-        "maxValIncl":0.6,
+        "maxValIncl":0.4,
         "stepper": 0.1,
         "weightFnKey": "EVEN"
     },

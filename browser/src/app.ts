@@ -25,12 +25,4 @@ class PhaserGameDelegate {
 }
 
 
-let gameDelegate = new PhaserGameDelegate(GameOrchestrator.newGame({
-    density: 0.3,
-    tilePixelDim: 30,
-    tilesColCount: 45,
-    tilesRowCount: 20,
-    checkpointCount: 3,
-    timeBeforeFirstWaveSec: 15,
-    timeBetweenWavesSec: 10
-}));
+let gameDelegate = new PhaserGameDelegate(GameOrchestrator.newGame());

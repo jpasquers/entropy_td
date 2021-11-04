@@ -1,4 +1,4 @@
-import { Tower, TowerType } from "entropy-td-core";
+import { LiveTower, TowerType } from "entropy-td-core";
 import { ActiveGameScene } from "..";
 import { State, StateMap } from "../../../common/state";
 import { AddTowerActor } from "../actors/add_tower_actor";
@@ -14,12 +14,12 @@ export abstract class ActiveGameState<Props> extends State<ActiveGameScene, Prop
 }
 
 export interface ExistingTowerSelectedProps {
-    tower: Tower;
+    tower: LiveTower;
 }
 
-export class ExistingTowerSelected extends ActiveGameState<ExistingTowerSelectedProps> {
+// export class ExistingTowerSelected extends ActiveGameState<ExistingTowerSelectedProps> {
     
-}
+// }
 
 export class NewTowerConsideration extends ActiveGameState<{}> {
     commandCard?: CommandCard;

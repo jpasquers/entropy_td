@@ -2,27 +2,14 @@ import { ActionHandler } from "./actions/action_handler";
 import { ActiveCreep } from "./enemy/creep";
 import { Wave } from "./enemy/wave";
 import { WaveExecutor } from "./enemy/wave_executor";
-import { GameBoard, GameBoardConfiguration, PixelCoordinate } from "./game_board";
-import { PlayerGameState, PlayerStateConfiguration } from "./friendly/player";
-import { createAndStartTimeline, Timeline, TimelineConfiguration } from "./timeline";
+import { GameBoard, PixelCoordinate } from "./game_board";
+import { PlayerGameState } from "./friendly/player";
+import { createAndStartTimeline, Timeline } from "./timeline";
 import { LiveTower } from "./friendly/tower";
-import defaultTowersMap from "./config/default_tower_types.json";
 import { Projectile, ProjectileSummary } from "./friendly/projectile";
-import { GameInstanceConfiguration, TowerType } from "./config";
+import { GameInstanceConfiguration, generateGameConfiguration, TowerType } from "./config";
 
 export type CustomGameConfiguration = Partial<GameInstanceConfiguration>;
-
-const DEFAULT_GAME_CONFIGURATION: GameInstanceConfiguration = {
-    tilesRowCount: 30,
-    tilesColCount: 30,
-    tilePixelDim: 20,
-    density: 0.7,
-    checkpointCount: 3,
-    timeBeforeFirstWaveSec: 2,
-    timeBetweenWavesSec: 20,
-    startingMoney: 5000,
-    towerTypes: {}
-}
 
 export interface GameState {
     activeCreeps: ActiveCreep[];
@@ -41,19 +28,16 @@ export class GameOrchestrator {
     playerState: PlayerGameState;
     playerActionHandler: ActionHandler;
 
-    constructor(customConfigs: CustomGameConfiguration) {
-        this.config = {
-            ...DEFAULT_GAME_CONFIGURATION,
-            ...customConfigs
-        }
+    constructor() {
+        this.config = generateGameConfiguration();
         this.gameBoard = new GameBoard(this.config, this);
         this.timeline = createAndStartTimeline(this.config, this);
         this.playerState = new PlayerGameState(this.config);
         this.playerActionHandler = new ActionHandler(this.playerState, this.gameBoard, this.timeline);
     }
 
-    public static newGame(customConfigs: CustomGameConfiguration) {
-        return new GameOrchestrator(customConfigs);
+    public static newGame() {
+        return new GameOrchestrator();
     }
 
     public actor(): ActionHandler {
@@ -74,7 +58,8 @@ export class GameOrchestrator {
     }
 
     public getEffectiveTowersList(): TowerType[] {
-        return Object.values(defaultTowersMap);
+        return Object.values(this.config
+            .towerTypes);
     }
 
     public canAfford(money: number) {
