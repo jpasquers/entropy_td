@@ -1,3 +1,4 @@
+import { TimelineConfiguration } from "./config";
 import { simpleGroundWave, Wave } from "./enemy/wave";
 import { GameOrchestrator } from "./orchestrator";
 /**
@@ -46,11 +47,6 @@ export class Timeline {
         }
     }
 
-}
-
-export interface TimelineConfiguration {
-    timeBeforeFirstWaveSec: number;
-    timeBetweenWavesSec: number;
 }
 
 export const createAndStartTimeline = (config: TimelineConfiguration, orchestrator: GameOrchestrator): Timeline => {

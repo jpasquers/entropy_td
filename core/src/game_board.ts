@@ -1,9 +1,8 @@
 import { calculateDistance, getTileCenterPx } from "./common/utils";
-import { ActiveCreep } from "./enemy/creep";
 import { getSearchAlgorithmInclusive } from "./pathfinder";
 import { LiveTower } from "./friendly/tower";
 import { GameOrchestrator, TowerType } from ".";
-import { Projectile } from "./friendly/projectile";
+import { GameBoardConfiguration } from "./config";
 
 export enum TileType {
     Grass,
@@ -203,14 +202,6 @@ export class GameBoard {
             }
         });
     }
-}
-
-export interface GameBoardConfiguration {
-    tilesColCount: number;
-    tilesRowCount: number;
-    tilePixelDim: number;
-    density: number;
-    checkpointCount: number;
 }
 
 //Logic to decide unimportant tile.

@@ -46,65 +46,19 @@ export const findNewPosition = (src: PixelCoordinate, target: PixelCoordinate, m
 }
 
 export type ConfigWithOptionalMappedSubType<SrcType extends ConfigType,ReplaceFrom,ReplaceTo> =  {
-    [K in keyof SrcType as string]: SrcType[K] extends ReplaceFrom ? ReplaceTo | ReplaceFrom : 
-        SrcType[K] extends ConfigType ? ConfigWithOptionalMappedSubType<SrcType[K],ReplaceFrom,ReplaceTo> : K;
+    [K in keyof SrcType]: SrcType[K] extends ReplaceFrom 
+        ? ReplaceTo | ReplaceFrom 
+        : SrcType[K] extends ConfigType 
+            ? ConfigWithOptionalMappedSubType<SrcType[K],ReplaceFrom,ReplaceTo> 
+            : K;
 }
 
 export type ConfigWithStrictMappedSubType<SrcType extends ConfigType, ReplaceFrom,ReplaceTo> = {
-    [K in keyof SrcType as string]: SrcType[K] extends ReplaceFrom ? ReplaceTo : 
-        SrcType[K] extends ConfigType ? ConfigWithOptionalMappedSubType<SrcType[K],ReplaceFrom,ReplaceTo> : K;
-}
-
-
-export interface Test{
-    x: string;
-    y:string;
-}
-
-export type TestMap<T> = {
-    [K in keyof T]: number;
-}
-
-const sample: TestMap<Test> = {
-    x: 0,
-    y: 0
-}
-
-/**
- * Recurses through fields, and every time it finds a field matching the isLeaf function, 
- * Calls the map function and terminates for that branch.
- * 
- * 
- * 
- * In our example Outbound = InstanceGame, 
- * InLeafType = RandomizableRange | number;
- * OutLeafType = number;
- * 
- * inObj = Global = InstanceGame with number mapped to number or RandomizableRange
- * Outbound = InstanceGame = Global with number | RandomizableRange mapped strictly to number;
- */
-export const unmapLeafType = <InLeafType, OutLeafType, 
-    SrcType extends ConfigWithOptionalMappedSubType<
-        ConfigWithStrictMappedSubType<SrcType,InLeafType | OutLeafType,InLeafType>,
-        OutLeafType,
-        InLeafType | OutLeafType
-        >
-    > (
-    inObj: SrcType, 
-    leafMap: (field: InLeafType) => OutLeafType,
-    isTargetLeafType: (field: unknown)=>field is InLeafType
-): ConfigWithStrictMappedSubType<SrcType,InLeafType | OutLeafType,InLeafType> => {
-    let out: ConfigWithStrictMappedSubType<SrcType,InLeafType | OutLeafType,InLeafType> = {} as ConfigWithStrictMappedSubType<SrcType,InLeafType | OutLeafType,InLeafType>;
-    // Object.entries(inObj).forEach(([key,value], i) => {
-    //     if (isTargetLeafType(value)) {
-    //         out[key] = leafMap(value);
-    //     }
-    //     else if (typeof value === 'object') {
-    //         out[key] = unmapLeafType<InLeafType,OutLeafType,Outbound>(value,leafMap,isTargetLeafType);
-    //     }
-    //     else {
-    //         out[key] = value;
-    //     }
-    // });
-    return out;
+    [K in keyof SrcType]: SrcType[K] extends ReplaceFrom 
+        ? ReplaceTo 
+        : SrcType[K] extends (ReplaceFrom | ReplaceTo) 
+            ? ReplaceTo
+            : SrcType[K] extends ConfigType 
+                ? ConfigWithStrictMappedSubType<SrcType[K],ReplaceFrom,ReplaceTo> 
+                : K;
 }

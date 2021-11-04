@@ -1,3 +1,5 @@
+import { PlayerStateConfiguration } from "../config";
+
 export class PlayerGameState {
     money: number;
     constructor(config: PlayerStateConfiguration) {
@@ -11,8 +13,4 @@ export class PlayerGameState {
     makePurchase(cost: number) {
         this.money -= cost;
     }
-}
-
-export interface PlayerStateConfiguration {
-    startingMoney: number;
 }
