@@ -1,12 +1,13 @@
 import { ObjectRendererWithSync } from "../../../common/renderer";
-import { GRID_LAYER } from "../../../common/z_layers";
+import { FIXED_LAYER, GRID_LAYER } from "../../../common/z_layers";
+import { BORDER_COLOR } from "../../../display_configs";
 import { GlobalSceneDisplayContext } from "../../../phaser/extensions/display_context";
 import { GRID_BORDER_THICKNESS, toExternalDim, toExternalOffset } from "../../../phaser/extensions/scene_grid";
-import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
+import { BorderedSubScene, isBordered, SubScene } from "../../../phaser/extensions/sub_scene";
 
 
 
-export class SceneGridRenderer extends ObjectRendererWithSync<BorderedSubScene,Phaser.GameObjects.Rectangle> {
+export class BorderedSubSceneRenderer extends ObjectRendererWithSync<BorderedSubScene,Phaser.GameObjects.Rectangle> {
     
     scene: Phaser.Scene;
     
@@ -26,10 +27,20 @@ export class SceneGridRenderer extends ObjectRendererWithSync<BorderedSubScene,P
             subSection.internalWidth + GRID_BORDER_THICKNESS,
             subSection.internalHeight + GRID_BORDER_THICKNESS
         )
-        rect.isFilled = false;
-        rect.setStrokeStyle(GRID_BORDER_THICKNESS, 0xa69b9a);
-        rect.setDepth(GRID_LAYER);
+        if (subSection.filled) {
+            rect.isFilled = true;
+            rect.fillColor = subSection.filled;
+        }
+        rect.setStrokeStyle(GRID_BORDER_THICKNESS, BORDER_COLOR);
+        if (subSection.fixed) {
+            rect.setDepth(FIXED_LAYER);
+        }
+        else {
+            rect.setDepth(GRID_LAYER);
+        }
+        if (subSection.fixed) rect.setScrollFactor(0);
         return rect;
+        
     }
 
     update(item: BorderedSubScene, phaserObj: Phaser.GameObjects.Rectangle): void {

@@ -64,8 +64,8 @@
         "weightFnKey": "EVEN"
     },
     "tilePixelDim": {
-        "minValIncl": 20,
-        "maxValIncl": 20,
+        "minValIncl": 50,
+        "maxValIncl": 50,
         "stepper": 1,
         "weightFnKey": "EVEN"
     },

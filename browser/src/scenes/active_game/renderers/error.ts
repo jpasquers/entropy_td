@@ -1,7 +1,7 @@
 import { ActionError } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
+import { BorderedSubScene, SubScene } from "../../../phaser/extensions/sub_scene";
 import { GameStateObserver } from "../gamestate_publisher";
 
 
@@ -14,8 +14,8 @@ export class ErrorRenderer {
     currentRenderedError?: Phaser.GameObjects.Text;
     currentTween?: Phaser.Tweens.Tween;
     displayContext: DisplayContext;
-    subScene: BorderedSubScene;
-    constructor(subScene: BorderedSubScene) {
+    subScene: SubScene;
+    constructor(subScene: SubScene) {
         this.subScene = subScene
         this.displayContext = new SubSceneDisplayContext(subScene);
     }

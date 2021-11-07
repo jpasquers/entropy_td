@@ -4,7 +4,7 @@ import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
 import {  GameObjectLike } from "../../../common/renderer";
 import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
+import { SubScene } from "../../../phaser/extensions/sub_scene";
 
 export class CreepDisplay implements GameObjectLike {
     creepBody: Phaser.GameObjects.Arc;
@@ -61,7 +61,7 @@ export class CreepDisplay implements GameObjectLike {
 }
 
 export class CreepRenderer extends GameStateObjectRenderer<ActiveCreep, CreepDisplay> {
-    constructor(subScene: BorderedSubScene) {
+    constructor(subScene: SubScene) {
         super({
             alwaysCreate: false,
             withCleanup: true

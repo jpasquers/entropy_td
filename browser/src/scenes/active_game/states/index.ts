@@ -17,9 +17,16 @@ export interface ExistingTowerSelectedProps {
     tower: LiveTower;
 }
 
-// export class ExistingTowerSelected extends ActiveGameState<ExistingTowerSelectedProps> {
+export class ExistingTowerSelected extends ActiveGameState<ExistingTowerSelectedProps> {
     
-// }
+    onEnterState(meta: ExistingTowerSelectedProps): void {
+        throw new Error("Method not implemented.");
+    }
+    onLeaveState(): void {
+        throw new Error("Method not implemented.");
+    }
+    
+}
 
 export class NewTowerConsideration extends ActiveGameState<{}> {
     commandCard?: CommandCard;
@@ -33,7 +40,7 @@ export class NewTowerConsideration extends ActiveGameState<{}> {
             }
         );
         this.addToKeyTracker(this.commandCard);
-        this.scene.commandCardRenderer.synchronizeItems(this.commandCard);
+        this.scene.commandCardRenderer!.synchronizeItems(this.commandCard);
     }
     
     onLeaveState(): void {

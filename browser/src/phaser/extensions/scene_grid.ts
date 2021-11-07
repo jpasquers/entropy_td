@@ -1,8 +1,17 @@
 import { PixelCoordinate } from "entropy-td-core";
-import { BorderedSubScene } from "./sub_scene";
+import { BorderedSubScene, isBordered, SubScene } from "./sub_scene";
 
 export interface SceneGrid {
-    getSections: ()=>BorderedSubScene[];
+    getSections: ()=>(SubScene | BorderedSubScene)[];
+}
+
+export abstract class BasicSceneGrid implements SceneGrid {
+    abstract getSections(): (SubScene | BorderedSubScene)[];
+
+    public getBorderedSections(): BorderedSubScene[] {
+        return this.getSections()
+            .filter((section): section is BorderedSubScene => isBordered(section));
+    }
 }
 
 export const GRID_BORDER_THICKNESS = 8;

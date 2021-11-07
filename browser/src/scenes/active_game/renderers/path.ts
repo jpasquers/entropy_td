@@ -4,7 +4,7 @@ import { GameStateObjectRenderer } from ".";
 import { GameObjectLike, RenderWithOffset, SimpleRenderer } from "../../../common/renderer";
 import { WALKING_PATH_LAYER } from "../../../common/z_layers";
 import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
+import { BorderedSubScene, SubScene } from "../../../phaser/extensions/sub_scene";
 import { GameStateObserver } from "../gamestate_publisher";
 
 class OptimalPathSet implements GameObjectLike {
@@ -37,7 +37,7 @@ export class PathRenderer extends SimpleRenderer<OptimalPathSet> implements Game
     currentPaths: PixelCoordinate[][];
     optimalPathSet?: OptimalPathSet;
 
-    constructor(sceneSection: BorderedSubScene) {
+    constructor(sceneSection: SubScene) {
         super(new SubSceneDisplayContext(sceneSection));
         this.currentPaths = [];
         this.id = "path_renderer";

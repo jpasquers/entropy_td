@@ -9,7 +9,7 @@ import { GameObjectLike, NoOp, ObjectRendererWithSync } from "../../../common/re
 import { calculateAngleRad } from "../../../common/util";
 import { TOWER_COLOR } from "../../../display_configs";
 import { CanSetPos, DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
+import { SubScene } from "../../../phaser/extensions/sub_scene";
 
 export class Terrain implements GameObjectLike {
     terrainTiles: Phaser.GameObjects.Image[][];
@@ -27,7 +27,7 @@ export class Terrain implements GameObjectLike {
 export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> {
     tileDim: number;
     
-    constructor(subScene: BorderedSubScene, tileDim: number) {
+    constructor(subScene: SubScene, tileDim: number) {
         super( {
             withCleanup: false,
             alwaysCreate: false
@@ -179,7 +179,7 @@ export class LiveTowerDisplay extends StaticTowerDisplay {
 export class TowerRenderer extends GameStateObjectRenderer<LiveTower, LiveTowerDisplay> {
     towerDim: number;
 
-    constructor(subScene: BorderedSubScene, towerDim: number) {
+    constructor(subScene: SubScene, towerDim: number) {
         super({
             alwaysCreate: false,
             withCleanup: true

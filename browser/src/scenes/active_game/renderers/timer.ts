@@ -1,6 +1,7 @@
 import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
 import { SimpleRenderer, WithIdentifier } from "../../../common/renderer";
+import { SIT_ON_FIXED_LAYER } from "../../../common/z_layers";
 import { SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
 import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
 import { GameStateObserver } from "../gamestate_publisher";
@@ -20,6 +21,7 @@ export class TimeRenderer extends SimpleRenderer<Phaser.GameObjects.Text> implem
         if (!this.timer) {
             this.timer = this.displayContext.addTextStartingAt({pxCol: 20,pxRow: 20}, `Next Wave: ${dispTime}`);
             this.timer.setFontSize(35);
+            this.timer.setDepth(SIT_ON_FIXED_LAYER);
         }
         else {
             this.timer.setText(`Next Wave: ${dispTime}`);
@@ -41,6 +43,7 @@ export class MoneyRenderer extends SimpleRenderer<Phaser.GameObjects.Text> imple
         if (!this.moneyDisplay) {
             this.moneyDisplay = this.displayContext.addTextStartingAt({pxCol: 400, pxRow:20}, "");
             this.moneyDisplay.setFontSize(35);
+            this.moneyDisplay.setDepth(SIT_ON_FIXED_LAYER);
         }
         this.moneyDisplay.setText(`Money: $${event.money}`);
     }

@@ -4,11 +4,11 @@ import { TerrainRenderer, TowerRenderer } from "./renderers/board";
 import { CreepRenderer } from "./renderers/creep";
 import { ProjectileRenderer } from "./renderers/projectile";
 import { CommandCardRenderer } from "./renderers/command_card";
-import { SceneGridRenderer } from "./renderers/scene_grid";
+import { BorderedSubSceneRenderer } from "./renderers/scene_grid";
 import { CommandCard, TowerListCommandCard } from "./command_card";
 import { ActionError } from "entropy-td-core";
 import { ErrorRenderer } from "./renderers/error";
-import { ActiveGameSceneGrid } from "./scene_grid";
+import { ActiveGameSceneGrid, getInternalGameplayHeight, getInternalGameplayWidth } from "./scene_grid";
 import { GameStatePublisher } from "./gamestate_publisher";
 import { BasicScene } from "..";
 import { TowerSilhoutteRenderer } from "./renderers/tower_silhoutte";
@@ -16,53 +16,32 @@ import { getActiveGameStartingState } from "./states";
 import { MoneyRenderer, TimeRenderer } from "./renderers/timer";
 import { PathRenderer } from "./renderers/path";
 import { TOWER_SHOOT_ANIM_FRAMES } from "../../display_configs";
+import { ifNegativeZero } from "../../common/util";
 
 
 export class ActiveGameScene extends BasicScene {
     gameController: GameOrchestrator
-    sceneGrid: ActiveGameSceneGrid;
-    terrainRenderer: TerrainRenderer;
-    towerRenderer: TowerRenderer;
-    creepRenderer: CreepRenderer;
-    projectileRenderer: ProjectileRenderer;
-    commandCardRenderer: CommandCardRenderer;
-    sceneGridRenderer: SceneGridRenderer;
-    timeRenderer: TimeRenderer;
-    moneyRenderer: MoneyRenderer;
-    pathRenderer: PathRenderer;
+    sceneGrid?: ActiveGameSceneGrid;
+    terrainRenderer?: TerrainRenderer;
+    towerRenderer?: TowerRenderer;
+    creepRenderer?: CreepRenderer;
+    projectileRenderer?: ProjectileRenderer;
+    commandCardRenderer?: CommandCardRenderer;
+    sceneGridRenderer?: BorderedSubSceneRenderer;
+    timeRenderer?: TimeRenderer;
+    moneyRenderer?: MoneyRenderer;
+    pathRenderer?: PathRenderer;
     frameCount: number;
     currentError?: ActionError;
-    errorRenderer: ErrorRenderer;
+    errorRenderer?: ErrorRenderer;
     gameStatePublisher: GameStatePublisher;
 
     constructor(gameController: GameOrchestrator) {
         super();
         this.frameCount = 0;
         this.gameController = gameController;
-        this.sceneGrid = new ActiveGameSceneGrid(this);
         this.gameStatePublisher = new GameStatePublisher(this.gameController);
         this.frameDeltaPublisher.addObserver(this.gameStatePublisher);
-        
-        this.terrainRenderer = new TerrainRenderer(this.sceneGrid.gameplaySection, this.gameController.config.tilePixelDim);
-        
-        this.towerRenderer = new TowerRenderer(this.sceneGrid.gameplaySection, this.gameController.config.tilePixelDim);
-        this.creepRenderer = new CreepRenderer(this.sceneGrid.gameplaySection);
-        this.projectileRenderer = new ProjectileRenderer(this.sceneGrid.gameplaySection);
-        this.commandCardRenderer = new CommandCardRenderer(this.sceneGrid.commandCardSection);
-        this.sceneGridRenderer = new SceneGridRenderer(this);
-        this.errorRenderer = new ErrorRenderer(this.sceneGrid.gameplaySection);
-        this.timeRenderer = new TimeRenderer(this.sceneGrid.navigationSection);
-        this.moneyRenderer = new MoneyRenderer(this.sceneGrid.navigationSection);
-        this.pathRenderer = new PathRenderer(this.sceneGrid.gameplaySection);
-
-        this.gameStatePublisher.addObservers(
-            this.towerRenderer,
-            this.creepRenderer,
-            this.projectileRenderer,
-            this.timeRenderer,
-            this.moneyRenderer,
-            this.pathRenderer
-        )
     }
 
     public preload() {
@@ -80,11 +59,50 @@ export class ActiveGameScene extends BasicScene {
 
     }
 
+    adjustCameraForWindow() {
+        this.cameras.main.width = window.innerWidth;
+        this.cameras.main.height = window.innerHeight;
+        let halfGameWidth = Math.floor(getInternalGameplayWidth(this.gameController.config) / 2);
+        let halfWindowWidth = Math.floor(window.innerWidth/2);
+        let scrollX = 
+        this.cameras.main.scrollX = ifNegativeZero(halfGameWidth - halfWindowWidth);
+
+        let halfGameHeight = Math.floor(getInternalGameplayHeight(this.gameController.config) / 2);
+        let halfWindowHeight = Math.floor(window.innerHeight/2);
+        this.cameras.main.scrollY = ifNegativeZero(halfGameHeight - halfWindowHeight);
+    }
+
+
+
+
     public create() {
         super.create();
+        
+        this.adjustCameraForWindow();
+        this.sceneGrid = new ActiveGameSceneGrid(this);
+        this.terrainRenderer = new TerrainRenderer(this.sceneGrid.gameplaySection, this.gameController.config.tilePixelDim);
+        
+        this.towerRenderer = new TowerRenderer(this.sceneGrid.gameplaySection, this.gameController.config.tilePixelDim);
+        this.creepRenderer = new CreepRenderer(this.sceneGrid.gameplaySection);
+        this.projectileRenderer = new ProjectileRenderer(this.sceneGrid.gameplaySection);
+        this.commandCardRenderer = new CommandCardRenderer(this.sceneGrid.commandCardSection);
+        this.sceneGridRenderer = new BorderedSubSceneRenderer(this);
+        this.errorRenderer = new ErrorRenderer(this.sceneGrid.gameplaySection);
+        this.timeRenderer = new TimeRenderer(this.sceneGrid.navigationSection);
+        this.moneyRenderer = new MoneyRenderer(this.sceneGrid.navigationSection);
+        this.pathRenderer = new PathRenderer(this.sceneGrid.gameplaySection);
+
+        this.gameStatePublisher.addObservers(
+            this.towerRenderer,
+            this.creepRenderer,
+            this.projectileRenderer,
+            this.timeRenderer,
+            this.moneyRenderer,
+            this.pathRenderer
+        )
         this.terrainRenderer.renderBackgroundTerrain();
         this.terrainRenderer.synchronizeItems(this.gameController.getBoard());
-        this.sceneGridRenderer.synchronizeItems(...this.sceneGrid.getSections());
+        this.sceneGridRenderer.synchronizeItems(...this.sceneGrid.getBorderedSections());
         this.anims.create({
             key: 'shoot_tower',
             frames: this.anims.generateFrameNames('tower_simple_1', {
@@ -100,6 +118,6 @@ export class ActiveGameScene extends BasicScene {
     }
 
     handleActionError(e: ActionError): void {
-        this.errorRenderer.renderError(e);
+        this.errorRenderer?.renderError(e);
     }
 }

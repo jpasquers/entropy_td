@@ -1,4 +1,5 @@
 import { LiveTower, TowerType } from "entropy-td-core";
+import { OneTimeUpgrade } from "entropy-td-core/lib/friendly/tower";
 import { KeyDownEvent, KeyDownObserver } from "../../common/publishers/input";
 import { TowerSilhoutteRenderer } from "./renderers/tower_silhoutte";
 
@@ -63,3 +64,7 @@ export const towerCommandCardItem = (tower: TowerType): CommandCardItem => {
         assetKey: `tower_${tower.name}_command_card`
     }
 }
+
+// export const upgradeCommandCardItem = (upgrade: IncrementalUpgrade | OneTimeUpgrade): CommandCardItem => {
+
+// }

@@ -47,3 +47,7 @@ const bottomLeftQuad = (pt1: PixelCoordinate, pt2: PixelCoordinate): number => {
 const bottomRightQuad = (pt1: PixelCoordinate, pt2: PixelCoordinate): number => {
     return (Math.PI) - Math.tanh(Math.abs(pt2.pxCol-pt1.pxCol) / Math.abs(pt2.pxRow - pt1.pxRow));
 }
+
+export const ifNegativeZero = (num: number): number => {
+    return num >= 0 ? num : 0;
+}

@@ -18,9 +18,9 @@ export class AddTowerActor extends ActionBridge<ActiveGameScene> implements Clic
     }
 
     onEvent(event: ClickEvent): void {
-        let pixel: PixelCoordinate = event.targetPos;
-        if (this.scene.terrainRenderer.isPixelRelated(pixel)) {
-            let coord = this.scene.terrainRenderer.getTileCoordForRenderedPixel(pixel);
+        let gamePos: PixelCoordinate = this.scene.mapCameraPosToGamePos(event.targetCameraPos);
+        if (this.scene.terrainRenderer!.isPixelRelated(gamePos)) {
+            let coord = this.scene.terrainRenderer!.getTileCoordForRenderedPixel(gamePos);
             if (this.scene.gameController.gameBoard.isOpen(coord) && this.towerType) {
                 this.attemptAction(() => {
                     this.actionHandler.addTower(coord, this.towerType);

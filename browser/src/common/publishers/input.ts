@@ -3,11 +3,11 @@ import { Observer, Publisher } from "./";
 import { FrameDeltaEvent, FrameDeltaObserver } from "./frame_delta";
 
 export interface MouseMovement {
-    newPosition: PixelCoordinate;
+    newCameraPos: PixelCoordinate;
 }
 
 export interface ClickEvent {
-    targetPos: PixelCoordinate;
+    targetCameraPos: PixelCoordinate;
 }
 
 export interface KeyDownEvent {
@@ -40,7 +40,7 @@ export class MouseMovementPublisher extends InputPublisher<MouseMovement> implem
     onEvent(event: FrameDeltaEvent): void {
         if (this.hasMouseChanged()) {
             this.publishEvent({
-                newPosition: this.getMousePosition()
+                newCameraPos: this.getMousePosition()
             })
         }
     }
@@ -88,7 +88,7 @@ export class ClickPublisher extends InputPublisher<ClickEvent> {
     clickHandler(input: Phaser.Input.Pointer): void {
         let pixel: PixelCoordinate = this.pixelFromPointer(input);
         this.publishEvent({
-            targetPos: pixel
+            targetCameraPos: pixel
         });
     }
 

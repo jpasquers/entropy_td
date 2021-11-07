@@ -17,27 +17,24 @@ export interface TowerSilhoutte {
 export class TowerSilhoutteRenderer implements MouseMovementObserver {
     id: string;
     towerType?: TowerType;
-    towerRenderer: TowerRenderer;
-    terrainRenderer: TerrainRenderer;
     currentSilhoutteDisplay?: StaticTowerDisplay
-    gameController: GameOrchestrator;
+    scene: ActiveGameScene;
     
     constructor(scene: ActiveGameScene, towerType?: TowerType) {
         this.towerType = towerType;
         this.id = "tower_silhoutte_renderer";
-        this.towerRenderer = scene.towerRenderer;
-        this.terrainRenderer = scene.terrainRenderer;
-        this.gameController = scene.gameController;
+        this.scene = scene;
+
     }
 
     createDisplay(silhoutte: TowerSilhoutte) {
-        this.currentSilhoutteDisplay = this.towerRenderer.renderTowerSilhoutte(silhoutte!.coord, this.towerType!)
+        this.currentSilhoutteDisplay = this.scene.towerRenderer!.renderTowerSilhoutte(silhoutte!.coord, this.towerType!)
         this.currentSilhoutteDisplay!.towerBackground.setAlpha(0.3);
         this.currentSilhoutteDisplay!.towerSprite.setAlpha(0.3);
     }
 
     updateDisplay(silhoutte: TowerSilhoutte) {
-        this.towerRenderer.updateTowerSilhoutte(silhoutte.coord, this.currentSilhoutteDisplay!);
+        this.scene.towerRenderer!.updateTowerSilhoutte(silhoutte.coord, this.currentSilhoutteDisplay!);
 
     }
 
@@ -53,9 +50,10 @@ export class TowerSilhoutteRenderer implements MouseMovementObserver {
 
     onEvent(event: MouseMovement): void {
         if (!this.towerType) return;
-        if (!this.terrainRenderer.isPixelRelated(event.newPosition)) return;
-        let newCoord = this.terrainRenderer.getTileCoordForRenderedPixel(event.newPosition);
-        if (!this.gameController.getBoard().isOpen(newCoord)) return;
+        let globalPos = this.scene.mapCameraPosToGamePos(event.newCameraPos);
+        if (!this.scene.terrainRenderer!.isPixelRelated(globalPos)) return;
+        let newCoord = this.scene.terrainRenderer!.getTileCoordForRenderedPixel(globalPos);
+        if (!this.scene.gameController.getBoard().isOpen(newCoord)) return;
         let silhoutte = {
             coord: newCoord,
             towerType: this.towerType

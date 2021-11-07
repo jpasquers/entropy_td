@@ -1,5 +1,6 @@
 import { Scene } from "phaser";
 import { GameObjectLike, ObjectRendererWithSync } from "../../../common/renderer";
+import { SIT_ON_FIXED_LAYER } from "../../../common/z_layers";
 import { COMMAND_CARD_ITEM_DIM, COMMAND_CARD_WIDTH } from "../../../display_configs";
 import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
 import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
@@ -19,7 +20,7 @@ export class CommandCardItemDisplay implements GameObjectLike {
             pxCol: col*COMMAND_CARD_ITEM_DIM,
             pxRow: row*COMMAND_CARD_ITEM_DIM
         }, COMMAND_CARD_ITEM_DIM, COMMAND_CARD_ITEM_DIM, commandCardItem.assetKey);
-        this.sprite.setDepth(1);
+        this.sprite.setDepth(SIT_ON_FIXED_LAYER);
         this.hotkey = displayContext.addTextStartingAt({
             pxCol: col*COMMAND_CARD_ITEM_DIM + 2,
             pxRow: row*COMMAND_CARD_ITEM_DIM + 2
@@ -28,7 +29,7 @@ export class CommandCardItemDisplay implements GameObjectLike {
         );
         this.hotkey.setFontSize(COMMAND_CARD_ITEM_DIM / 3);
         this.hotkey.setColor("black");
-        this.hotkey.setDepth(2);
+        this.hotkey.setDepth(SIT_ON_FIXED_LAYER);
     }
 
     destroy() {

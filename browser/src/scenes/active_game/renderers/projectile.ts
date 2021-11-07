@@ -2,10 +2,10 @@ import {  ProjectileSummary } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
 import { SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
+import { SubScene } from "../../../phaser/extensions/sub_scene";
 
 export class ProjectileRenderer extends GameStateObjectRenderer<ProjectileSummary, Phaser.GameObjects.Arc> {
-    constructor(subScene: BorderedSubScene) {
+    constructor(subScene: SubScene) {
         super({
             alwaysCreate: false,
             withCleanup: true
