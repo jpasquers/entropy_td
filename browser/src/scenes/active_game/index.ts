@@ -17,6 +17,7 @@ import { MoneyRenderer, TimeRenderer } from "./renderers/timer";
 import { PathRenderer } from "./renderers/path";
 import { TOWER_SHOOT_ANIM_FRAMES } from "../../display_configs";
 import { ifNegativeZero } from "../../common/util";
+import { MouseMovement } from "../../common/publishers/input";
 
 
 export class ActiveGameScene extends BasicScene {
@@ -31,6 +32,7 @@ export class ActiveGameScene extends BasicScene {
     timeRenderer?: TimeRenderer;
     moneyRenderer?: MoneyRenderer;
     pathRenderer?: PathRenderer;
+
     frameCount: number;
     currentError?: ActionError;
     errorRenderer?: ErrorRenderer;
@@ -64,7 +66,6 @@ export class ActiveGameScene extends BasicScene {
         this.cameras.main.height = window.innerHeight;
         let halfGameWidth = Math.floor(getInternalGameplayWidth(this.gameController.config) / 2);
         let halfWindowWidth = Math.floor(window.innerWidth/2);
-        let scrollX = 
         this.cameras.main.scrollX = ifNegativeZero(halfGameWidth - halfWindowWidth);
 
         let halfGameHeight = Math.floor(getInternalGameplayHeight(this.gameController.config) / 2);
@@ -72,13 +73,25 @@ export class ActiveGameScene extends BasicScene {
         this.cameras.main.scrollY = ifNegativeZero(halfGameHeight - halfWindowHeight);
     }
 
-
+    enableCameraDrag() {
+        this.mouseMovementTracker?.addObserver({
+            id: "camera_drag",
+            onEvent: (event: MouseMovement) => {
+                console.log(event);
+                if (event.rDown) {
+                    this.cameras.main.scrollX = this.cameras.main.scrollX - event.delta.pxCol;
+                    this.cameras.main.scrollY = this.cameras.main.scrollY - event.delta.pxRow;
+                }
+            }
+        });
+    }
 
 
     public create() {
         super.create();
         
         this.adjustCameraForWindow();
+        //this.enableCameraDrag();
         this.sceneGrid = new ActiveGameSceneGrid(this);
         this.terrainRenderer = new TerrainRenderer(this.sceneGrid.gameplaySection, this.gameController.config.tilePixelDim);
         

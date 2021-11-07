@@ -4,6 +4,9 @@ import { FrameDeltaEvent, FrameDeltaObserver } from "./frame_delta";
 
 export interface MouseMovement {
     newCameraPos: PixelCoordinate;
+    delta: PixelCoordinate;
+    lDown: boolean;
+    rDown: boolean;
 }
 
 export interface ClickEvent {
@@ -36,12 +39,21 @@ export class MouseMovementPublisher extends InputPublisher<MouseMovement> implem
     constructor(input: Phaser.Input.InputPlugin, mouseMovementListeners?: MouseMovementObserver[]) {
         super(input, mouseMovementListeners);
         this.id = "mouse_movement_publisher";
+        this.previousMousePosition = this.getMousePosition();
     }
+    
     onEvent(event: FrameDeltaEvent): void {
         if (this.hasMouseChanged()) {
             this.publishEvent({
-                newCameraPos: this.getMousePosition()
+                newCameraPos: this.getMousePosition(),
+                delta: {
+                    pxCol: this.getMousePosition().pxCol - this.previousMousePosition!.pxCol,
+                    pxRow: this.getMousePosition().pxRow - this.previousMousePosition!.pxRow
+                },
+                lDown: this.input.mousePointer.leftButtonDown(),
+                rDown: this.input.mousePointer.rightButtonDown()
             })
+            this.previousMousePosition = this.getMousePosition();
         }
     }
 
