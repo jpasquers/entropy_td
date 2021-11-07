@@ -77,8 +77,7 @@ export class ActiveGameScene extends BasicScene {
         this.mouseMovementTracker?.addObserver({
             id: "camera_drag",
             onEvent: (event: MouseMovement) => {
-                console.log(event);
-                if (event.rDown) {
+                if (event.rDrag) {
                     this.cameras.main.scrollX = this.cameras.main.scrollX - event.delta.pxCol;
                     this.cameras.main.scrollY = this.cameras.main.scrollY - event.delta.pxRow;
                 }
@@ -91,7 +90,7 @@ export class ActiveGameScene extends BasicScene {
         super.create();
         
         this.adjustCameraForWindow();
-        //this.enableCameraDrag();
+        this.enableCameraDrag();
         this.sceneGrid = new ActiveGameSceneGrid(this);
         this.terrainRenderer = new TerrainRenderer(this.sceneGrid.gameplaySection, this.gameController.config.tilePixelDim);
         
