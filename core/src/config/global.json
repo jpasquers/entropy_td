@@ -52,14 +52,14 @@
         }
     },
     "tilesColCount": {
-        "minValIncl": 30,
+        "minValIncl": 50,
         "maxValIncl": 50,
         "stepper": 1,
         "weightFnKey": "EVEN"
     },
     "tilesRowCount": {
-        "minValIncl": 15,
-        "maxValIncl": 30,
+        "minValIncl": 50,
+        "maxValIncl": 50,
         "stepper": 1,
         "weightFnKey": "EVEN"
     },

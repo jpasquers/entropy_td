@@ -10,7 +10,7 @@ export abstract class BasicScene extends Phaser.Scene {
     keyTracker?: KeyDownPublisher;
     clickTracker?: ClickPublisher;
     frameDeltaPublisher: FrameDeltaPublisher;
-    controls?: Phaser.Cameras.Controls.SmoothedKeyControl;
+    prevTime?: number;
 
     constructor() {
         super({
@@ -32,31 +32,23 @@ export abstract class BasicScene extends Phaser.Scene {
     }
 
     create() {
-        this.mouseMovementTracker = new MouseMovementPublisher(this.input);
-        this.frameDeltaPublisher.addObserver(this.mouseMovementTracker);
+        //this.mouseMovementTracker = new MouseMovementPublisher(this.input);
+        //this.frameDeltaPublisher.addObserver(this.mouseMovementTracker);
         this.keyTracker = new KeyDownPublisher(this.input);
         this.clickTracker = new ClickPublisher(this.input);
 
-        //  From here down is just camera controls and feedback
-        var cursors = this.input.keyboard.createCursorKeys();
-
-        var controlConfig = {
-            camera: this.cameras.main,
-            left: cursors.left,
-            right: cursors.right,
-            up: cursors.up,
-            down: cursors.down,
-            acceleration: 0.06,
-            drag: 0.0005,
-            maxSpeed: 1.0
-        };
-
-        this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
+        
     }
 
     update(time: number, delta: number) {
-        this.frameDeltaPublisher.publishEvent({delta});
-        this.controls!.update(delta);
+        if (this.prevTime) {
+            console.log("real delta: " + (time - this.prevTime));
+        }
+        this.prevTime = time;
+        this.frameCount++;
+        let frameRate = (1000 / (time / this.frameCount));
+        this.frameDeltaPublisher.publishEvent({delta, rawAvgFrameRate: frameRate});
+
     }
 
     getViewportWidth():number {

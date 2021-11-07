@@ -12,8 +12,8 @@ import { CanSetPos, DisplayContext, SubSceneDisplayContext } from "../../../phas
 import { SubScene } from "../../../phaser/extensions/sub_scene";
 
 export class Terrain implements GameObjectLike {
-    terrainTiles: Phaser.GameObjects.Image[][];
-    constructor(terrainTiles: Phaser.GameObjects.Image[][]) {
+    terrainTiles: (Phaser.GameObjects.Image )[][];
+    constructor(terrainTiles: (Phaser.GameObjects.Image )[][]) {
         this.terrainTiles = terrainTiles;
     }
 

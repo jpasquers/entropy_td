@@ -1,0 +1,22 @@
+{
+  "name": "entropy_td",
+  "version": "1.0.0",
+  "description": "ant sprites sourced from: Dan Norder. https://opengameart.org/content/ant-art",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "develop": "yarn build:core && yarn develop:browser",
+    "build:core": "cd ./core && yarn build",
+    "develop:browser": "cd ./browser && yarn develop"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jpasquers/entropy_td.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jpasquers/entropy_td/issues"
+  },
+  "homepage": "https://github.com/jpasquers/entropy_td#readme"
+}

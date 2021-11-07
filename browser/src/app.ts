@@ -12,13 +12,14 @@ class PhaserGameDelegate {
         this.gameView = new Phaser.Game({
             input: true,
             scene: new ActiveGameScene(gameController),
-            scale: {
-                width: getEffectiveGameWidth(gameController.config),
-                height: getEffectiveGameHeight(gameController.config),
-                //autoCenter: Phaser.Scale.CENTER_BOTH,
-                //mode: Phaser.Scale.FIT,
-            },
+            // width: getEffectiveGameWidth(gameController.config),
+            // height: getEffectiveGameHeight(gameController.config),
+            width: 2000,
+            height: 2000,
+            //width: 800,
+            //height: 800,
             backgroundColor: BG_COLOR,
+            roundPixels: true,
             
         });
         this.gameController = gameController;
