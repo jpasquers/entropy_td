@@ -25,15 +25,16 @@ export abstract class BasicScene extends Phaser.Scene {
     }
 
     mapCameraPosToGamePos(cameraPos: PixelCoordinate): PixelCoordinate {
+        let worldPos = this.cameras.main.getWorldPoint(cameraPos.pxCol, cameraPos.pxRow)
         return {
-            pxCol: cameraPos.pxCol + this.cameras.main.scrollX,
-            pxRow: cameraPos.pxRow + this.cameras.main.scrollY
+            pxCol: worldPos.x,
+            pxRow: worldPos.y
         }
     }
 
     create() {
-        //this.mouseMovementTracker = new MouseMovementPublisher(this.input);
-        //this.frameDeltaPublisher.addObserver(this.mouseMovementTracker);
+        this.mouseMovementTracker = new MouseMovementPublisher(this.input);
+        this.frameDeltaPublisher.addObserver(this.mouseMovementTracker);
         this.keyTracker = new KeyDownPublisher(this.input);
         this.clickTracker = new ClickPublisher(this.input);
 
@@ -41,9 +42,6 @@ export abstract class BasicScene extends Phaser.Scene {
     }
 
     update(time: number, delta: number) {
-        if (this.prevTime) {
-            console.log("real delta: " + (time - this.prevTime));
-        }
         this.prevTime = time;
         this.frameCount++;
         let frameRate = (1000 / (time / this.frameCount));

@@ -1,5 +1,6 @@
 import { ActionError } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
+import { NOTIFICATION_LAYER } from "../../../common/z_layers";
 import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
 import { BorderedSubScene, SubScene } from "../../../phaser/extensions/sub_scene";
 import { GameStateObserver } from "../gamestate_publisher";
@@ -34,6 +35,7 @@ export class ErrorRenderer {
             },
             error.message
         ).setOrigin(0.5);
+        this.currentRenderedError.setDepth(NOTIFICATION_LAYER);
         this.subScene.scene.add.tween({
             targets: this.currentRenderedError,
             alpha: 0,

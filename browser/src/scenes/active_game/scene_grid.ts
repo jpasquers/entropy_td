@@ -1,13 +1,14 @@
 import { GameInstanceConfiguration } from "entropy-td-core";
 import { ActiveGameScene } from ".";
 import { BG_COLOR, BORDER_COLOR, COMMAND_CARD_HEIGHT, COMMAND_CARD_WIDTH } from "../../display_configs";
-import { BasicSceneGrid, GRID_BORDER_THICKNESS, toExternalDim } from "../../phaser/extensions/scene_grid";
+import { BasicSceneGrid, GRID_BORDER_THICKNESS, toExternalDim, toExternalOffset } from "../../phaser/extensions/scene_grid";
 import { BorderedSubScene, SubScene } from "../../phaser/extensions/sub_scene";
 
 export const NAVIGATION_INTERNAL_HEIGHT = 100;
 
 export class ActiveGameSceneGrid extends BasicSceneGrid {
     gameplaySection: SubScene;
+    notificationSection: SubScene;
     navigationSection: BorderedSubScene;
     commandCardSection: BorderedSubScene;
 
@@ -48,6 +49,17 @@ export class ActiveGameSceneGrid extends BasicSceneGrid {
             filled: BG_COLOR,
             fixed: true
         }
+        this.notificationSection = {
+            id: "activegame_notification",
+            scene: scene,
+            internalOffset: {
+                pxCol: 0,
+                pxRow: toExternalDim(NAVIGATION_INTERNAL_HEIGHT) + 100
+            },
+            internalHeight: 200,
+            internalWidth: scene.getViewportWidth(),
+            fixed: true
+        }
         this.commandCardSection = {
             id: "activegame_commandcard",
             scene: scene,
@@ -70,7 +82,8 @@ export class ActiveGameSceneGrid extends BasicSceneGrid {
         return [
             this.navigationSection,
             this.gameplaySection,
-            this.commandCardSection
+            this.commandCardSection,
+            this.notificationSection
         ]
     }
 }
