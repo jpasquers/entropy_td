@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import Phaser, { CANVAS } from "phaser";
 import { GameOrchestrator } from "entropy-td-core";
 import { ActiveGameScene } from "./scenes/active_game";
 import { getEffectiveGameWidth, getEffectiveGameHeight } from "./scenes/scene_grid";
@@ -18,6 +18,7 @@ class PhaserGameDelegate {
             //height: 2000,
             //width: 800,
             //height: 800,
+            type: CANVAS,
             backgroundColor: BG_COLOR,
             roundPixels: true,
             

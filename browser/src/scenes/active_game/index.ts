@@ -92,10 +92,10 @@ export class ActiveGameScene extends BasicScene {
         //TODO will move this to a publisher when needed. for now its whatever.
         this.input.on('wheel', (pointer: unknown, gameObjects: unknown, deltaX: number, deltaY: number, deltaZ: number) => {
             if (deltaY > 0) {
-                this.cameras.main.zoom *= 0.5;
+                this.cameras.main.zoom *= 0.95;
             }
             else {
-                this.cameras.main.zoom *= 2;
+                this.cameras.main.zoom *= 1.05;
             }
         })
     }

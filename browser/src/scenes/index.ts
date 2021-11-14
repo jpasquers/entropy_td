@@ -37,8 +37,6 @@ export abstract class BasicScene extends Phaser.Scene {
         this.frameDeltaPublisher.addObserver(this.mouseMovementTracker);
         this.keyTracker = new KeyDownPublisher(this.input);
         this.clickTracker = new ClickPublisher(this.input);
-
-        
     }
 
     update(time: number, delta: number) {
