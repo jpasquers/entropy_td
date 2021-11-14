@@ -63,50 +63,17 @@ export class ActiveGameScene extends BasicScene {
 
     }
 
-    adjustCameraForWindow() {
-        this.cameras.main.width = window.innerWidth;
-        this.cameras.main.height = window.innerHeight;
-        let halfGameWidth = Math.floor(getInternalGameplayWidth(this.gameController.config) / 2);
-        let halfWindowWidth = Math.floor(window.innerWidth/2);
-        this.cameras.main.scrollX = ifNegativeZero(halfGameWidth - halfWindowWidth);
-
-        let halfGameHeight = Math.floor(getInternalGameplayHeight(this.gameController.config) / 2);
-        let halfWindowHeight = Math.floor(window.innerHeight/2);
-        this.cameras.main.scrollY = ifNegativeZero(halfGameHeight - halfWindowHeight);
-    }
-
-    enableCameraDrag() {
-        this.mouseMovementTracker?.addObserver({
-            id: "camera_drag",
-            onEvent: (event: MouseMovement) => {
-                console.log(event);
-                if (event.rDrag) {
-                    this.cameras.main.scrollX = this.cameras.main.scrollX - event.delta.pxCol;
-                    this.cameras.main.scrollY = this.cameras.main.scrollY - event.delta.pxRow;
-                }
-            }
-        });
-    }
-
-    enableCameraZoom() {
-        //TODO will move this to a publisher when needed. for now its whatever.
-        this.input.on('wheel', (pointer: unknown, gameObjects: unknown, deltaX: number, deltaY: number, deltaZ: number) => {
-            if (deltaY > 0) {
-                this.cameras.main.zoom *= 0.95;
-            }
-            else {
-                this.cameras.main.zoom *= 1.05;
-            }
-        })
-    }
-
 
     public create() {
         super.create();
+        this.mainCameraAdapter?.resizeToWindow();
+        this.mainCameraAdapter?.centerWithin(
+            getInternalGameplayWidth(this.gameController.config), 
+            getInternalGameplayHeight(this.gameController.config)
+        );
+        this.mainCameraAdapter?.enableCameraDrag(this.mouseMovementTracker!);
+        this.mainCameraAdapter?.enableZoom(this.mouseScrollTracker!);
         
-        this.adjustCameraForWindow();
-        this.enableCameraDrag();
-        this.enableCameraZoom();
         this.sceneGrid = new ActiveGameSceneGrid(this);
         this.terrainRenderer = new TerrainRenderer(this.sceneGrid.gameplaySection, this.gameController.config.tilePixelDim);
         

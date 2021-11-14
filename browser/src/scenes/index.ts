@@ -1,15 +1,18 @@
 import { ActionError, PixelCoordinate } from "entropy-td-core";
 import { FrameDeltaPublisher } from "../common/publishers/frame_delta";
-import { ClickPublisher, KeyDownPublisher, MouseMovementPublisher } from "../common/publishers/input";
+import { ClickPublisher, KeyDownPublisher, MouseMovementPublisher, MouseScrollPublisher } from "../common/publishers/input";
+import { CameraAdapter } from "../phaser/extensions/camera";
 import { SceneGrid } from "../phaser/extensions/scene_grid";
 
 export abstract class BasicScene extends Phaser.Scene {
 
     frameCount: number;
     mouseMovementTracker?: MouseMovementPublisher;
+    mouseScrollTracker?: MouseScrollPublisher;
     keyTracker?: KeyDownPublisher;
     clickTracker?: ClickPublisher;
     frameDeltaPublisher: FrameDeltaPublisher;
+    mainCameraAdapter?: CameraAdapter;
     prevTime?: number;
 
     constructor() {
@@ -18,25 +21,16 @@ export abstract class BasicScene extends Phaser.Scene {
             visible: false
         });
         this.frameCount = 0;
-
         this.frameDeltaPublisher = new FrameDeltaPublisher();
-
-        
-    }
-
-    mapCameraPosToGamePos(cameraPos: PixelCoordinate): PixelCoordinate {
-        let worldPos = this.cameras.main.getWorldPoint(cameraPos.pxCol, cameraPos.pxRow)
-        return {
-            pxCol: worldPos.x,
-            pxRow: worldPos.y
-        }
     }
 
     create() {
-        this.mouseMovementTracker = new MouseMovementPublisher(this.input);
+        this.mainCameraAdapter = new CameraAdapter(this.cameras.main);
+        this.mouseMovementTracker = new MouseMovementPublisher(this.input, this.mainCameraAdapter);
         this.frameDeltaPublisher.addObserver(this.mouseMovementTracker);
         this.keyTracker = new KeyDownPublisher(this.input);
-        this.clickTracker = new ClickPublisher(this.input);
+        this.clickTracker = new ClickPublisher(this.input, this.mainCameraAdapter);
+        this.mouseScrollTracker = new MouseScrollPublisher(this.input);
     }
 
     update(time: number, delta: number) {

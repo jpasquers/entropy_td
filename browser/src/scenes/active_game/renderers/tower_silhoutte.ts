@@ -50,9 +50,8 @@ export class TowerSilhoutteRenderer implements MouseMovementObserver {
 
     onEvent(event: MouseMovement): void {
         if (!this.towerType) return;
-        let globalPos = this.scene.mapCameraPosToGamePos(event.newCameraPos);
-        if (!this.scene.terrainRenderer!.isPixelRelated(globalPos)) return;
-        let newCoord = this.scene.terrainRenderer!.getTileCoordForRenderedPixel(globalPos);
+        if (!this.scene.terrainRenderer!.isPixelRelated(event.newWorldPos)) return;
+        let newCoord = this.scene.terrainRenderer!.getTileCoordForRenderedPixel(event.newWorldPos);
         if (!this.scene.gameController.getBoard().isOpen(newCoord)) return;
         let silhoutte = {
             coord: newCoord,

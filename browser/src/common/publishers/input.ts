@@ -1,9 +1,11 @@
 import { PixelCoordinate } from "entropy-td-core";
+import { CameraAdapter } from "../../phaser/extensions/camera";
 import { Observer, Publisher } from "./";
 import { FrameDeltaEvent, FrameDeltaObserver } from "./frame_delta";
 
 export interface MouseMovement {
     newCameraPos: PixelCoordinate;
+    newWorldPos: PixelCoordinate;
     delta: PixelCoordinate;
     lDrag: boolean;
     rDrag: boolean;
@@ -11,15 +13,23 @@ export interface MouseMovement {
 
 export interface ClickEvent {
     targetCameraPos: PixelCoordinate;
+    targetWorldPos: PixelCoordinate;
 }
 
 export interface KeyDownEvent {
     key: string;
 }
 
+export interface ScrollEvent {
+    zoomIn: boolean;
+    amount: number;
+}
+
 export type MouseMovementObserver = Observer<MouseMovement>;
 
 export type ClickObserver = Observer<ClickEvent>;
+
+export type MouseScollObserver = Observer<ScrollEvent>;
 
 export type KeyDownObserver = Observer<KeyDownEvent>;
 
@@ -32,14 +42,28 @@ class InputPublisher<EventType> extends Publisher<EventType> {
     }
 }
 
+export class MouseScrollPublisher extends InputPublisher<ScrollEvent> {
+    constructor(input: Phaser.Input.InputPlugin, observers?: MouseScollObserver[]) {
+        super(input, observers);
+        this.input.on("scroll", (pointer: unknown, gameObjects: unknown, deltaX: number, deltaY: number, deltaZ: number) => {
+            this.publishEvent({
+                zoomIn: deltaY < 0,
+                amount: Math.abs(deltaY)
+            })
+        })
+    }
+}
+
 export class MouseMovementPublisher extends InputPublisher<MouseMovement> implements FrameDeltaObserver {
     previousMousePosition?: PixelCoordinate;
     previousRDown: boolean;
     previousLDown: boolean;
     id: string;
+    cameraAdapter: CameraAdapter;
 
-    constructor(input: Phaser.Input.InputPlugin, mouseMovementListeners?: MouseMovementObserver[]) {
+    constructor(input: Phaser.Input.InputPlugin, cameraAdapter: CameraAdapter, mouseMovementListeners?: MouseMovementObserver[]) {
         super(input, mouseMovementListeners);
+        this.cameraAdapter = cameraAdapter;
         this.id = "mouse_movement_publisher";
         this.previousMousePosition = this.getMousePosition();
         this.previousLDown = false;
@@ -50,6 +74,7 @@ export class MouseMovementPublisher extends InputPublisher<MouseMovement> implem
         if (this.hasMouseChanged()) {
             this.publishEvent({
                 newCameraPos: this.getMousePosition(),
+                newWorldPos: this.cameraAdapter.toWorldPos(this.getMousePosition()),
                 delta: {
                     pxCol: this.getMousePosition().pxCol - this.previousMousePosition!.pxCol,
                     pxRow: this.getMousePosition().pxRow - this.previousMousePosition!.pxRow
@@ -97,16 +122,19 @@ export class KeyDownPublisher extends InputPublisher<KeyDownEvent> {
 }
 
 export class ClickPublisher extends InputPublisher<ClickEvent> {
+    cameraAdapter: CameraAdapter;
 
-    constructor(input: Phaser.Input.InputPlugin, observers?: ClickObserver[]) {
+    constructor(input: Phaser.Input.InputPlugin, cameraAdapter: CameraAdapter, observers?: ClickObserver[]) {
         super(input, observers);
+        this.cameraAdapter = cameraAdapter;
         this.input.on("gameobjectdown", this.clickHandler.bind(this));
     }
 
     clickHandler(input: Phaser.Input.Pointer): void {
         let pixel: PixelCoordinate = this.pixelFromPointer(input);
         this.publishEvent({
-            targetCameraPos: pixel
+            targetCameraPos: pixel,
+            targetWorldPos: this.cameraAdapter.toWorldPos(pixel)
         });
     }
 

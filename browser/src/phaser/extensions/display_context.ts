@@ -2,6 +2,8 @@ import { PixelCoordinate } from "entropy-td-core";
 import { BorderedSubScene, SubScene } from "./sub_scene";
 
 
+//THIS IS BASICALLY WHERE I NEED TO DO ALL MY NEW WORK.
+
 export interface CanSetPos {
     setX(x: number): void;
     setY(y: number): void;

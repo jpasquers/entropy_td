@@ -1,4 +1,5 @@
 import { PixelCoordinate } from "entropy-td-core";
+import { CameraAdapter } from "./camera";
 
 
 export interface SubScene {
@@ -7,9 +8,14 @@ export interface SubScene {
     internalOffset: PixelCoordinate;
     internalWidth: number;
     internalHeight: number;
-    fixed?: boolean;
     filled?: number;
 }
+
+export interface CameraBoundSubScene extends SubScene{
+    boundTo: CameraAdapter;
+}
+
+export type WorldBoundSubScene = SubScene;
 
 
 export interface Border {
