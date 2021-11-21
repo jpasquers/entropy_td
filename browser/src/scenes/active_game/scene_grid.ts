@@ -1,16 +1,45 @@
 import { GameInstanceConfiguration } from "entropy-td-core";
 import { ActiveGameScene } from ".";
+import { FIXED_LAYER, GRID_LAYER } from "../../common/z_layers";
 import { BG_COLOR, BORDER_COLOR, COMMAND_CARD_HEIGHT, COMMAND_CARD_WIDTH } from "../../display_configs";
 import { BasicSceneGrid, GRID_BORDER_THICKNESS, toExternalDim, toExternalOffset } from "../../phaser/extensions/scene_grid";
-import { BorderedSubScene, SubScene } from "../../phaser/extensions/sub_scene";
+import { CameraFixedSubScene, SubScene, WorldFixedSubScene } from "../../phaser/extensions/sub_scene";
+import { HudScene } from "../hud";
 
 export const NAVIGATION_INTERNAL_HEIGHT = 100;
 
-export class ActiveGameSceneGrid extends BasicSceneGrid {
+export class ActiveGameWorldGrid extends BasicSceneGrid<SubScene> {
     gameplaySection: SubScene;
+
+    GAMEPLAY_INTERNAL_WIDTH: number;
+    GAMEPLAY_INTERNAL_HEIGHT: number;
+
+    getSections(): SubScene[] {
+        throw new Error("Method not implemented.");
+    }
+    constructor(scene: ActiveGameScene) {
+        super();
+        this.GAMEPLAY_INTERNAL_HEIGHT = getInternalGameplayHeight(scene.gameController.config);
+        this.GAMEPLAY_INTERNAL_WIDTH = getInternalGameplayWidth(scene.gameController.config);
+        this.gameplaySection = {
+            id: "activegame_gameplay",
+            scene: scene,
+            externalOffset: {
+                pxCol: GRID_BORDER_THICKNESS,
+                pxRow: NAVIGATION_INTERNAL_HEIGHT + 2*GRID_BORDER_THICKNESS
+            },
+            externalHeight: this.GAMEPLAY_INTERNAL_HEIGHT + 2*GRID_BORDER_THICKNESS,
+            externalWidth: this.GAMEPLAY_INTERNAL_WIDTH + 2*GRID_BORDER_THICKNESS,
+            layer: GRID_LAYER
+        }
+    }
+    
+}
+
+export class ActiveGameHudGrid extends BasicSceneGrid<SubScene> {
     notificationSection: SubScene;
-    navigationSection: BorderedSubScene;
-    commandCardSection: BorderedSubScene;
+    navigationSection: SubScene;
+    commandCardSection: SubScene;
 
     GAMEPLAY_INTERNAL_WIDTH: number;
     GAMEPLAY_INTERNAL_HEIGHT: number;
@@ -18,70 +47,59 @@ export class ActiveGameSceneGrid extends BasicSceneGrid {
 
 
     
-    constructor(scene: ActiveGameScene) {
+    constructor(scene: HudScene) {
         super();
         this.GAMEPLAY_INTERNAL_HEIGHT = getInternalGameplayHeight(scene.gameController.config);
         this.GAMEPLAY_INTERNAL_WIDTH = getInternalGameplayWidth(scene.gameController.config);
         this.NAVIGATION_INTERNAL_WIDTH = this.GAMEPLAY_INTERNAL_WIDTH;
-        this.gameplaySection = {
-            id: "activegame_gameplay",
-            scene: scene,
-            internalOffset: {
-                pxCol: GRID_BORDER_THICKNESS,
-                pxRow: toExternalDim(NAVIGATION_INTERNAL_HEIGHT)
-            },
-            internalHeight: this.GAMEPLAY_INTERNAL_HEIGHT,
-            internalWidth: this.GAMEPLAY_INTERNAL_WIDTH,
-        }
         this.navigationSection = {
             id: "activegame_navigation",
             scene: scene,
-            internalOffset: {
+            externalOffset: {
                 pxCol: GRID_BORDER_THICKNESS,
                 pxRow: GRID_BORDER_THICKNESS
             },
-            internalHeight: NAVIGATION_INTERNAL_HEIGHT,
-            internalWidth: scene.getViewportWidth() - 2*GRID_BORDER_THICKNESS,
+            externalHeight: NAVIGATION_INTERNAL_HEIGHT + 2*GRID_BORDER_THICKNESS,
+            externalWidth: scene.getViewportWidth(),
             border: {
                 color: BORDER_COLOR,
                 width: GRID_BORDER_THICKNESS
             },
             filled: BG_COLOR,
-            fixed: true
+            layer: FIXED_LAYER
         }
         this.notificationSection = {
             id: "activegame_notification",
             scene: scene,
-            internalOffset: {
+            externalOffset: {
                 pxCol: 0,
                 pxRow: toExternalDim(NAVIGATION_INTERNAL_HEIGHT) + 100
             },
-            internalHeight: 200,
-            internalWidth: scene.getViewportWidth(),
-            fixed: true
+            externalHeight: 200,
+            externalWidth: scene.getViewportWidth(),
+            layer: FIXED_LAYER
         }
         this.commandCardSection = {
             id: "activegame_commandcard",
             scene: scene,
-            internalOffset: {
+            externalOffset: {
                 pxCol: scene.getViewportWidth() - (COMMAND_CARD_WIDTH + GRID_BORDER_THICKNESS),
                 pxRow: scene.getViewportHeight() - (COMMAND_CARD_HEIGHT + GRID_BORDER_THICKNESS)
             },
-            internalHeight: COMMAND_CARD_HEIGHT,
-            internalWidth: COMMAND_CARD_WIDTH,
+            externalHeight: COMMAND_CARD_HEIGHT + 2*GRID_BORDER_THICKNESS,
+            externalWidth: COMMAND_CARD_WIDTH + 2*GRID_BORDER_THICKNESS,
             border: {
                 color: BORDER_COLOR,
                 width: GRID_BORDER_THICKNESS
             },
             filled: BG_COLOR,
-            fixed: true
+            layer: FIXED_LAYER
         }
     }
 
-    getSections(): (SubScene | BorderedSubScene)[] {
+    getSections(): SubScene[] {
         return [
             this.navigationSection,
-            this.gameplaySection,
             this.commandCardSection,
             this.notificationSection
         ]

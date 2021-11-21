@@ -2,8 +2,8 @@ import { Scene } from "phaser";
 import { GameObjectLike, ObjectRendererWithSync } from "../../../common/renderer";
 import { SIT_ON_FIXED_LAYER } from "../../../common/z_layers";
 import { COMMAND_CARD_ITEM_DIM, COMMAND_CARD_WIDTH } from "../../../display_configs";
-import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
+import { DisplayContext, forSubScene } from "../../../phaser/extensions/display_context";
+import { SubScene } from "../../../phaser/extensions/sub_scene";
 import { CommandCard, CommandCardItem } from "../command_card";
 
 
@@ -52,11 +52,11 @@ export class CommandCardDisplay implements GameObjectLike {
 
 export class CommandCardRenderer extends ObjectRendererWithSync<CommandCard, CommandCardDisplay>  {
 
-    constructor(subScene: BorderedSubScene) {
+    constructor(subScene: SubScene) {
         super({
             alwaysCreate: false,
             withCleanup: true
-        }, new SubSceneDisplayContext(subScene));
+        }, forSubScene(subScene));
     }
 
     create(commandCard: CommandCard): CommandCardDisplay {

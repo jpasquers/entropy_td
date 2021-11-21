@@ -1,5 +1,5 @@
 import { DisplayContext } from "../../phaser/extensions/display_context";
-import { BorderedSubScene } from "../../phaser/extensions/sub_scene";
+import { SubScene } from "../../phaser/extensions/sub_scene";
 
 
 export interface WithIdentifier {
@@ -88,4 +88,4 @@ export abstract class ObjectRendererWithSync<Model extends WithIdentifier,
 
 }
 
-export type RenderWithOffset<T> = (scene: BorderedSubScene, toRender: T, additionalConfig?: any) => void;
+export type RenderWithOffset<T> = (scene: SubScene, toRender: T, additionalConfig?: any) => void;

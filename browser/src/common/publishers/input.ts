@@ -46,6 +46,7 @@ export class MouseScrollPublisher extends InputPublisher<ScrollEvent> {
     constructor(input: Phaser.Input.InputPlugin, observers?: MouseScollObserver[]) {
         super(input, observers);
         this.input.on("scroll", (pointer: unknown, gameObjects: unknown, deltaX: number, deltaY: number, deltaZ: number) => {
+            console.log("scroll happened!");
             this.publishEvent({
                 zoomIn: deltaY < 0,
                 amount: Math.abs(deltaY)

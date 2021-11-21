@@ -3,14 +3,14 @@ import { GameStateObjectRenderer } from ".";
 import { SimpleRenderer, WithIdentifier } from "../../../common/renderer";
 import { SIT_ON_FIXED_LAYER } from "../../../common/z_layers";
 import { SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { BorderedSubScene } from "../../../phaser/extensions/sub_scene";
+import { SubScene } from "../../../phaser/extensions/sub_scene";
 import { GameStateObserver } from "../gamestate_publisher";
 
 export class TimeRenderer extends SimpleRenderer<Phaser.GameObjects.Text> implements GameStateObserver {
     id: string;
     timer?: Phaser.GameObjects.Text;
 
-    constructor(subScene: BorderedSubScene) {
+    constructor(subScene: SubScene) {
         super(new SubSceneDisplayContext(subScene));
         this.id = "time_renderer";
     }
@@ -34,7 +34,7 @@ export class MoneyRenderer extends SimpleRenderer<Phaser.GameObjects.Text> imple
     id: string;
     moneyDisplay?: Phaser.GameObjects.Text;
 
-    constructor(subScene: BorderedSubScene) {
+    constructor(subScene: SubScene) {
         super(new SubSceneDisplayContext(subScene));
         this.id = "money_renderer";
     }

@@ -8,7 +8,7 @@ import { BorderedSubSceneRenderer } from "./renderers/scene_grid";
 import { CommandCard, TowerListCommandCard } from "./command_card";
 import { ActionError } from "entropy-td-core";
 import { ErrorRenderer } from "./renderers/error";
-import { ActiveGameSceneGrid, getInternalGameplayHeight, getInternalGameplayWidth } from "./scene_grid";
+import { ActiveGameHudGrid, ActiveGameWorldGrid, getInternalGameplayHeight, getInternalGameplayWidth } from "./scene_grid";
 import { GameStatePublisher } from "./gamestate_publisher";
 import { BasicScene } from "..";
 import { TowerSilhoutteRenderer } from "./renderers/tower_silhoutte";
@@ -23,7 +23,8 @@ import { FrameRateRenderer } from "./renderers/frame_rate";
 
 export class ActiveGameScene extends BasicScene {
     gameController: GameOrchestrator
-    sceneGrid?: ActiveGameSceneGrid;
+    worldGrid?: ActiveGameWorldGrid;
+    cameraGrid?: ActiveGameHudGrid;
     terrainRenderer?: TerrainRenderer;
     towerRenderer?: TowerRenderer;
     creepRenderer?: CreepRenderer;
@@ -41,7 +42,7 @@ export class ActiveGameScene extends BasicScene {
     gameStatePublisher: GameStatePublisher;
 
     constructor(gameController: GameOrchestrator) {
-        super();
+        super("active_game_world");
         this.frameCount = 0;
         this.gameController = gameController;
         this.gameStatePublisher = new GameStatePublisher(this.gameController);
@@ -74,19 +75,20 @@ export class ActiveGameScene extends BasicScene {
         this.mainCameraAdapter?.enableCameraDrag(this.mouseMovementTracker!);
         this.mainCameraAdapter?.enableZoom(this.mouseScrollTracker!);
         
-        this.sceneGrid = new ActiveGameSceneGrid(this);
-        this.terrainRenderer = new TerrainRenderer(this.sceneGrid.gameplaySection, this.gameController.config.tilePixelDim);
+        this.worldGrid = new ActiveGameWorldGrid(this);
+        this.cameraGrid = new ActiveGameHudGrid(this);
+        this.terrainRenderer = new TerrainRenderer(this.worldGrid.gameplaySection, this.gameController.config.tilePixelDim);
         
-        this.towerRenderer = new TowerRenderer(this.sceneGrid.gameplaySection, this.gameController.config.tilePixelDim);
-        this.creepRenderer = new CreepRenderer(this.sceneGrid.gameplaySection);
-        this.projectileRenderer = new ProjectileRenderer(this.sceneGrid.gameplaySection);
-        this.commandCardRenderer = new CommandCardRenderer(this.sceneGrid.commandCardSection);
+        this.towerRenderer = new TowerRenderer(this.worldGrid.gameplaySection, this.gameController.config.tilePixelDim);
+        this.creepRenderer = new CreepRenderer(this.worldGrid.gameplaySection);
+        this.projectileRenderer = new ProjectileRenderer(this.worldGrid.gameplaySection);
+        this.commandCardRenderer = new CommandCardRenderer(this.cameraGrid.commandCardSection);
         this.sceneGridRenderer = new BorderedSubSceneRenderer(this);
-        this.errorRenderer = new ErrorRenderer(this.sceneGrid.notificationSection);
-        this.timeRenderer = new TimeRenderer(this.sceneGrid.navigationSection);
-        this.moneyRenderer = new MoneyRenderer(this.sceneGrid.navigationSection);
-        this.pathRenderer = new PathRenderer(this.sceneGrid.gameplaySection);
-        this.frameRateRenderer = new FrameRateRenderer(this.sceneGrid.navigationSection);
+        this.errorRenderer = new ErrorRenderer(this.cameraGrid.notificationSection);
+        this.timeRenderer = new TimeRenderer(this.cameraGrid.navigationSection);
+        this.moneyRenderer = new MoneyRenderer(this.cameraGrid.navigationSection);
+        this.pathRenderer = new PathRenderer(this.worldGrid.gameplaySection);
+        this.frameRateRenderer = new FrameRateRenderer(this.cameraGrid.navigationSection);
 
         this.frameDeltaPublisher.addObserver(this.frameRateRenderer);
         this.gameStatePublisher.addObservers(
@@ -99,7 +101,7 @@ export class ActiveGameScene extends BasicScene {
         )
         this.terrainRenderer.renderBackgroundTerrain();
         this.terrainRenderer.synchronizeItems(this.gameController.getBoard());
-        this.sceneGridRenderer.synchronizeItems(...this.sceneGrid.getBorderedSections());
+        //this.sceneGridRenderer.synchronizeItems(...this.cameraGrid.getBorderedSections());
         this.anims.create({
             key: 'shoot_tower',
             frames: this.anims.generateFrameNames('tower_simple_1', {

@@ -77,6 +77,7 @@ export class CameraAdapter extends Publisher<CameraState>{
             onEvent: (event: MouseMovement) => {
                 console.log(event);
                 if (event.rDrag) {
+                    console.log("camera drag")
                     this.setScrollX(this.camera.scrollX - event.delta.pxCol);
                     this.setScrollY(this.camera.scrollY - event.delta.pxRow);
                 }
@@ -88,6 +89,8 @@ export class CameraAdapter extends Publisher<CameraState>{
         scrollPublisher.addObserver({
             id: "scroll_zoom_observer",
             onEvent: (event: ScrollEvent) => {
+                console.log("zoom event");
+                console.log(event);
                 if (event.zoomIn) {
                     //TODO vary by amount.
                     this.setZoom(this.camera.zoom*1.05);

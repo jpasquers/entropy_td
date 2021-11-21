@@ -3,6 +3,7 @@ import { GameOrchestrator } from "entropy-td-core";
 import { ActiveGameScene } from "./scenes/active_game";
 import { getEffectiveGameWidth, getEffectiveGameHeight } from "./scenes/scene_grid";
 import { BG_COLOR } from "./display_configs";
+import { HudScene } from "./scenes/hud";
 
 
 class PhaserGameDelegate {
@@ -11,13 +12,9 @@ class PhaserGameDelegate {
     constructor(gameController: GameOrchestrator) {
         this.gameView = new Phaser.Game({
             input: true,
-            scene: new ActiveGameScene(gameController),
+            scene: [new ActiveGameScene(gameController),new HudScene(gameController)],
             width: getEffectiveGameWidth(gameController.config),
             height: getEffectiveGameHeight(gameController.config),
-            //width: 2000,
-            //height: 2000,
-            //width: 800,
-            //height: 800,
             type: CANVAS,
             backgroundColor: BG_COLOR,
             roundPixels: true,

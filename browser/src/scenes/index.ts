@@ -15,10 +15,11 @@ export abstract class BasicScene extends Phaser.Scene {
     mainCameraAdapter?: CameraAdapter;
     prevTime?: number;
 
-    constructor() {
+    constructor(key: string) {
         super({
-            active: false,
-            visible: false
+            active: true,
+            visible: true,
+            key: key
         });
         this.frameCount = 0;
         this.frameDeltaPublisher = new FrameDeltaPublisher();

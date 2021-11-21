@@ -1,7 +1,7 @@
 import { FrameDeltaEvent, FrameDeltaObserver } from "../../../common/publishers/frame_delta";
 import { SimpleRenderer } from "../../../common/renderer";
 import { SIT_ON_FIXED_LAYER } from "../../../common/z_layers";
-import { SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
+import { forSubScene } from "../../../phaser/extensions/display_context";
 import { SubScene } from "../../../phaser/extensions/sub_scene";
 
 
@@ -10,7 +10,7 @@ export class FrameRateRenderer extends SimpleRenderer<Phaser.GameObjects.Text> i
     timer?: Phaser.GameObjects.Text;
 
     constructor(subScene: SubScene) {
-        super(new SubSceneDisplayContext(subScene));
+        super(forSubScene(subScene));
         this.id = "time_renderer";
     }
 

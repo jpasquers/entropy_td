@@ -1,7 +1,7 @@
 import {  ProjectileSummary } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
-import { SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
+import { forSubScene } from "../../../phaser/extensions/display_context";
 import { SubScene } from "../../../phaser/extensions/sub_scene";
 
 export class ProjectileRenderer extends GameStateObjectRenderer<ProjectileSummary, Phaser.GameObjects.Arc> {
@@ -9,7 +9,7 @@ export class ProjectileRenderer extends GameStateObjectRenderer<ProjectileSummar
         super({
             alwaysCreate: false,
             withCleanup: true
-        }, new SubSceneDisplayContext(subScene), "projectile_renderer");
+        }, forSubScene(subScene), "projectile_renderer");
     }
 
     getModels(gameState: GameState): ProjectileSummary[] {

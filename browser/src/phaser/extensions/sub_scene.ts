@@ -5,36 +5,44 @@ import { CameraAdapter } from "./camera";
 export interface SubScene {
     id: string;
     scene: Phaser.Scene;
-    internalOffset: PixelCoordinate;
-    internalWidth: number;
-    internalHeight: number;
+    externalWidth: number;
+    externalHeight: number;
+    externalOffset: PixelCoordinate;
+    layer: number;
     filled?: number;
+    border?: Border;
 }
 
-export interface CameraBoundSubScene extends SubScene{
-    boundTo: CameraAdapter;
+export const isCameraFixed = (subScene: SubScene):subScene is CameraFixedSubScene => {
+    return "cameraOffset" in subScene;
 }
 
-export type WorldBoundSubScene = SubScene;
+export const isWorldFixed = (subScene: SubScene):subScene is WorldFixedSubScene => {
+    return "worldOffset" in subScene;
+}
+
+export interface CameraFixedSubScene extends SubScene{
+    boundToCamera: CameraAdapter;
+    cameraOffset: PixelCoordinate;
+}
+
+export interface WorldFixedSubScene extends SubScene {
+    worldOffset: PixelCoordinate;
+}
 
 
 export interface Border {
     color: number;
     rounding?: number;
-    width: number | BorderWidthDetail;
+    width: number;
 }
 
-export interface BorderWidthDetail {
-    top: number;
-    left: number;
-    right: number;
-    bottom: number;
+export const getInternalWidth = (subScene: SubScene) => {
+    if (!subScene.border) return subScene.externalWidth;
+    else return subScene.externalWidth - (subScene.border.width*2);
 }
 
-export interface BorderedSubScene extends SubScene {
-    border: Border;
-}
-
-export const isBordered = (val: SubScene | BorderedSubScene):val is BorderedSubScene => {
-    return "border" in val;
+export const getInternalHeight = (subScene: SubScene) => {
+    if (!subScene.border) return subScene.externalHeight;
+    else return subScene.externalHeight - (subScene.border.width*2);
 }

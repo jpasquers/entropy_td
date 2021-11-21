@@ -1,16 +1,16 @@
 import { PixelCoordinate } from "entropy-td-core";
-import { BorderedSubScene, isBordered, SubScene } from "./sub_scene";
+import { SubScene } from "./sub_scene";
 
-export interface SceneGrid {
-    getSections: ()=>(SubScene | BorderedSubScene)[];
+export interface SceneGrid<T extends SubScene> {
+    getSections: ()=>T[];
 }
 
-export abstract class BasicSceneGrid implements SceneGrid {
-    abstract getSections(): (SubScene | BorderedSubScene)[];
+export abstract class BasicSceneGrid<T extends SubScene> implements SceneGrid<T> {
+    abstract getSections(): T[];
 
-    public getBorderedSections(): BorderedSubScene[] {
+    public getBorderedSections(): T[] {
         return this.getSections()
-            .filter((section): section is BorderedSubScene => isBordered(section));
+            .filter((section):boolean => !!section.border && !!section.border.width)
     }
 }
 

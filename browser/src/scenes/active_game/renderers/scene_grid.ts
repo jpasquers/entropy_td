@@ -1,49 +1,55 @@
+import { BasicScene } from "../..";
 import { ObjectRendererWithSync } from "../../../common/renderer";
 import { FIXED_LAYER, GRID_LAYER } from "../../../common/z_layers";
 import { BORDER_COLOR } from "../../../display_configs";
-import { GlobalSceneDisplayContext } from "../../../phaser/extensions/display_context";
+import { SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
 import { GRID_BORDER_THICKNESS, toExternalDim, toExternalOffset } from "../../../phaser/extensions/scene_grid";
-import { BorderedSubScene, isBordered, SubScene } from "../../../phaser/extensions/sub_scene";
+import { SubScene } from "../../../phaser/extensions/sub_scene";
 
 
 
-export class BorderedSubSceneRenderer extends ObjectRendererWithSync<BorderedSubScene,Phaser.GameObjects.Rectangle> {
+export class BorderedSubSceneRenderer extends ObjectRendererWithSync<SubScene,Phaser.GameObjects.Rectangle> {
     
-    scene: Phaser.Scene;
+    scene: BasicScene;
     
 
-    constructor(scene: Phaser.Scene) {
+    constructor(scene: BasicScene) {
         super({
             alwaysCreate: false,
             withCleanup: true
-        }, new GlobalSceneDisplayContext(scene));
+        }, new SubSceneDisplayContext({
+            scene: scene, 
+            id: "glob_sub_scene",
+            externalHeight: scene.getViewportHeight(),
+            externalWidth: scene.getViewportWidth(),
+            externalOffset: {
+                pxCol: 0,
+                pxRow: 0
+            }, 
+            layer: FIXED_LAYER}
+        ));
         this.scene = scene;
     }
 
-    create(subSection: BorderedSubScene): Phaser.GameObjects.Rectangle {
+    create(subSection: SubScene): Phaser.GameObjects.Rectangle {
         let rect = this.scene.add.rectangle(
-            toExternalOffset(subSection.internalOffset).pxCol + (toExternalDim(subSection.internalWidth) / 2),
-            toExternalOffset(subSection.internalOffset).pxRow + (toExternalDim(subSection.internalHeight) / 2),
-            subSection.internalWidth + GRID_BORDER_THICKNESS,
-            subSection.internalHeight + GRID_BORDER_THICKNESS
+            subSection.externalOffset.pxCol + (subSection.externalWidth / 2),
+            subSection.externalOffset.pxRow + (subSection.externalHeight / 2),
+            subSection.externalWidth - GRID_BORDER_THICKNESS,
+            subSection.externalHeight - GRID_BORDER_THICKNESS
         )
         if (subSection.filled) {
             rect.isFilled = true;
             rect.fillColor = subSection.filled;
         }
         rect.setStrokeStyle(GRID_BORDER_THICKNESS, BORDER_COLOR);
-        if (subSection.fixed) {
-            rect.setDepth(FIXED_LAYER);
-        }
-        else {
-            rect.setDepth(GRID_LAYER);
-        }
-        if (subSection.fixed) rect.setScrollFactor(0);
+        rect.setDepth(subSection.layer);
+        //if (subSection.fixed) rect.setScrollFactor(0);
         return rect;
         
     }
 
-    update(item: BorderedSubScene, phaserObj: Phaser.GameObjects.Rectangle): void {
+    update(item: SubScene, phaserObj: Phaser.GameObjects.Rectangle): void {
         //NO op for now.
     }
 }

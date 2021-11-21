@@ -3,8 +3,8 @@ import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
 import { GameObjectLike, RenderWithOffset, SimpleRenderer } from "../../../common/renderer";
 import { WALKING_PATH_LAYER } from "../../../common/z_layers";
-import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { BorderedSubScene, SubScene } from "../../../phaser/extensions/sub_scene";
+import { DisplayContext, forSubScene } from "../../../phaser/extensions/display_context";
+import { SubScene } from "../../../phaser/extensions/sub_scene";
 import { GameStateObserver } from "../gamestate_publisher";
 
 class OptimalPathSet implements GameObjectLike {
@@ -38,7 +38,7 @@ export class PathRenderer extends SimpleRenderer<OptimalPathSet> implements Game
     optimalPathSet?: OptimalPathSet;
 
     constructor(sceneSection: SubScene) {
-        super(new SubSceneDisplayContext(sceneSection));
+        super(forSubScene(sceneSection));
         this.currentPaths = [];
         this.id = "path_renderer";
     }
@@ -95,7 +95,7 @@ const randomColor = (): number => {
     return Math.floor(Math.random()*16777215);
 }
 
-const updateRopes = (sceneSection: BorderedSubScene,
+const updateRopes = (sceneSection: SubScene,
     paths: PixelCoordinate[][]) => {
 
 }

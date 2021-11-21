@@ -3,7 +3,7 @@ import { ActiveCreep, Creep } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
 import {  GameObjectLike } from "../../../common/renderer";
-import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
+import { DisplayContext, forSubScene } from "../../../phaser/extensions/display_context";
 import { SubScene } from "../../../phaser/extensions/sub_scene";
 
 export class CreepDisplay implements GameObjectLike {
@@ -65,7 +65,7 @@ export class CreepRenderer extends GameStateObjectRenderer<ActiveCreep, CreepDis
         super({
             alwaysCreate: false,
             withCleanup: true
-        }, new SubSceneDisplayContext(subScene), "creep_renderer");
+        }, forSubScene(subScene), "creep_renderer");
     }
 
     getModels(gameState: GameState): ActiveCreep[] {

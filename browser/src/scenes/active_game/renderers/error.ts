@@ -1,8 +1,8 @@
 import { ActionError } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { NOTIFICATION_LAYER } from "../../../common/z_layers";
-import { DisplayContext, SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { BorderedSubScene, SubScene } from "../../../phaser/extensions/sub_scene";
+import { DisplayContext, forSubScene } from "../../../phaser/extensions/display_context";
+import { SubScene } from "../../../phaser/extensions/sub_scene";
 import { GameStateObserver } from "../gamestate_publisher";
 
 
@@ -18,7 +18,7 @@ export class ErrorRenderer {
     subScene: SubScene;
     constructor(subScene: SubScene) {
         this.subScene = subScene
-        this.displayContext = new SubSceneDisplayContext(subScene);
+        this.displayContext = forSubScene(subScene);
     }
 
     renderError(error: ActionError) {
@@ -30,7 +30,7 @@ export class ErrorRenderer {
         }
         this.currentRenderedError = this.displayContext.addTextStartingAt(
             {
-                pxCol: this.subScene.internalWidth / 2,
+                pxCol: this.displayContext.getInternalBoundWidth() / 2,
                 pxRow: 200
             },
             error.message
