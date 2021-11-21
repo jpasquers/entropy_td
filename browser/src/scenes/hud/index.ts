@@ -26,7 +26,6 @@ export class HudScene extends BasicScene {
         this.hudGrid = new ActiveGameHudGrid(this);
         this.sceneGridRenderer = new BorderedSubSceneRenderer(this);
         this.sceneGridRenderer.synchronizeItems(...this.hudGrid.getBorderedSections());
-
     }
 
     handleActionError(e: ActionError): void {

@@ -75,9 +75,7 @@ export class CameraAdapter extends Publisher<CameraState>{
         mouseMovementPublisher.addObserver({
             id: "camera_drag",
             onEvent: (event: MouseMovement) => {
-                console.log(event);
                 if (event.rDrag) {
-                    console.log("camera drag")
                     this.setScrollX(this.camera.scrollX - event.delta.pxCol);
                     this.setScrollY(this.camera.scrollY - event.delta.pxRow);
                 }
