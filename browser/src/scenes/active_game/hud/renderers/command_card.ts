@@ -1,10 +1,9 @@
-import { Scene } from "phaser";
-import { GameObjectLike, ObjectRendererWithSync } from "../../../common/renderer";
-import { SIT_ON_FIXED_LAYER } from "../../../common/z_layers";
-import { COMMAND_CARD_ITEM_DIM, COMMAND_CARD_WIDTH } from "../../../display_configs";
-import { DisplayContext, forSubScene } from "../../../phaser/extensions/display_context";
-import { SubScene } from "../../../phaser/extensions/sub_scene";
-import { CommandCard, CommandCardItem } from "../command_card";
+import { GameObjectLike, ObjectRendererWithSync } from "../../../../common/renderer";
+import { SIT_ON_FIXED_LAYER } from "../../../../common/z_layers";
+import { COMMAND_CARD_WIDTH, COMMAND_CARD_ITEM_DIM } from "../../../../display_configs";
+import { DisplayContext, forSubScene } from "../../../../phaser/extensions/display_context";
+import { SubScene } from "../../../../phaser/extensions/sub_scene";
+import { CommandCardItem, CommandCard } from "../command_card";
 
 
 
@@ -28,7 +27,7 @@ export class CommandCardItemDisplay implements GameObjectLike {
             commandCardItem.hotkey.toUpperCase()
         );
         this.hotkey.setFontSize(COMMAND_CARD_ITEM_DIM / 3);
-        this.hotkey.setColor("black");
+        this.hotkey.setColor("white");
         this.hotkey.setDepth(SIT_ON_FIXED_LAYER);
     }
 

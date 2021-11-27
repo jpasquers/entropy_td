@@ -1,8 +1,9 @@
 import { GameOrchestrator } from "entropy-td-core";
 import { TowerType } from "entropy-td-core";
 import { Coordinate, PixelCoordinate } from "entropy-td-core";
-import { ActiveGameScene } from "..";
-import { MouseMovement, MouseMovementObserver } from "../../../common/publishers/input";
+import { ActiveGameWorldScene } from "..";
+import { MouseMovementObserver, MouseMovement } from "../../../../common/publishers/input";
+import { ActiveGameWorldGrid } from "../../scene_grid";
 import { TerrainRenderer, StaticTowerDisplay, TowerRenderer } from "./board";
 
 
@@ -18,9 +19,9 @@ export class TowerSilhoutteRenderer implements MouseMovementObserver {
     id: string;
     towerType?: TowerType;
     currentSilhoutteDisplay?: StaticTowerDisplay
-    scene: ActiveGameScene;
+    scene: ActiveGameWorldScene;
     
-    constructor(scene: ActiveGameScene, towerType?: TowerType) {
+    constructor(scene: ActiveGameWorldScene, towerType?: TowerType) {
         this.towerType = towerType;
         this.id = "tower_silhoutte_renderer";
         this.scene = scene;

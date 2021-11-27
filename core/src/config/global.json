@@ -39,6 +39,10 @@
                 },
                 "purchasable": true
             }],
+            "dim": {
+                "width": 2,
+                "height": 2
+            },
             "enabled": true,
             "hotkey": "a",
             "baseCost": 10,

@@ -1,8 +1,8 @@
-import { FrameDeltaEvent, FrameDeltaObserver } from "../../../common/publishers/frame_delta";
-import { SimpleRenderer } from "../../../common/renderer";
-import { SIT_ON_FIXED_LAYER } from "../../../common/z_layers";
-import { forSubScene } from "../../../phaser/extensions/display_context";
-import { SubScene } from "../../../phaser/extensions/sub_scene";
+import { FrameDeltaObserver, FrameDeltaEvent } from "../../../../common/publishers/frame_delta";
+import { SimpleRenderer } from "../../../../common/renderer";
+import { SIT_ON_FIXED_LAYER } from "../../../../common/z_layers";
+import { forSubScene } from "../../../../phaser/extensions/display_context";
+import { SubScene } from "../../../../phaser/extensions/sub_scene";
 
 
 export class FrameRateRenderer extends SimpleRenderer<Phaser.GameObjects.Text> implements FrameDeltaObserver {

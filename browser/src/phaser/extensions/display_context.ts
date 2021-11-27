@@ -1,9 +1,6 @@
 import { PixelCoordinate } from "entropy-td-core";
 import { CameraFixedSubScene, isCameraFixed, isWorldFixed, SubScene, WorldFixedSubScene } from "./sub_scene";
 
-
-//THIS IS BASICALLY WHERE I NEED TO DO ALL MY NEW WORK.
-
 export interface CanSetPos {
     setX(x: number): void;
     setY(y: number): void;
@@ -29,12 +26,16 @@ export interface DisplayContext {
     //addTween(config: TweenBuilderConfig): Phaser.Tweens.Tween;
 }
 
-const hasScrollFactor =  (t: any):t is Phaser.GameObjects.Components.ScrollFactor => {
-    return "setScrollFactor" in t;
-}
-
 export const forSubScene = (subScene: SubScene): DisplayContext => {
     return new SubSceneDisplayContext(subScene);
+}
+
+export interface ManipulatableDepth {
+    depth: number;
+}
+
+export const hasDepth = (t: any): t is ManipulatableDepth => {
+    return "depth" in t;
 }
 
 /**
@@ -49,30 +50,33 @@ export class SubSceneDisplayContext implements DisplayContext {
     }
 
     postProcess<T extends Phaser.GameObjects.GameObject>(t: T): T {
+        if (hasDepth(t)) {
+            t.depth = this.subScene.layer;
+        }
         return t;
     }
 
 
     addTiledSprite(x: number, y: number, totalWidth: number, totalHeight: number, spriteKey: string): Phaser.GameObjects.TileSprite {
         return this.postProcess(this.subScene.scene.add.tileSprite(
-            this.addColOffset(x),
-            this.addRowOffset(y),
+            this.addInternalColOffset(x),
+            this.addInternalRowOffset(y),
             totalWidth,totalHeight,
             spriteKey
         ));
     }
 
     setXPos(obj: CanSetPos, x: number): void {
-        obj.setX(this.addColOffset(x));
+        obj.setX(this.addInternalColOffset(x));
     }
     setYPos(obj: CanSetPos, y: number): void {
-        obj.setY(this.addRowOffset(y));
+        obj.setY(this.addInternalRowOffset(y));
     }
 
     addSprite(relTopLeft: PixelCoordinate, dimX: number, dimY: number, spriteKey: string): Phaser.GameObjects.Sprite {
         let sprite = this.subScene.scene.add.sprite(
-            this.addColOffset(relTopLeft.pxCol) + dimX/2,
-            this.addRowOffset(relTopLeft.pxRow) + dimY/2,
+            this.addInternalColOffset(relTopLeft.pxCol) + dimX/2,
+            this.addInternalRowOffset(relTopLeft.pxRow) + dimY/2,
             spriteKey
         )
         sprite.setDisplaySize(dimX, dimY);
@@ -82,10 +86,10 @@ export class SubSceneDisplayContext implements DisplayContext {
     addLine(px1: PixelCoordinate, px2: PixelCoordinate, color: number, alpha: number): Phaser.GameObjects.Line {
         return this.postProcess(this.subScene.scene.add.line(
             undefined,undefined,
-            this.addColOffset(px1.pxCol),
-            this.addRowOffset(px1.pxRow),
-            this.addColOffset(px2.pxCol),
-            this.addRowOffset(px2.pxRow),
+            this.addInternalColOffset(px1.pxCol),
+            this.addInternalRowOffset(px1.pxRow),
+            this.addInternalColOffset(px2.pxCol),
+            this.addInternalRowOffset(px2.pxRow),
             color,
             alpha
         ));
@@ -105,18 +109,18 @@ export class SubSceneDisplayContext implements DisplayContext {
         }
     }
 
-    addColOffset(col: number) {
-        return col + this.subScene.externalOffset.pxCol;
+    addInternalColOffset(col: number) {
+        return col + this.subScene.externalOffset.pxCol + (this.subScene.border?.width ?? 0);
     }
 
-    addRowOffset(row: number) {
-        return row + this.subScene.externalOffset.pxRow;
+    addInternalRowOffset(row: number) {
+        return row + this.subScene.externalOffset.pxRow + (this.subScene.border?.width ?? 0);
     }
 
     addCircle(center: PixelCoordinate, radius: number, color: number): Phaser.GameObjects.Arc {
         let circle =  this.subScene.scene.add.circle(
-            this.addColOffset(center.pxCol),
-            this.addRowOffset(center.pxRow),
+            this.addInternalColOffset(center.pxCol),
+            this.addInternalRowOffset(center.pxRow),
             radius,
             color
         );
@@ -125,8 +129,8 @@ export class SubSceneDisplayContext implements DisplayContext {
     }
     addRectangle(relTopLeft: PixelCoordinate, width: number, height: number,fillColor?: number): Phaser.GameObjects.Rectangle {
         return this.postProcess(this.subScene.scene.add.rectangle(
-            this.addColOffset(relTopLeft.pxCol) + width/2,
-            this.addRowOffset(relTopLeft.pxRow) + height / 2,
+            this.addInternalColOffset(relTopLeft.pxCol) + width/2,
+            this.addInternalRowOffset(relTopLeft.pxRow) + height / 2,
             width,
             height,
             fillColor
@@ -142,16 +146,16 @@ export class SubSceneDisplayContext implements DisplayContext {
 
     addTextStartingAt(relTopLeft: PixelCoordinate, text: string): Phaser.GameObjects.Text {
         return this.postProcess(this.subScene.scene.add.text(
-            this.addColOffset(relTopLeft.pxCol),
-            this.addRowOffset(relTopLeft.pxRow),
+            this.addInternalColOffset(relTopLeft.pxCol),
+            this.addInternalRowOffset(relTopLeft.pxRow),
             text
         ));
     }
 
     addImage(relTopLeft: PixelCoordinate, dimX: number, dimY: number, imageKey: string): Phaser.GameObjects.Image {
         let image =  this.subScene.scene.add.image(
-            this.addColOffset(relTopLeft.pxCol) + dimX/2,
-            this.addRowOffset(relTopLeft.pxRow) + dimY/2,
+            this.addInternalColOffset(relTopLeft.pxCol) + dimX/2,
+            this.addInternalRowOffset(relTopLeft.pxRow) + dimY/2,
             imageKey
         );
         image.displayHeight = dimY;

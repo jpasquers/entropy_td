@@ -1,7 +1,8 @@
 import { GameState } from "entropy-td-core";
-import { GameObjectLike, ObjectRendererWithSync, RendererConfig, WithIdentifier } from "../../../common/renderer";
-import { DisplayContext } from "../../../phaser/extensions/display_context";
-import { GameStateObserver } from "../gamestate_publisher";
+import { WithIdentifier, GameObjectLike, ObjectRendererWithSync, RendererConfig } from "../../../../common/renderer";
+import { DisplayContext } from "../../../../phaser/extensions/display_context";
+import { GameStateObserver } from "../../gamestate_publisher";
+
 
 export abstract class GameStateObjectRenderer<Model extends WithIdentifier, PhaserObj extends GameObjectLike>
     extends ObjectRendererWithSync<Model,PhaserObj> implements GameStateObserver {

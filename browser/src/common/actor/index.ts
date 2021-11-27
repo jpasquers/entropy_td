@@ -1,6 +1,5 @@
 import { ActionError, ActionHandler } from "entropy-td-core";
 import { BasicScene } from "../../scenes";
-import { ErrorRenderer } from "../../scenes/active_game/renderers/error";
 
 export abstract class ActionBridge<Scene extends BasicScene> {
     actionHandler: ActionHandler;

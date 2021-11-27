@@ -5,11 +5,11 @@ import { Coordinate, PixelCoordinate, Tile, TileType } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { Game } from "phaser";
 import { GameStateObjectRenderer } from ".";
-import { GameObjectLike, NoOp, ObjectRendererWithSync } from "../../../common/renderer";
-import { calculateAngleRad } from "../../../common/util";
-import { TOWER_COLOR } from "../../../display_configs";
-import { CanSetPos, DisplayContext, forSubScene } from "../../../phaser/extensions/display_context";
-import { SubScene } from "../../../phaser/extensions/sub_scene";
+import { GameObjectLike, ObjectRendererWithSync } from "../../../../common/renderer";
+import { calculateAngleRad } from "../../../../common/util";
+import { TOWER_COLOR } from "../../../../display_configs";
+import { forSubScene, CanSetPos, DisplayContext } from "../../../../phaser/extensions/display_context";
+import { SubScene } from "../../../../phaser/extensions/sub_scene";
 
 export class Terrain implements GameObjectLike {
     terrainTiles: (Phaser.GameObjects.Image )[][];

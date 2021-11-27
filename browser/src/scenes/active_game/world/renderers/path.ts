@@ -1,11 +1,12 @@
 import { PixelCoordinate } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
-import { GameObjectLike, RenderWithOffset, SimpleRenderer } from "../../../common/renderer";
-import { WALKING_PATH_LAYER } from "../../../common/z_layers";
-import { DisplayContext, forSubScene } from "../../../phaser/extensions/display_context";
-import { SubScene } from "../../../phaser/extensions/sub_scene";
-import { GameStateObserver } from "../gamestate_publisher";
+import { GameObjectLike, SimpleRenderer } from "../../../../common/renderer";
+import { WALKING_PATH_LAYER } from "../../../../common/z_layers";
+import { forSubScene, DisplayContext } from "../../../../phaser/extensions/display_context";
+import { SubScene } from "../../../../phaser/extensions/sub_scene";
+import { GameStateObserver } from "../../gamestate_publisher";
+
 
 class OptimalPathSet implements GameObjectLike {
     segments: Phaser.GameObjects.Line[][];

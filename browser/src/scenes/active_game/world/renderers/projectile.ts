@@ -1,8 +1,8 @@
 import {  ProjectileSummary } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
-import { forSubScene } from "../../../phaser/extensions/display_context";
-import { SubScene } from "../../../phaser/extensions/sub_scene";
+import { forSubScene } from "../../../../phaser/extensions/display_context";
+import { SubScene } from "../../../../phaser/extensions/sub_scene";
 
 export class ProjectileRenderer extends GameStateObjectRenderer<ProjectileSummary, Phaser.GameObjects.Arc> {
     constructor(subScene: SubScene) {

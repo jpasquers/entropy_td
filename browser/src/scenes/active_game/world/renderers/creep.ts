@@ -2,9 +2,9 @@ import { GameBoard } from "entropy-td-core";
 import { ActiveCreep, Creep } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { GameStateObjectRenderer } from ".";
-import {  GameObjectLike } from "../../../common/renderer";
-import { DisplayContext, forSubScene } from "../../../phaser/extensions/display_context";
-import { SubScene } from "../../../phaser/extensions/sub_scene";
+import { GameObjectLike } from "../../../../common/renderer";
+import { DisplayContext, forSubScene } from "../../../../phaser/extensions/display_context";
+import { SubScene } from "../../../../phaser/extensions/sub_scene";
 
 export class CreepDisplay implements GameObjectLike {
     creepBody: Phaser.GameObjects.Arc;

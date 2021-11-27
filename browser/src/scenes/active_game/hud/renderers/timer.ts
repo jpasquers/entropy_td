@@ -1,10 +1,9 @@
 import { GameState } from "entropy-td-core";
-import { GameStateObjectRenderer } from ".";
-import { SimpleRenderer, WithIdentifier } from "../../../common/renderer";
-import { SIT_ON_FIXED_LAYER } from "../../../common/z_layers";
-import { SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { SubScene } from "../../../phaser/extensions/sub_scene";
-import { GameStateObserver } from "../gamestate_publisher";
+import { SimpleRenderer } from "../../../../common/renderer";
+import { SIT_ON_FIXED_LAYER } from "../../../../common/z_layers";
+import { SubSceneDisplayContext } from "../../../../phaser/extensions/display_context";
+import { SubScene } from "../../../../phaser/extensions/sub_scene";
+import { GameStateObserver } from "../../gamestate_publisher";
 
 export class TimeRenderer extends SimpleRenderer<Phaser.GameObjects.Text> implements GameStateObserver {
     id: string;

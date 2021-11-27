@@ -1,9 +1,8 @@
 import { ActionError } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
-import { NOTIFICATION_LAYER } from "../../../common/z_layers";
-import { DisplayContext, forSubScene } from "../../../phaser/extensions/display_context";
-import { SubScene } from "../../../phaser/extensions/sub_scene";
-import { GameStateObserver } from "../gamestate_publisher";
+import { NOTIFICATION_LAYER } from "../../../../common/z_layers";
+import { DisplayContext, forSubScene } from "../../../../phaser/extensions/display_context";
+import { SubScene } from "../../../../phaser/extensions/sub_scene";
 
 
 const ERROR_COLOR = "#e35d5d";

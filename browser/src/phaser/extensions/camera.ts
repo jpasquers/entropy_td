@@ -83,6 +83,16 @@ export class CameraAdapter extends Publisher<CameraState>{
         });
     }
 
+    capMin(value: number, min: number): number {
+        if (value < min) return min;
+        return value;
+    }
+
+    capMax(value: number, max: number): number {
+        if (value > max) return max;
+        return value;
+    }
+
     public enableZoom(scrollPublisher: MouseScrollPublisher) {
         scrollPublisher.addObserver({
             id: "scroll_zoom_observer",
@@ -91,10 +101,10 @@ export class CameraAdapter extends Publisher<CameraState>{
                 console.log(event);
                 if (event.zoomIn) {
                     //TODO vary by amount.
-                    this.setZoom(this.camera.zoom*1.05);
+                    this.setZoom(this.capMax(this.camera.zoom*1.05, 2));
                 }
                 else {
-                    this.setZoom(this.camera.zoom*0.95);
+                    this.setZoom(this.capMin(this.camera.zoom*0.95, 0.5));
                 }
             }
         })

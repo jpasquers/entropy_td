@@ -1,6 +1,6 @@
 import { ConfigWithOptionalMappedSubType, ConfigWithStrictMappedSubType } from "../common/utils";
 import { choose, isRandomizableRange, RandomizableRange } from "./calc";
-import defaults from "./global.json";
+import * as defaults from "./global.json";
 
 export interface ConfigType {} 
 
@@ -93,6 +93,7 @@ export interface RandomizableTowerType extends ConfigType{
     name: string;
     enabled: boolean;
     hotkey: string;
+    //dim: Dim2D;
     baseCost: RandomizableRange | number;
     baseDamage: RandomizableRange | number;
     baseFramesPerAttk: RandomizableRange | number;

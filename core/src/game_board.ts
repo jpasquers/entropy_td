@@ -23,6 +23,16 @@ export interface PixelCoordinate {
     pxCol: number;
 }
 
+export interface Dim2D {
+    width: number;
+    height: number;
+}
+
+export interface PixDim2D {
+    pxWidth: number;
+    pxHeight: number;
+}
+
 export class NoPathAvailable extends Error {}
 
 export class GameBoard {

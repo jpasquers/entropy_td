@@ -1,11 +1,10 @@
-import { BasicScene } from "../..";
-import { ObjectRendererWithSync } from "../../../common/renderer";
-import { FIXED_LAYER, GRID_LAYER } from "../../../common/z_layers";
-import { BORDER_COLOR } from "../../../display_configs";
-import { SubSceneDisplayContext } from "../../../phaser/extensions/display_context";
-import { GRID_BORDER_THICKNESS, toExternalDim, toExternalOffset } from "../../../phaser/extensions/scene_grid";
-import { SubScene } from "../../../phaser/extensions/sub_scene";
-
+import { BasicScene } from "../../..";
+import { ObjectRendererWithSync } from "../../../../common/renderer";
+import { FIXED_LAYER } from "../../../../common/z_layers";
+import { BORDER_COLOR } from "../../../../display_configs";
+import { SubSceneDisplayContext } from "../../../../phaser/extensions/display_context";
+import { GRID_BORDER_THICKNESS } from "../../../../phaser/extensions/scene_grid";
+import { SubScene } from "../../../../phaser/extensions/sub_scene";
 
 
 export class BorderedSubSceneRenderer extends ObjectRendererWithSync<SubScene,Phaser.GameObjects.Rectangle> {
@@ -43,6 +42,7 @@ export class BorderedSubSceneRenderer extends ObjectRendererWithSync<SubScene,Ph
             rect.fillColor = subSection.filled;
         }
         rect.setStrokeStyle(GRID_BORDER_THICKNESS, BORDER_COLOR);
+        //rect.setDepth(subSection.layer);
         rect.setDepth(subSection.layer);
         //if (subSection.fixed) rect.setScrollFactor(0);
         return rect;

@@ -1,7 +1,5 @@
 import { LiveTower, TowerType } from "entropy-td-core";
-import { OneTimeUpgrade } from "entropy-td-core/lib/friendly/tower";
-import { KeyDownEvent, KeyDownObserver } from "../../common/publishers/input";
-import { TowerSilhoutteRenderer } from "./renderers/tower_silhoutte";
+import { KeyDownEvent, KeyDownObserver } from "../../../common/publishers/input";
 
 export abstract class CommandCard implements KeyDownObserver{
     id: string;
