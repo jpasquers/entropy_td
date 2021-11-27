@@ -113,7 +113,7 @@ export class ActiveGameWorldScene extends BasicScene {
         this.worldGrid = new ActiveGameWorldGrid(this);
         this.terrainRenderer = new TerrainRenderer(this.worldGrid.gameplaySection, this.gameController.config.tilePixelDim);
         
-        this.towerRenderer = new TowerRenderer(this.worldGrid.gameplaySection, this.gameController.config.tilePixelDim);
+        this.towerRenderer = new TowerRenderer(this.worldGrid.gameplaySection);
         this.creepRenderer = new CreepRenderer(this.worldGrid.gameplaySection);
         this.projectileRenderer = new ProjectileRenderer(this.worldGrid.gameplaySection);
         this.sceneGridRenderer = new BorderedSubSceneRenderer(this);

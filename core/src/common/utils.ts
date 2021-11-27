@@ -1,11 +1,16 @@
 import { IndexType, InlayHint } from "typescript";
 import { ConfigType } from "../config";
-import { Coordinate, PixelCoordinate } from "../game_board";
+import { TILE_SIZE_PX } from "../constants";
+import { Coordinate, Dim2D, PixelCoordinate } from "../game_board";
 
-export const getTileCenterPx = (coord: Coordinate, dim: number): PixelCoordinate => {
+export const getTileCenterPx = (coord: Coordinate): PixelCoordinate => {
+    return getPxCenter(coord, {width: 1, height: 1});
+}
+
+export const getPxCenter = (tlCoord: Coordinate, dim: Dim2D): PixelCoordinate => {
     return {
-        pxCol: coord.col*dim + dim*0.5,
-        pxRow: coord.row*dim + dim*0.5
+        pxCol: tlCoord.col*TILE_SIZE_PX + (dim.width*TILE_SIZE_PX*0.5),
+        pxRow: tlCoord.row*TILE_SIZE_PX + (dim.height*TILE_SIZE_PX*0.5)
     }
 }
 
@@ -14,6 +19,24 @@ export const getCurrentTile = (pixelCoord: PixelCoordinate, dim: number): Coordi
         row: Math.floor(pixelCoord.pxRow / dim),
         col: Math.floor(pixelCoord.pxCol / dim)
     }
+}
+
+export const randomSpotInArray = (size: number): number => {
+    return Math.floor(Math.random() * size);
+ }
+
+export const coordsEqual = (a: Coordinate, b: Coordinate): boolean => {
+    return a.col === b.col && a.row === b.row;
+}
+
+export const getAllCoordinates = (tlCoord: Coordinate, dim: Dim2D): Coordinate[] => {
+    let coords: Coordinate[] = [];
+    for (let row=tlCoord.row; row < tlCoord.row + dim.height; row++) {
+        for (let col=tlCoord.col; col < tlCoord.col + dim.width; col++) {
+            coords.push({row,col})
+        }
+    }
+    return coords;
 }
 
 export const pythag = (a: number, b: number): number => {

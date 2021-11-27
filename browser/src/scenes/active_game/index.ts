@@ -33,7 +33,7 @@ export class ActiveGameSceneComposite implements ActiveGameEventListener{
     }
 
     attemptToPlaceTower(towerType: TowerType, coord: Coordinate): void {
-        if (this.gameController.gameBoard.isOpen(coord) && towerType) {
+        if (this.gameController.gameBoard.spaceForTowerAt(towerType, coord) && towerType) {
             this.attemptAction(() => {
                 this.gameController.actor().addTower(coord, towerType);
                 this.activeGameWorld.towerPlaced();

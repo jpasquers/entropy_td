@@ -1,11 +1,11 @@
-import { getTileCenterPx } from "../common/utils";
+import { getPxCenter } from "../common/utils";
 import { ConfigType, IncrementalUpgradeConfig, isIncremental, OneTimeUpgradeConfig, TowerType, UpgradeConfig } from "../config";
 import { ActiveCreep } from "../enemy/creep";
-import { Coordinate, PixelCoordinate } from "../game_board";
+import { Coordinate, Dim2D, PixelCoordinate } from "../game_board";
 let GLOBAL_ID = 0;
 export interface TowerSummary {
     type: TowerType;
-    pos: Coordinate;
+    tlCoord: Coordinate;
     pxCenter: PixelCoordinate;
     id: string;
     framesReloading: number;
@@ -41,7 +41,7 @@ const availableUpgradesFromConfig = (upgradeConfigs: (OneTimeUpgradeConfig | Inc
 
 export class LiveTower implements TowerSummary {
     type: TowerType;
-    pos: Coordinate;
+    tlCoord: Coordinate;
     pxCenter: PixelCoordinate;
     id: string;
     framesReloading: number;
@@ -49,15 +49,16 @@ export class LiveTower implements TowerSummary {
     currentUpgrades: Upgrade[];
     availableUpgrades: Upgrade[];
 
-    constructor(pos: Coordinate, tileDim: number, towerType: TowerType) {
+    constructor(tlCoord: Coordinate, towerType: TowerType) {
         this.type = towerType;
-        this.pos = pos;
-        this.pxCenter = getTileCenterPx(pos,tileDim);
+        this.tlCoord = tlCoord;
+        this.pxCenter = getPxCenter(tlCoord, towerType.dim);
         this.id = (GLOBAL_ID++).toString();
         this.framesReloading = 0;
         this.currentUpgrades = [];
         this.availableUpgrades = availableUpgradesFromConfig(towerType.potentialUpgrades);
     }
+
 
     public getOutboundDamageInstance(): number {
         return this.type.baseDamage;

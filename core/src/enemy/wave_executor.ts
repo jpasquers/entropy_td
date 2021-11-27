@@ -3,7 +3,7 @@ import { GameOrchestrator } from "../orchestrator";
 import { Coordinate, PixelCoordinate, Tile, TileType } from "../game_board";
 import { ActiveCreep, Creep } from "./creep";
 import { Wave } from "./wave";
-import { calculateDistance, findNewPosition, getCurrentTile, getTileCenterPx } from "../common/utils";
+import { calculateDistance, findNewPosition, getCurrentTile, getPxCenter, getTileCenterPx } from "../common/utils";
 import { LiveTower } from "../friendly/tower";
 import { Projectile } from "../friendly/projectile";
 import { ProjectileTracker } from "../friendly/projectile_tracker";
@@ -84,7 +84,7 @@ export class WaveExecutor {
         }
         else {
             let targetIndexInSegment = currentIndexInSegment+1;
-            let targetPx = getTileCenterPx(activeSegment[targetIndexInSegment], this.board.config.tilePixelDim);
+            let targetPx = getTileCenterPx(activeSegment[targetIndexInSegment]);
             this.moveTowards(creep, targetPx);
         }
     }
@@ -158,7 +158,7 @@ export class WaveExecutor {
 
 export const creepIsInRange = (tower: LiveTower, creep: ActiveCreep, dim: number): boolean => {
     //TODO effective.
-    return calculateDistance(getTileCenterPx(tower.pos,dim),creep.pxPos) 
+    return calculateDistance(getPxCenter(tower.tlCoord, tower.type.dim),creep.pxPos) 
         <= tower.type.baseRangePx;
 }
 

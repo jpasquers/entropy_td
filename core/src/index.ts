@@ -9,3 +9,7 @@ export {ProjectileSummary} from "./friendly/projectile";
 export {ActiveCreep, Creep} from "./enemy/creep";
 export {GameState} from "./orchestrator";
 export {ActionError, ActionHandler} from "./actions/action_handler";
+
+export { TILE_SIZE_PX } from "./constants";
+
+export { getPxCenter } from "./common/utils";

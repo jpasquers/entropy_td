@@ -1,4 +1,5 @@
 import { ConfigWithOptionalMappedSubType, ConfigWithStrictMappedSubType } from "../common/utils";
+import { Dim2D } from "../game_board";
 import { choose, isRandomizableRange, RandomizableRange } from "./calc";
 import * as defaults from "./global.json";
 
@@ -93,7 +94,7 @@ export interface RandomizableTowerType extends ConfigType{
     name: string;
     enabled: boolean;
     hotkey: string;
-    //dim: Dim2D;
+    dim: Dim2D;
     baseCost: RandomizableRange | number;
     baseDamage: RandomizableRange | number;
     baseFramesPerAttk: RandomizableRange | number;

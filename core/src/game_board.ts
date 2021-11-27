@@ -1,4 +1,4 @@
-import { calculateDistance, getTileCenterPx } from "./common/utils";
+import { calculateDistance, coordsEqual, getAllCoordinates, getTileCenterPx, randomSpotInArray } from "./common/utils";
 import { getSearchAlgorithmInclusive } from "./pathfinder";
 import { LiveTower } from "./friendly/tower";
 import { GameOrchestrator, TowerType } from ".";
@@ -60,8 +60,8 @@ export class GameBoard {
         this.id = (++GameBoard.GLOBAL_ID).toString();
     }
 
-    addTowerWithRollback(pos: Coordinate, towerType: TowerType) {
-        let newTower = new LiveTower(pos, this.config.tilePixelDim, towerType);
+    addTowerWithRollback(tlCoord: Coordinate, towerType: TowerType) {
+        let newTower = new LiveTower(tlCoord, towerType);
         let towerId = newTower.id;
         this.towers.push(newTower);
         try {
@@ -80,9 +80,9 @@ export class GameBoard {
             return current.concat(previous);
         }, []);
         this.walkingBestPathSegmentsPx = this.walkingBestPathSegments.map((segment) => {
-            return segment.map((coord) => getTileCenterPx(coord, this.config.tilePixelDim));
+            return segment.map((coord) => getTileCenterPx(coord));
         })
-        this.walkingBestFullPathPx = this.walkingBestFullPath.map(coord => getTileCenterPx(coord, this.config.tilePixelDim));
+        this.walkingBestFullPathPx = this.walkingBestFullPath.map(coord => getTileCenterPx(coord));
     }
 
     forEachSegment(fn: (start: Coordinate, end: Coordinate)=>void): void {
@@ -159,7 +159,7 @@ export class GameBoard {
     }
 
     public getStartCenterPx(): PixelCoordinate {
-        return getTileCenterPx(this.start, this.config.tilePixelDim);
+        return getTileCenterPx(this.start);
     }
 
     public numCols(): number {
@@ -179,15 +179,14 @@ export class GameBoard {
     }
 
     public towerExistsAt(coord: Coordinate): boolean {
-        let tower =  this.towers.find(tower => {
-            return tower.pos.col === coord.col &&
-                tower.pos.row === coord.row
-        });
-        //is this okay?
+        let tower =  this.towers.find(tower => towerIncludesCoord(tower,coord));
         return !(!(tower));
     }
-
-
+    
+    public spaceForTowerAt(towerType: TowerType, tlCoord: Coordinate): boolean {
+        return getAllCoordinates(tlCoord, towerType.dim)
+            .every(coord => this.isOpen(coord));
+    }
 
     public isOpen(coord: Coordinate): boolean {
         return this.isGrassTile(coord) && !this.towerExistsAt(coord);
@@ -213,10 +212,6 @@ export class GameBoard {
         });
     }
 }
-
-//Logic to decide unimportant tile.
-//return Math.random() > this.config.density ? {type: TileType.Grass} : {type: TileType.Rock};
-
 
 export interface Tile {
     type: TileType
@@ -251,8 +246,9 @@ export const listAllTraversableCoordinates = (config: GameBoardConfiguration, ti
     return listAllCoordinates(config).filter(coord => typeIsTraversable(tiles[coord.row][coord.col].type));
 }
 
-const randomSpotInArray = (size: number): number => {
-   return Math.floor(Math.random() * size);
+
+const towerIncludesCoord = (tower: LiveTower, coord: Coordinate): boolean => {
+    return getAllCoordinates(tower.tlCoord, tower.type.dim).some(coordB => coordsEqual(coord,coordB));
 }
 
 const BLOCKED = 1;
@@ -260,7 +256,7 @@ const FREE = 0;
 const generatePathfindingGrid = (terrain: Tile[][], towers: LiveTower[]): number[][] => {
     return terrain.map((row, rowNum) => {
         return row.map((terrain, colNum) => {
-            if (towers.find(tower => tower.pos.col === colNum && tower.pos.row === rowNum)) {
+            if (towers.find(tower => towerIncludesCoord(tower, {col: colNum, row: rowNum}))) {
                 return BLOCKED;
             }
             else if (!terrain || typeIsTraversable(terrain.type)) return FREE;
