@@ -48,7 +48,25 @@
             "baseCost": 10,
             "baseDamage": 10,
             "baseFramesPerAttk": 30,
-            "baseRangePx": 250,
+            "baseRangePx": 400,
+            "projectileConfig": {
+                "speedPxPerFrame": 15,
+                "projectileType": "simple_circle"
+            }
+        },
+        "blocker_1": {
+            "name": "blocker_1",
+            "potentialUpgrades": [],
+            "dim": {
+                "width": 1,
+                "height": 1
+            },
+            "enabled": true,
+            "hotkey": "b",
+            "baseCost": 20,
+            "baseDamage": 0,
+            "baseFramesPerAttk": 5000,
+            "baseRangePx": 0,
             "projectileConfig": {
                 "speedPxPerFrame": 15,
                 "projectileType": "simple_circle"
@@ -72,13 +90,13 @@
         }
     },
     "tilesColCount": {
-        "minValIncl": 50,
+        "minValIncl": 25,
         "maxValIncl": 50,
         "stepper": 1,
         "weightFnKey": "EVEN"
     },
     "tilesRowCount": {
-        "minValIncl": 50,
+        "minValIncl": 25,
         "maxValIncl": 50,
         "stepper": 1,
         "weightFnKey": "EVEN"
@@ -91,7 +109,7 @@
     },
     "density": {
         "minValIncl": 0.2,
-        "maxValIncl":0.4,
+        "maxValIncl":0.3,
         "stepper": 0.1,
         "weightFnKey": "EVEN"
     },

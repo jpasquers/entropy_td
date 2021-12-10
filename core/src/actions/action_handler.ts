@@ -25,7 +25,7 @@ export class ActionHandler {
         this.timeline = timeline;
     }
 
-    addTower(pos: Coordinate, towerType: TowerType) {
+    addTower(tlCoord: Coordinate, towerType: TowerType) {
         if (this.timeline.isWaveActive) {
             throw new ActionError("Cannot place towers during wave");
         }
@@ -33,7 +33,7 @@ export class ActionHandler {
             throw new ActionError("Cannot afford tower. Stop being broke.")
         }
         try {
-            this.gameBoard.addTowerWithRollback(pos, towerType);
+            this.gameBoard.addTowerWithRollback(tlCoord, towerType);
             this.playerState.makePurchase(towerType.baseCost);
         }
         catch(e) {

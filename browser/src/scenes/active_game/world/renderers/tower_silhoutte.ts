@@ -1,9 +1,7 @@
-import { GameOrchestrator } from "entropy-td-core";
 import { TowerType } from "entropy-td-core";
 import { Coordinate, PixelCoordinate } from "entropy-td-core";
 import { ActiveGameWorldScene } from "..";
 import { MouseMovementObserver, MouseMovement } from "../../../../common/publishers/input";
-import { ActiveGameWorldGrid } from "../../scene_grid";
 import { TerrainRenderer, StaticTowerDisplay, TowerRenderer } from "./board";
 
 
@@ -53,7 +51,7 @@ export class TowerSilhoutteRenderer implements MouseMovementObserver {
         if (!this.towerType) return;
         if (!this.scene.terrainRenderer!.isPixelRelated(event.newWorldPos)) return;
         let newCoord = this.scene.terrainRenderer!.getTileCoordForRenderedPixel(event.newWorldPos);
-        if (!this.scene.gameController.getBoard().isOpen(newCoord)) return;
+        if (!this.scene.gameController.getBoard().spaceForTowerAt(this.towerType, newCoord)) return;
         let silhoutte = {
             coord: newCoord,
             towerType: this.towerType

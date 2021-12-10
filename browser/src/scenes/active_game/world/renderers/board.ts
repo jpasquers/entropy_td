@@ -1,4 +1,4 @@
-import { GameBoard } from "entropy-td-core";
+import { GameBoard, getPxCenter, TILE_SIZE_PX } from "entropy-td-core";
 import { ActiveCreep } from "entropy-td-core";
 import { LiveTower, TowerType } from "entropy-td-core";
 import { Coordinate, PixelCoordinate, Tile, TileType } from "entropy-td-core";
@@ -109,15 +109,15 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
 
     renderImageAtTileCoord(coord: Coordinate,imageKey: string): Phaser.GameObjects.Image {
         return this.displayContext.addImage(
-            tileTopLeft(coord.row, coord.col,this.tileDim ), 
+            tileTopLeft(coord.row, coord.col), 
             this.tileDim, this.tileDim,
             imageKey
         );
     }
 
     updateImageToTileCoord(coord: Coordinate, image: Phaser.GameObjects.Image): void {
-        this.displayContext.setXPos(image, tileCenterX(coord.col,this.tileDim));
-        this.displayContext.setYPos(image, tileCenterY(coord.row,this.tileDim));
+        this.displayContext.setXPos(image, tileCenterX(coord.col));
+        this.displayContext.setYPos(image, tileCenterY(coord.row));
     }
     
 }
@@ -125,21 +125,20 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
 export class StaticTowerDisplay implements GameObjectLike, CanSetPos {
     towerSprite: Phaser.GameObjects.Sprite;
     towerBackground: Phaser.GameObjects.Rectangle;
-    pos: PixelCoordinate;
+    centerPx: PixelCoordinate;
+    towerType: TowerType;
 
-    constructor(coord: Coordinate,towerType: TowerType , displayContext: DisplayContext, towerDim: number) {
-        this.pos = {
-            pxCol: tileCenterX(coord.col, towerDim),
-            pxRow: tileCenterY(coord.row, towerDim)
-        }
+    constructor(tlCoord: Coordinate,towerType: TowerType , displayContext: DisplayContext) {
+        this.towerType = towerType;
+        this.centerPx = getPxCenter(tlCoord, towerType.dim);
         this.towerSprite = displayContext.addSprite(
-            tileTopLeft(coord.row,coord.col,towerDim),
-            towerDim, towerDim,
+            tileTopLeft(tlCoord.row,tlCoord.col),
+            towerType.dim.width*TILE_SIZE_PX, towerType.dim.height*TILE_SIZE_PX,
             `tower_${towerType.name}`
         );
         this.towerBackground = displayContext.addRectangle(
-            tileTopLeft(coord.row,coord.col,towerDim),
-            towerDim, towerDim
+            tileTopLeft(tlCoord.row,tlCoord.col),
+            towerType.dim.width*TILE_SIZE_PX, towerType.dim.height*TILE_SIZE_PX
         );
         this.towerBackground.setStrokeStyle(2, TOWER_COLOR);
     }
@@ -160,13 +159,13 @@ export class StaticTowerDisplay implements GameObjectLike, CanSetPos {
 
 export class LiveTowerDisplay extends StaticTowerDisplay {
 
-    constructor(tower: LiveTower, displayContext: DisplayContext, towerDim: number) {
-        super(tower.pos, tower.type, displayContext, towerDim);
+    constructor(tower: LiveTower, displayContext: DisplayContext) {
+        super(tower.tlCoord, tower.type, displayContext);
         
     }
 
     orientToCreep(creep: ActiveCreep): void {
-        this.towerSprite.setRotation(calculateAngleRad(this.pos,creep.pxPos));
+        this.towerSprite.setRotation(calculateAngleRad(this.centerPx,creep.pxPos));
     }
 
     destroy() {
@@ -177,31 +176,31 @@ export class LiveTowerDisplay extends StaticTowerDisplay {
 
 //I should probably make a separate tower silhoutte renderer. But im lazy.
 export class TowerRenderer extends GameStateObjectRenderer<LiveTower, LiveTowerDisplay> {
-    towerDim: number;
 
-    constructor(subScene: SubScene, towerDim: number) {
+    constructor(subScene: SubScene) {
         super({
             alwaysCreate: false,
             withCleanup: true
         }, forSubScene(subScene), "tower_renderer");
-        this.towerDim = towerDim;
     }
 
     getModels(gameState: GameState): LiveTower[] {
         return gameState.towers;
     }
 
-    renderTowerSilhoutte(coord: Coordinate, type: TowerType): StaticTowerDisplay {
-        return new StaticTowerDisplay(coord, type, this.displayContext,this.towerDim);
+    renderTowerSilhoutte(tlCoord: Coordinate, type: TowerType): StaticTowerDisplay {
+        return new StaticTowerDisplay(tlCoord, type, this.displayContext);
     }
 
-    updateTowerSilhoutte(coord: Coordinate, display: StaticTowerDisplay): void {
-        this.displayContext.setXPos(display, tileCenterX(coord.col,this.towerDim));
-        this.displayContext.setYPos(display, tileCenterY(coord.row,this.towerDim));
+    updateTowerSilhoutte(tlCoord: Coordinate, display: StaticTowerDisplay): void {
+        console.log(tlCoord);
+        console.log(getPxCenter(tlCoord, display.towerType.dim));
+        this.displayContext.setXPos(display, getPxCenter(tlCoord, display.towerType.dim).pxCol);
+        this.displayContext.setYPos(display, getPxCenter(tlCoord, display.towerType.dim).pxRow);
     }
     
     create(tower: LiveTower): LiveTowerDisplay {
-        return new LiveTowerDisplay(tower, this.displayContext, this.towerDim);
+        return new LiveTowerDisplay(tower, this.displayContext);
     }
 
     update(tower: LiveTower, phaserObj: LiveTowerDisplay): void {
@@ -215,19 +214,19 @@ export class TowerRenderer extends GameStateObjectRenderer<LiveTower, LiveTowerD
 }
 
 //Without offset, assumes a display context.
-const tileTopLeft = (rowNum: number, colNum: number, dim: number): PixelCoordinate => {
+const tileTopLeft = (rowNum: number, colNum: number): PixelCoordinate => {
     return {
-        pxCol: colNum*dim,
-        pxRow: rowNum*dim
+        pxCol: colNum*TILE_SIZE_PX,
+        pxRow: rowNum*TILE_SIZE_PX
     }
 }
 
 //Without offset, assumes a display context.
-const tileCenterX = (colNum: number, dim: number): number => {
-    return colNum*dim + 0.5*dim;
+const tileCenterX = (colNum: number): number => {
+    return colNum*TILE_SIZE_PX + 0.5*TILE_SIZE_PX;
 }
 
 //Without offset, assumes a display context.
-const tileCenterY = (rowNum: number, dim: number): number => {
-    return rowNum*dim + 0.5*dim;
+const tileCenterY = (rowNum: number): number => {
+    return rowNum*TILE_SIZE_PX + 0.5*TILE_SIZE_PX;
 }

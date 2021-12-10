@@ -20,7 +20,6 @@ export class CreepDisplay implements GameObjectLike {
             this.CREEP_RADIUS,
             0xff0000
         );
-        this.creepBody.setDepth(6);
         this.healthBox = displayContext.addRectangle({
             pxCol: activeCreep.pxPos.pxCol - (this.CREEP_RADIUS-3),
             pxRow: activeCreep.pxPos.pxRow - (this.CREEP_RADIUS + 9)
@@ -28,13 +27,11 @@ export class CreepDisplay implements GameObjectLike {
         8);
         this.healthBox.setStrokeStyle(2,0xaaaaaa);
         this.healthBox.isFilled = false;
-        this.healthBox.setDepth(6);
         this.healthBar = displayContext.addRectangle({
             pxCol: activeCreep.pxPos.pxCol - (this.CREEP_RADIUS-2),
             pxRow: activeCreep.pxPos.pxRow - (this.CREEP_RADIUS + 8),
             },this.pctHealth(activeCreep) * (this.CREEP_RADIUS*2 - 5),
         6,0x00ff00);
-        this.healthBar.setDepth(6);
         this.displayContext = displayContext;
     }
 

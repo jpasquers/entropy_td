@@ -21,7 +21,6 @@ export class ProjectileRenderer extends GameStateObjectRenderer<ProjectileSummar
             pxCol: projectile.pxPos.pxCol, 
             pxRow: projectile.pxPos.pxRow
         }, 5, 0x0000ff);
-        arc.setDepth(8);
         return arc;
     }
 

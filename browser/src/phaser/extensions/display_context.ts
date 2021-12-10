@@ -20,7 +20,6 @@ export interface DisplayContext {
     addSprite(relTopLeft: PixelCoordinate, dimX: number, dimY: number, spriteKey: string): Phaser.GameObjects.Sprite;
     setXPos(obj: CanSetPos,x: number): void;
     setYPos(obj: CanSetPos, y: number): void;
-    addTiledSprite(x: number,y: number, totalWidth: number, totalHeight: number, spriteKey: string): Phaser.GameObjects.TileSprite;
     getInternalBoundWidth(): number;
     getInternalBoundHeight(): number;
     //addTween(config: TweenBuilderConfig): Phaser.Tweens.Tween;
@@ -57,14 +56,7 @@ export class SubSceneDisplayContext implements DisplayContext {
     }
 
 
-    addTiledSprite(x: number, y: number, totalWidth: number, totalHeight: number, spriteKey: string): Phaser.GameObjects.TileSprite {
-        return this.postProcess(this.subScene.scene.add.tileSprite(
-            this.addInternalColOffset(x),
-            this.addInternalRowOffset(y),
-            totalWidth,totalHeight,
-            spriteKey
-        ));
-    }
+
 
     setXPos(obj: CanSetPos, x: number): void {
         obj.setX(this.addInternalColOffset(x));
