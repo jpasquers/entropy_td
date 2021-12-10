@@ -62,6 +62,10 @@ export class GameOrchestrator {
             .towerTypes);
     }
 
+    public giveMoney(money: number) {
+        this.playerState.giveMoney(money);
+    }
+
     public canAfford(money: number) {
         return this.playerState.canAfford(money);
     }

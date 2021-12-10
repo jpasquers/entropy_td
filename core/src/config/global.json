@@ -55,6 +55,22 @@
             }
         }
     },
+    "bonusIncomeTiles": {
+        "count": {
+            "minValIncl": 1,
+            "maxValIncl": 4,
+            "stepper": 1,
+            "weightFnKey": "EVEN"
+        },
+        "itemDetails": {
+            "waveMultValue": {
+                "minValIncl": 0.5,
+                "maxValIncl": 3.5,
+                "stepper": 0.1,
+                "weightFnKey": "EVEN"
+            }
+        }
+    },
     "tilesColCount": {
         "minValIncl": 50,
         "maxValIncl": 50,

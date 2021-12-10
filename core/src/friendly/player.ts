@@ -6,6 +6,10 @@ export class PlayerGameState {
         this.money = config.startingMoney;
     }
 
+    giveMoney(money: number) {
+        this.money+=money;
+    }
+
     canAfford(cost: number) {
         return this.money >= cost;
     }
