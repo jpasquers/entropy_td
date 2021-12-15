@@ -18,5 +18,6 @@
   "bugs": {
     "url": "https://github.com/jpasquers/entropy_td/issues"
   },
-  "homepage": "https://github.com/jpasquers/entropy_td#readme"
+  "homepage": "https://github.com/jpasquers/entropy_td#readme",
+  "dependencies": {}
 }

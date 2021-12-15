@@ -11,7 +11,7 @@
   "devDependencies": {},
   "dependencies": {
     "astar-typescript": "^1.2.5",
-    "config-randomizer": "^1.0.7",
+    "config-randomizer": "^1.0.9",
     "typescript": "^4.4.3"
   }
 }

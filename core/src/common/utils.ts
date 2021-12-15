@@ -67,21 +67,3 @@ export const findNewPosition = (src: PixelCoordinate, target: PixelCoordinate, m
         pxRow: src.pxRow + rowChange
     }
 }
-
-export type ConfigWithOptionalMappedSubType<SrcType extends ConfigType,ReplaceFrom,ReplaceTo> =  {
-    [K in keyof SrcType]: SrcType[K] extends ReplaceFrom 
-        ? ReplaceTo | ReplaceFrom 
-        : SrcType[K] extends ConfigType 
-            ? ConfigWithOptionalMappedSubType<SrcType[K],ReplaceFrom,ReplaceTo> 
-            : K;
-}
-
-export type ConfigWithStrictMappedSubType<SrcType extends ConfigType, ReplaceFrom,ReplaceTo> = {
-    [K in keyof SrcType]: SrcType[K] extends ReplaceFrom 
-        ? ReplaceTo 
-        : SrcType[K] extends (ReplaceFrom | ReplaceTo) 
-            ? ReplaceTo
-            : SrcType[K] extends ConfigType 
-                ? ConfigWithStrictMappedSubType<SrcType[K],ReplaceFrom,ReplaceTo> 
-                : K;
-}
