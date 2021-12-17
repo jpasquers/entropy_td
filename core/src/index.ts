@@ -1,6 +1,6 @@
 export {GameOrchestrator} from "./orchestrator";
 
-export { GameBoard, PixelCoordinate, Coordinate, Tile, TileType} from "./game_board";
+export { GameBoard, PixelCoordinate, Coordinate, Tile, TileType} from "./gameboard/game_board";
 
 export {TowerType, GameInstanceConfiguration} from "./config/index";
 

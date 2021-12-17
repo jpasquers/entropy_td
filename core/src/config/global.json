@@ -73,6 +73,12 @@
             }
         }
     },
+    "rockCount": {
+        "minValIncl": 5,
+        "maxValIncl": 20,
+        "stepper": 1,
+        "weightFnKey": "EVEN"
+    },
     "bonusIncomeTiles": {
         "count": {
             "minValIncl": 1,
@@ -105,12 +111,6 @@
         "minValIncl": 50,
         "maxValIncl": 50,
         "stepper": 1,
-        "weightFnKey": "EVEN"
-    },
-    "density": {
-        "minValIncl": 0.2,
-        "maxValIncl":0.3,
-        "stepper": 0.1,
         "weightFnKey": "EVEN"
     },
     "checkpointCount": {

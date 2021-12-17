@@ -1,19 +1,29 @@
-import { Dim2D } from "../game_board";
+import { Dim2D } from "../gameboard/game_board";
 import * as defaults from "./global.json";
-import {deRandomize, FullDeRandomized, RandomizableRange} from "config-randomizer";
+import {deRandomize, FullDeRandomized, RandomizableCount, RandomizableRange} from "config-randomizer";
 
 export interface ConfigType {} 
 
 
-export interface RandomizableGameBoardConfiguration {
+export interface RandomizableGameBoardConfiguration extends RandomizableBonusIncomeTilesConfiguration {
     tilesColCount: RandomizableRange | number;
     tilesRowCount: RandomizableRange | number;
     tilePixelDim: RandomizableRange | number;
-    density: RandomizableRange | number;
+    rockCount: RandomizableRange | number;
     checkpointCount: RandomizableRange | number;
 }
 
 export type GameBoardConfiguration = FullDeRandomized<RandomizableGameBoardConfiguration>;
+
+export interface RandomizableBonusIncomeTilesConfiguration {
+    bonusIncomeTiles: RandomizableCount<RandomizableBonusIncomeTileConfiguration>;
+}
+
+export interface RandomizableBonusIncomeTileConfiguration {
+    waveMultValue: RandomizableRange;
+}
+
+export type BonusIncomeTilesConfiguration = FullDeRandomized<RandomizableBonusIncomeTilesConfiguration>;
 
 export interface RandomizableTimelineConfiguration {
     timeBeforeFirstWaveSec: RandomizableRange | number;

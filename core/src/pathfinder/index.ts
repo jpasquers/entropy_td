@@ -1,4 +1,4 @@
-import { Coordinate } from "../game_board";
+import { Coordinate } from "../gameboard/game_board";
 import { aStarFinder } from "./astar_finder";
 export interface PathFinder {
     search: PathSearchAlgorithm

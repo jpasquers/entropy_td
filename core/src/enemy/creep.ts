@@ -1,4 +1,4 @@
-import { PixelCoordinate } from "../game_board";
+import { PixelCoordinate } from "../gameboard/game_board";
 
 let GLOBAL_ID = 1;
 

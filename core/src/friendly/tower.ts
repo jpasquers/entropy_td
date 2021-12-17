@@ -1,7 +1,7 @@
 import { getPxCenter } from "../common/utils";
 import { ConfigType, IncrementalUpgradeConfig, isIncremental, OneTimeUpgradeConfig, TowerType, UpgradeConfig } from "../config";
 import { ActiveCreep } from "../enemy/creep";
-import { Coordinate, Dim2D, PixelCoordinate } from "../game_board";
+import { Coordinate, Dim2D, OccupiesBoard, PixelCoordinate } from "../gameboard/game_board";
 let GLOBAL_ID = 0;
 export interface TowerSummary {
     type: TowerType;
@@ -39,10 +39,8 @@ const availableUpgradesFromConfig = (upgradeConfigs: (OneTimeUpgradeConfig | Inc
     })
 }
 
-export class LiveTower implements TowerSummary {
+export class LiveTower extends OccupiesBoard  implements TowerSummary {
     type: TowerType;
-    tlCoord: Coordinate;
-    pxCenter: PixelCoordinate;
     id: string;
     framesReloading: number;
     targettedCreep?: ActiveCreep;
@@ -50,9 +48,9 @@ export class LiveTower implements TowerSummary {
     availableUpgrades: Upgrade[];
 
     constructor(tlCoord: Coordinate, towerType: TowerType) {
+        super(tlCoord, towerType.dim);
         this.type = towerType;
         this.tlCoord = tlCoord;
-        this.pxCenter = getPxCenter(tlCoord, towerType.dim);
         this.id = (GLOBAL_ID++).toString();
         this.framesReloading = 0;
         this.currentUpgrades = [];

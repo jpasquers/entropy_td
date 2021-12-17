@@ -1,6 +1,6 @@
 import { findNewPosition } from "../common/utils";
 import { ActiveCreep } from "../enemy/creep";
-import { PixelCoordinate } from "../game_board";
+import { PixelCoordinate } from "../gameboard/game_board";
 import { LiveTower } from "./tower";
 
 export interface ProjectileSummary {

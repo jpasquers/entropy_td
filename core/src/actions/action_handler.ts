@@ -1,5 +1,5 @@
 import { GameBoard, TowerType } from "..";
-import { Coordinate } from "../game_board";
+import { Coordinate } from "../gameboard/game_board";
 import { PlayerGameState } from "../friendly/player";
 import { Timeline } from "../timeline";
 

@@ -1,7 +1,7 @@
 import { IndexType, InlayHint } from "typescript";
 import { ConfigType } from "../config";
 import { TILE_SIZE_PX } from "../constants";
-import { Coordinate, Dim2D, PixelCoordinate } from "../game_board";
+import { Coordinate, Dim2D, PixelCoordinate } from "../gameboard/game_board";
 
 export const getTileCenterPx = (coord: Coordinate): PixelCoordinate => {
     return getPxCenter(coord, {width: 1, height: 1});

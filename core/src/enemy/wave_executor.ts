@@ -1,6 +1,6 @@
 import { GameBoard } from "..";
 import { GameOrchestrator } from "../orchestrator";
-import { Coordinate, PixelCoordinate, Tile, TileType } from "../game_board";
+import { Coordinate, PixelCoordinate, Tile, TileType } from "../gameboard/game_board";
 import { ActiveCreep, Creep } from "./creep";
 import { Wave } from "./wave";
 import { calculateDistance, findNewPosition, getCurrentTile, getPxCenter, getTileCenterPx } from "../common/utils";

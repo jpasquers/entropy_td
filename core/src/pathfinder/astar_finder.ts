@@ -1,4 +1,4 @@
-import { Coordinate } from "../game_board";
+import { Coordinate } from "../gameboard/game_board";
 import { PathSearchAlgorithm } from ".";
 import { AStarFinder } from "astar-typescript";
 import { IPoint } from "astar-typescript/dist/interfaces/astar.interfaces";

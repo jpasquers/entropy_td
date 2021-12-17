@@ -10,8 +10,10 @@
   },
   "devDependencies": {},
   "dependencies": {
+    "@types/graphlib": "^2.1.8",
     "astar-typescript": "^1.2.5",
-    "config-randomizer": "^1.0.9",
+    "config-randomizer": "^1.0.10",
+    "graphlib": "^2.1.8",
     "typescript": "^4.4.3"
   }
 }

@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@types/graphlib@^2.1.8":
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/@types/graphlib/-/graphlib-2.1.8.tgz#9edd607e4b863a33b8b78cb08385c0be6896008a"
+  integrity sha512-8nbbyD3zABRA9ePoBgAl2ym8cIwKQXTfv1gaIRTdY99yEOCaHfmjBeRp+BIemS8NtOqoWK7mfzWxjNrxLK3T5w==
+
 astar-typescript@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/astar-typescript/-/astar-typescript-1.2.5.tgz#93946c8bad155e6a5f69ce3bfbde9abbf6fd6732"
@@ -9,15 +14,27 @@ astar-typescript@^1.2.5:
   dependencies:
     lodash "4.17.20"
 
-config-randomizer@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/config-randomizer/-/config-randomizer-1.0.9.tgz#27839da23df50191ee5f57a80a2a419e868836d3"
-  integrity sha512-h1FPNlU5l+Dcj/3VKfHoJ86MNeMmqhHlPids0dDJGPJIv8CGTKb2FqBZTtrwIVCp47pvroJFCCHu6Y9KR5a53A==
+config-randomizer@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/config-randomizer/-/config-randomizer-1.0.10.tgz#621849175f897fa9fbf168e9e7c10adc7f994773"
+  integrity sha512-6vDAq6Wxphtutf4jZxucbEJYXmhTrbXMljDFYhH9uMOEGpQK6eDAjXFlpyKQ2KbD5e6CoI+yyjUi+SK+rPHwPw==
+
+graphlib@^2.1.8:
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/graphlib/-/graphlib-2.1.8.tgz#5761d414737870084c92ec7b5dbcb0592c9d35da"
+  integrity sha512-jcLLfkpoVGmH7/InMC/1hIvOPSUh38oJtGhvrOFGzioE1DZ+0YW16RgmOJhHiuWTvGiJQ9Z1Ik43JvkRPRvE+A==
+  dependencies:
+    lodash "^4.17.15"
 
 lodash@4.17.20:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
+
+lodash@^4.17.15:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 typescript@^4.4.3:
   version "4.4.3"

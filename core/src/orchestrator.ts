@@ -2,7 +2,7 @@ import { ActionHandler } from "./actions/action_handler";
 import { ActiveCreep } from "./enemy/creep";
 import { Wave } from "./enemy/wave";
 import { WaveExecutor } from "./enemy/wave_executor";
-import { GameBoard, PixelCoordinate } from "./game_board";
+import { GameBoard, PixelCoordinate } from "./gameboard/game_board";
 import { PlayerGameState } from "./friendly/player";
 import { createAndStartTimeline, Timeline } from "./timeline";
 import { LiveTower } from "./friendly/tower";

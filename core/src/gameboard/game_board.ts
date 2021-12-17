@@ -1,8 +1,8 @@
-import { calculateDistance, coordsEqual, getAllCoordinates, getTileCenterPx, randomSpotInArray } from "./common/utils";
-import { getSearchAlgorithmInclusive } from "./pathfinder";
-import { LiveTower } from "./friendly/tower";
-import { GameOrchestrator, TowerType } from ".";
-import { GameBoardConfiguration } from "./config";
+import { calculateDistance, coordsEqual, getAllCoordinates, getPxCenter, getTileCenterPx, randomSpotInArray } from "../common/utils";
+import { getSearchAlgorithmInclusive } from "../pathfinder";
+import { LiveTower } from "../friendly/tower";
+import { GameOrchestrator, TowerType } from "..";
+import { BonusIncomeTilesConfiguration, GameBoardConfiguration } from "../config";
 
 export enum TileType {
     Grass,
@@ -33,15 +33,39 @@ export interface PixDim2D {
     pxHeight: number;
 }
 
+export class OccupiesBoard {
+    tlCoord: Coordinate;
+    size: Dim2D;
+    coords: Coordinate[];
+    pxCenter: PixelCoordinate;
+
+    constructor(tlCoord: Coordinate, size: Dim2D) {
+        this.tlCoord = tlCoord;
+        this.size = size;
+        this.coords = getAllCoordinates(tlCoord, size);
+        this.pxCenter = getPxCenter(tlCoord, size);
+    }
+}
+
+export class Rock extends OccupiesBoard {
+    constructor(tlCoord: Coordinate, rotated: boolean) {
+        let dim = rotated ? {width: 2, height: 3} : {width: 3, height: 2};
+        super(tlCoord, dim);
+    }
+}
+
 export class NoPathAvailable extends Error {}
 
 export class GameBoard {
     config: GameBoardConfiguration;
-    terrain!: Tile[][];
+    size: Dim2D;
+    rocks: Rock[];
     towers: LiveTower[];
     start!: Coordinate;
     checkpoints!: Coordinate[];
     finish!: Coordinate;
+    fullyBlockedTiles!: Coordinate[];
+    playerBlockedTiles: Coordinate[];
     id: string;
     static GLOBAL_ID: number = 0;
 
@@ -53,6 +77,10 @@ export class GameBoard {
 
     constructor(config: GameBoardConfiguration, orchestrator: GameOrchestrator) {
         this.config = config;
+        this.size = {
+            width: this.config.tilesColCount,
+            height: this.config.tilesRowCount
+        }
         this.orchestrator = orchestrator;
         this.towers = [];
         this.buildTiles();
@@ -114,10 +142,13 @@ export class GameBoard {
     }
     
     buildTiles(): void {
-        this.terrain = Array.from({length: this.config.tilesRowCount}, (aRow, row) => {
-            return Array.from({length: this.config.tilesColCount})
-        });
+
         let availableCoordinates = listAllCoordinates(this.config);
+        this.rocks = assignRocks(this.config);
+        this.fullyBlockedTiles = this.rocks.reduce((prev, current) => {
+            prev.push(...current.coords);
+            return prev;
+        }, new Array<Coordinate>());
         this.start = pickRandomAndRemove(availableCoordinates);
         this.checkpoints = Array.from({length: this.config.checkpointCount}, (v,index) => {
             return pickRandomAndRemove(availableCoordinates);
@@ -163,19 +194,11 @@ export class GameBoard {
     }
 
     public numCols(): number {
-        return this.terrain[0].length;
+        return this.size.width
     }
 
     public numRows(): number {
-        return this.terrain.length;
-    }
-
-    public getTile(coord: Coordinate): Tile {
-        return this.terrain[coord.row][coord.col];
-    }
-
-    public isGrassTile(coord: Coordinate): boolean {
-        return this.terrain[coord.row][coord.col].type === TileType.Grass;
+        return this.size.height;
     }
 
     public towerExistsAt(coord: Coordinate): boolean {
@@ -216,6 +239,7 @@ export class GameBoard {
 export interface Tile {
     type: TileType
     checkPointNum?: number;
+    bonusIncomeWaveMult?: number;
 }
 
 export const pickRandomAndRemove = (coordinates: Coordinate[]): Coordinate => {
@@ -223,6 +247,12 @@ export const pickRandomAndRemove = (coordinates: Coordinate[]): Coordinate => {
     let coord = coordinates[selectedIdx];
     coordinates.splice(selectedIdx,1);
     return coord;
+}
+
+export const randomCoordinate = (config: GameBoardConfiguration): Coordinate => {
+    let coords = listAllCoordinates(config);
+    let selectedIdx = randomSpotInArray(coords.length);
+    return coords[selectedIdx];
 }
 
 export const listAllCoordinates = (config: GameBoardConfiguration): Coordinate[] => {
@@ -265,5 +295,10 @@ const generatePathfindingGrid = (terrain: Tile[][], towers: LiveTower[]): number
     })
 }
 
-
+const assignRocks = (config: GameBoardConfiguration): Rock[] => {
+    let rotated = Math.random() > 0.5 ? true : false;
+    return Array.from({length: config.rockCount}).map(() => {
+        return new Rock(randomCoordinate(config), rotated);
+    })
+}
 
