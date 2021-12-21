@@ -74,8 +74,8 @@
         }
     },
     "rockCount": {
-        "minValIncl": 5,
-        "maxValIncl": 20,
+        "minValIncl": 40,
+        "maxValIncl": 80,
         "stepper": 1,
         "weightFnKey": "EVEN"
     },
@@ -91,6 +91,22 @@
                 "minValIncl": 0.5,
                 "maxValIncl": 3.5,
                 "stepper": 0.1,
+                "weightFnKey": "EVEN"
+            }
+        }
+    },
+    "noBuildBlockers": {
+        "count": {
+            "minValIncl": 1,
+            "maxValIncl": 4,
+            "stepper": 1,
+            "weightFnKey": "EVEN"
+        },
+        "itemDetails": {
+            "dim": {
+                "minValIncl": 2,
+                "maxValIncl": 4,
+                "stepper": 1,
                 "weightFnKey": "EVEN"
             }
         }

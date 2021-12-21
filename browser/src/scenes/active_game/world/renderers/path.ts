@@ -5,22 +5,33 @@ import { GameObjectLike, SimpleRenderer } from "../../../../common/renderer";
 import { WALKING_PATH_LAYER } from "../../../../common/z_layers";
 import { forSubScene, DisplayContext } from "../../../../phaser/extensions/display_context";
 import { SubScene } from "../../../../phaser/extensions/sub_scene";
+import { TweenDelegate } from "../../../../phaser/extensions/tween";
 import { GameStateObserver } from "../../gamestate_publisher";
 
 
 class OptimalPathSet implements GameObjectLike {
-    segments: Phaser.GameObjects.Line[][];
+    paths: OptimalPath[];
 
-    constructor(segments: Phaser.GameObjects.Line[][]) {
-        this.segments = segments;
+    constructor(paths: OptimalPath[]) {
+        this.paths = paths;
     }
 
     destroy() {
-        this.segments.forEach((segment) => {
-            segment.forEach(line => {
-                line.destroy();
-            })
-         });
+        this.paths.forEach((path) => path.destroy());
+    }
+    
+}
+
+class OptimalPath implements GameObjectLike {
+    lines: Phaser.GameObjects.Line[];
+    
+    constructor(lines: Phaser.GameObjects.Line[], tweenDelegate: TweenDelegate) {
+        this.lines = lines;
+        tweenDelegate.blink(this.lines);
+    }
+
+    destroy() {
+        this.lines.forEach(line => line.destroy());
     }
     
 }
@@ -37,11 +48,13 @@ export class PathRenderer extends SimpleRenderer<OptimalPathSet> implements Game
     id: string;
     currentPaths: PixelCoordinate[][];
     optimalPathSet?: OptimalPathSet;
+    tweenDelegate: TweenDelegate;
 
-    constructor(sceneSection: SubScene) {
+    constructor(sceneSection: SubScene, tweenDelegate: TweenDelegate) {
         super(forSubScene(sceneSection));
         this.currentPaths = [];
         this.id = "path_renderer";
+        this.tweenDelegate = tweenDelegate;
     }
 
     onEvent(event: GameState): void {
@@ -51,7 +64,7 @@ export class PathRenderer extends SimpleRenderer<OptimalPathSet> implements Game
             this.optimalPathSet = undefined;
         }
         if (!this.optimalPathSet) {
-            let lines = generateLines(this.displayContext, event.optimalPathSegmentsPx);
+            let lines = generateLines(this.displayContext, event.optimalPathSegmentsPx, this.tweenDelegate);
             this.optimalPathSet = new OptimalPathSet(lines);
             this.currentPaths = event.optimalPathSegmentsPx;
         }
@@ -72,7 +85,7 @@ const pathsAreTheSame = (current: PixelCoordinate[][], next: PixelCoordinate[][]
 }
 
 const generateLines = (displayContext: DisplayContext,
-    paths: PixelCoordinate[][]): Phaser.GameObjects.Line[][] => {
+    paths: PixelCoordinate[][], tweenDelegate: TweenDelegate): OptimalPath[] => {
 
     return paths.map((path,segmentIdx) => {
         let segmentLines: Phaser.GameObjects.Line[] = [];
@@ -83,12 +96,13 @@ const generateLines = (displayContext: DisplayContext,
                 colorForSegment,
                 0.3
             );
+            line.setLineWidth(4);
             line.setZ(WALKING_PATH_LAYER);
             //I dont understand this and it makes me nervous lol. But an issue tracker mentioned it.
             line.setOrigin(0,0);
             segmentLines.push(line);
         });
-        return segmentLines;
+        return new OptimalPath(segmentLines, tweenDelegate);
     });
 }
 

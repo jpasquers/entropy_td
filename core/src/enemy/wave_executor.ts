@@ -3,7 +3,7 @@ import { GameOrchestrator } from "../orchestrator";
 import { Coordinate, PixelCoordinate, Tile, TileType } from "../gameboard/game_board";
 import { ActiveCreep, Creep } from "./creep";
 import { Wave } from "./wave";
-import { calculateDistance, findNewPosition, getCurrentTile, getPxCenter, getTileCenterPx } from "../common/utils";
+import { calculateDistance, coordsEqual, findNewPosition, getCurrentTile, getPxCenter, getTileCenterPx } from "../common/utils";
 import { LiveTower } from "../friendly/tower";
 import { Projectile } from "../friendly/projectile";
 import { ProjectileTracker } from "../friendly/projectile_tracker";
@@ -56,10 +56,6 @@ export class WaveExecutor {
         this.framesTillNextCreep = this.wave.config.creepFrameSeparation;
     }
 
-    isPivotTile(tile: Tile): boolean {
-        return tile.type === TileType.Start || tile.type === TileType.Checkpoint;
-    }
-
     removeActiveCreep(id: string) {
         let toRemove = this.wave.activeCreeps.findIndex(activeCreep => id === activeCreep.id);
         this.wave.activeCreeps.splice(toRemove,1);
@@ -76,10 +72,10 @@ export class WaveExecutor {
         let currentCoord = getCurrentTile(creep.pxPos, this.board.config.tilePixelDim);
         let currentIndexInSegment = activeSegment.findIndex(coord => 
             coord.col === currentCoord.col && coord.row === currentCoord.row);
-        if (this.board.getTile(currentCoord).type === TileType.Finish && creep.checkpointsCrossed === walkingPaths.length-1) {
+        if (coordsEqual(currentCoord, this.board.finish) && creep.checkpointsCrossed === walkingPaths.length-1) {
             this.removeActiveCreep(creep.id);
         }
-        else if (currentIndexInSegment === activeSegment.length-1 && this.isPivotTile(this.board.getTile(currentCoord))) {
+        else if (currentIndexInSegment === activeSegment.length-1 && this.board.isPivotTile(currentCoord)) {
             creep.checkpointsCrossed++;
         }
         else {

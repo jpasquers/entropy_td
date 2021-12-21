@@ -25,6 +25,11 @@ export const randomSpotInArray = (size: number): number => {
     return Math.floor(Math.random() * size);
  }
 
+ export const randomItemIn = <T> (ts: T[]): T => {
+    let selectedIdx = randomSpotInArray(ts.length);
+    return ts[selectedIdx];
+ }
+
 export const coordsEqual = (a: Coordinate, b: Coordinate): boolean => {
     return a.col === b.col && a.row === b.row;
 }

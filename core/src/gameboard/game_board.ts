@@ -1,8 +1,10 @@
-import { calculateDistance, coordsEqual, getAllCoordinates, getPxCenter, getTileCenterPx, randomSpotInArray } from "../common/utils";
+import { calculateDistance, coordsEqual, getAllCoordinates, getPxCenter, getTileCenterPx, randomItemIn, randomSpotInArray } from "../common/utils";
 import { getSearchAlgorithmInclusive } from "../pathfinder";
 import { LiveTower } from "../friendly/tower";
 import { GameOrchestrator, TowerType } from "..";
 import { BonusIncomeTilesConfiguration, GameBoardConfiguration } from "../config";
+import { getLargestConnectedGrid } from "./connected_component";
+import { OccupiesBoard } from "./model";
 
 export enum TileType {
     Grass,
@@ -33,19 +35,16 @@ export interface PixDim2D {
     pxHeight: number;
 }
 
-export class OccupiesBoard {
-    tlCoord: Coordinate;
-    size: Dim2D;
-    coords: Coordinate[];
-    pxCenter: PixelCoordinate;
+export class MoneyTile extends OccupiesBoard {
+    waveMultValue: number;
 
-    constructor(tlCoord: Coordinate, size: Dim2D) {
-        this.tlCoord = tlCoord;
-        this.size = size;
-        this.coords = getAllCoordinates(tlCoord, size);
-        this.pxCenter = getPxCenter(tlCoord, size);
+    constructor(tlCoord: Coordinate, waveMultValue: number) {
+        super(tlCoord, {width: 1, height: 1});
+        this.waveMultValue = waveMultValue;
     }
 }
+
+export class NoBuildBlocker extends OccupiesBoard {}
 
 export class Rock extends OccupiesBoard {
     constructor(tlCoord: Coordinate, rotated: boolean) {
@@ -59,13 +58,15 @@ export class NoPathAvailable extends Error {}
 export class GameBoard {
     config: GameBoardConfiguration;
     size: Dim2D;
-    rocks: Rock[];
+    rocks!: Rock[];
+    noBuildBlockers!: NoBuildBlocker[];
+    moneyTiles!: MoneyTile[];
     towers: LiveTower[];
     start!: Coordinate;
     checkpoints!: Coordinate[];
     finish!: Coordinate;
     fullyBlockedTiles!: Coordinate[];
-    playerBlockedTiles: Coordinate[];
+    playerBlockedTiles!: Coordinate[];
     id: string;
     static GLOBAL_ID: number = 0;
 
@@ -133,7 +134,7 @@ export class GameBoard {
 
     findOptimalPath(start: Coordinate, end:Coordinate): Coordinate[] {
         let path = getSearchAlgorithmInclusive().search(
-            generatePathfindingGrid(this.terrain, this.towers),
+            this.generatePathFindingGrid(),
             start,
             end
         );
@@ -142,35 +143,19 @@ export class GameBoard {
     }
     
     buildTiles(): void {
-
-        let availableCoordinates = listAllCoordinates(this.config);
-        this.rocks = assignRocks(this.config);
-        this.fullyBlockedTiles = this.rocks.reduce((prev, current) => {
-            prev.push(...current.coords);
-            return prev;
-        }, new Array<Coordinate>());
-        this.start = pickRandomAndRemove(availableCoordinates);
+        let allCoordinates = listAllCoordinates(this.config);
+        this.rocks = this.generateRocks();
+        this.noBuildBlockers = this.generateBlockers();
+        let availableCoordinates = allCoordinates.filter((coord) => !this.isFullyBlocked(coord))
+        let largestComponent = getLargestConnectedGrid(availableCoordinates);
+        this.start = pickRandomAndRemove(largestComponent);
         this.checkpoints = Array.from({length: this.config.checkpointCount}, (v,index) => {
-            return pickRandomAndRemove(availableCoordinates);
+            return pickRandomAndRemove(largestComponent);
         });
-        this.finish = pickRandomAndRemove(availableCoordinates);
-        
-        this.terrain[this.start.row][this.start.col] = {type: TileType.Start};
-        this.checkpoints.forEach((checkpoint, idx) => {
-            //meh
-            this.terrain[checkpoint.row][checkpoint.col] = {type: TileType.Checkpoint, checkPointNum: idx+1};
+        this.finish = pickRandomAndRemove(largestComponent);
+        this.moneyTiles = this.config.bonusIncomeTiles.map((bonus) => {
+            return new MoneyTile(pickRandomAndRemove(largestComponent), bonus.waveMultValue);
         })
-        this.terrain[this.finish.row][this.finish.col] = {type: TileType.Finish};
-
-        this.makePathTraversible(this.start, this.checkpoints[0]);
-        this.checkpoints.forEach((checkpoint, idx) => {
-            if (idx === this.checkpoints.length-1) return;
-            this.makePathTraversible(checkpoint, this.checkpoints[idx+1]);
-        })
-        this.makePathTraversible(this.checkpoints[this.checkpoints.length-1], this.finish);
-        
-        this.fillInRemainingTiles();
-
     }
 
     public getWalkingBestPath(): Coordinate[] {
@@ -208,31 +193,101 @@ export class GameBoard {
     
     public spaceForTowerAt(towerType: TowerType, tlCoord: Coordinate): boolean {
         return getAllCoordinates(tlCoord, towerType.dim)
-            .every(coord => this.isOpen(coord));
+            .every(coord => this.isOpenForTower(coord));
     }
 
-    public isOpen(coord: Coordinate): boolean {
-        return this.isGrassTile(coord) && !this.towerExistsAt(coord);
+
+    public getAllRockCoords(): Coordinate[] {
+        let allRockCoords = this.rocks.reduce((prev, current) => {
+            prev.push(...current.coords);
+            return prev;
+        }, new Array<Coordinate>());
+        return allRockCoords.filter(rockCoord => this.inBounds(rockCoord));
     }
 
-    fillInRemainingTiles() {
-        listAllCoordinates(this.config).forEach(coord => {
-            if (!this.getTile(coord)) {
-                this.terrain[coord.row][coord.col] = 
-                    Math.random() > this.config.density 
-                        ? {type: TileType.Grass} 
-                        : {type: TileType.Rock};
-            }
+    public inBounds(coord: Coordinate): boolean {
+        return coord.col >= 0 && coord.row >= 0 &&
+            coord.col < this.config.tilesColCount &&
+            coord.row < this.config.tilesRowCount;
+    }
+
+    public getAllTowerCoords(): Coordinate[] {
+        return this.towers.reduce((prev,curr) => {
+            prev.push(...curr.coords);
+            return prev;
+        }, new Array<Coordinate>());
+    }
+
+    public getFullyBlockedTiles(): Coordinate[] {
+        return this.getAllRockCoords().concat(this.getAllTowerCoords());
+    }
+
+    public getFullyEmptyTiles(): Coordinate[] {
+        return this.listAllCoordinates().filter((coord) => this.isFullyEmpty(coord));
+    }
+
+    public isFullyEmpty(coord: Coordinate): boolean {
+        return !this.isFullyBlocked(coord) && !this.isPivotTile(coord)
+            && !this.onNoBuildBlocker(coord);
+    }
+
+    public isFullyBlocked(coord: Coordinate): boolean {
+        return this.getFullyBlockedTiles().some(blocked => coordsEqual(blocked,coord));
+    }
+
+    public isTraversible(coord: Coordinate): boolean {
+        return !(this.isFullyBlocked(coord));
+    }
+
+    public isOpenForTower(coord: Coordinate): boolean {
+        return this.isFullyEmpty(coord);
+    }
+
+    public onNoBuildBlocker(testCoord: Coordinate): boolean {
+        return this.noBuildBlockers.some(blocker => {
+            return blocker.coords.some(coord => coordsEqual(coord, testCoord));
         })
     }
 
-    makePathTraversible(start: Coordinate, end: Coordinate) {
-        let path: Coordinate[] = this.findOptimalPath(start,end);
-        path.forEach(tileCoord => {
-            if (!this.terrain[tileCoord.row][tileCoord.col]) {
-                this.terrain[tileCoord.row][tileCoord.col] = {type: TileType.Grass};
-            }
+    public isPivotTile(coord: Coordinate): boolean {
+        return coordsEqual(coord, this.start) ||
+            this.checkpoints.some(checkpoint => coordsEqual(coord, checkpoint)) ||
+            coordsEqual(coord, this.finish);
+    }
+
+    public listAllCoordinates(): Coordinate[] {
+        return listAllCoordinates(this.config);
+    }
+
+    private generateRocks (): Rock[] {
+        return Array.from({length: this.config.rockCount}).map(() => {
+            let rotated = Math.random() > 0.5 ? true : false;
+            return new Rock(randomCoordinate(this.config), rotated);
+        })
+    }
+    
+    private generateBlockers (): NoBuildBlocker[] {
+        return this.config.noBuildBlockers.map((blocker => {
+            return new NoBuildBlocker(randomCoordinate(this.config), {
+               width: blocker.dim,
+               height: blocker.dim
+            });
+        }));
+    }
+
+    
+
+    public generatePathFindingGrid(): number[][] {
+        const BLOCKED = 1;
+        const FREE = 0;
+        let initial = Array.from({length: this.config.tilesRowCount}, (v,k) => {
+            return Array.from({length: this.config.tilesColCount}, (v,k) => FREE);
+        })
+
+        this.getFullyBlockedTiles().forEach((blockedTile) => {
+            initial[blockedTile.row][blockedTile.col] = 1;
         });
+        return initial;
     }
 }
 
@@ -251,8 +306,7 @@ export const pickRandomAndRemove = (coordinates: Coordinate[]): Coordinate => {
 
 export const randomCoordinate = (config: GameBoardConfiguration): Coordinate => {
     let coords = listAllCoordinates(config);
-    let selectedIdx = randomSpotInArray(coords.length);
-    return coords[selectedIdx];
+    return randomItemIn(coords);
 }
 
 export const listAllCoordinates = (config: GameBoardConfiguration): Coordinate[] => {
@@ -281,24 +335,5 @@ const towerIncludesCoord = (tower: LiveTower, coord: Coordinate): boolean => {
     return getAllCoordinates(tower.tlCoord, tower.type.dim).some(coordB => coordsEqual(coord,coordB));
 }
 
-const BLOCKED = 1;
-const FREE = 0;
-const generatePathfindingGrid = (terrain: Tile[][], towers: LiveTower[]): number[][] => {
-    return terrain.map((row, rowNum) => {
-        return row.map((terrain, colNum) => {
-            if (towers.find(tower => towerIncludesCoord(tower, {col: colNum, row: rowNum}))) {
-                return BLOCKED;
-            }
-            else if (!terrain || typeIsTraversable(terrain.type)) return FREE;
-            else return BLOCKED;
-        })
-    })
-}
 
-const assignRocks = (config: GameBoardConfiguration): Rock[] => {
-    let rotated = Math.random() > 0.5 ? true : false;
-    return Array.from({length: config.rockCount}).map(() => {
-        return new Rock(randomCoordinate(config), rotated);
-    })
-}
 

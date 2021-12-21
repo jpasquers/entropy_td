@@ -58,6 +58,7 @@ export class ActiveGameWorldScene extends BasicScene {
         this.load.image('finish', '/assets/finish.jpeg');
         this.load.image('rock', '/assets/rock.jpeg');
         this.load.image('empty', '/assets/empty.jpeg');
+        this.load.image('nobuild', '/assets/nobuild.png');
         this.load.atlas("tower_simple_1", "/assets/tower_simple_1.png", "/assets/tower_simple_1.json");
         //this.load.image('tower_simple_1_card', '/assets/tower_simple_1.png');
         this.load.image('space_background','/assets/Starfield-13.jpg');
@@ -118,7 +119,7 @@ export class ActiveGameWorldScene extends BasicScene {
         this.projectileRenderer = new ProjectileRenderer(this.worldGrid.gameplaySection);
         this.sceneGridRenderer = new BorderedSubSceneRenderer(this);
 
-        this.pathRenderer = new PathRenderer(this.worldGrid.gameplaySection);
+        this.pathRenderer = new PathRenderer(this.worldGrid.gameplaySection, this.tweenDelegate!);
 
         this.gameStatePublisher.addObservers(
             this.towerRenderer,

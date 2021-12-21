@@ -3,6 +3,7 @@ import { FrameDeltaPublisher } from "../common/publishers/frame_delta";
 import { ClickPublisher, KeyDownPublisher, MouseMovementPublisher, MouseScrollPublisher } from "../common/publishers/input";
 import { CameraAdapter } from "../phaser/extensions/camera";
 import { SceneGrid } from "../phaser/extensions/scene_grid";
+import { TweenDelegate } from "../phaser/extensions/tween";
 
 export abstract class BasicScene extends Phaser.Scene {
 
@@ -13,6 +14,7 @@ export abstract class BasicScene extends Phaser.Scene {
     clickTracker?: ClickPublisher;
     frameDeltaPublisher: FrameDeltaPublisher;
     mainCameraAdapter?: CameraAdapter;
+    tweenDelegate?: TweenDelegate;
     prevTime?: number;
 
     constructor(key: string) {
@@ -32,6 +34,7 @@ export abstract class BasicScene extends Phaser.Scene {
         this.keyTracker = new KeyDownPublisher(this.input);
         this.clickTracker = new ClickPublisher(this.input, this.mainCameraAdapter);
         this.mouseScrollTracker = new MouseScrollPublisher(this.input);
+        this.tweenDelegate = new TweenDelegate(this);
     }
 
     update(time: number, delta: number) {

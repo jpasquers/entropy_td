@@ -27,6 +27,10 @@ export class ActiveGameWorldGrid extends BasicSceneGrid<SubScene> {
                 pxCol: GRID_BORDER_THICKNESS,
                 pxRow: NAVIGATION_INTERNAL_HEIGHT + 2*GRID_BORDER_THICKNESS
             },
+            border: {
+                color: BORDER_COLOR,
+                width: GRID_BORDER_THICKNESS
+            },
             externalHeight: this.GAMEPLAY_INTERNAL_HEIGHT + 2*GRID_BORDER_THICKNESS,
             externalWidth: this.GAMEPLAY_INTERNAL_WIDTH + 2*GRID_BORDER_THICKNESS,
             layer: GRID_LAYER

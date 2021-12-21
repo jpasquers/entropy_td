@@ -97,14 +97,12 @@ export class CameraAdapter extends Publisher<CameraState>{
         scrollPublisher.addObserver({
             id: "scroll_zoom_observer",
             onEvent: (event: ScrollEvent) => {
-                console.log("zoom event");
-                console.log(event);
                 if (event.zoomIn) {
                     //TODO vary by amount.
                     this.setZoom(this.capMax(this.camera.zoom*1.05, 2));
                 }
                 else {
-                    this.setZoom(this.capMin(this.camera.zoom*0.95, 0.5));
+                    this.setZoom(this.capMin(this.camera.zoom*0.95, 0.2));
                 }
             }
         })

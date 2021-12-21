@@ -1,7 +1,8 @@
 import { getPxCenter } from "../common/utils";
 import { ConfigType, IncrementalUpgradeConfig, isIncremental, OneTimeUpgradeConfig, TowerType, UpgradeConfig } from "../config";
 import { ActiveCreep } from "../enemy/creep";
-import { Coordinate, Dim2D, OccupiesBoard, PixelCoordinate } from "../gameboard/game_board";
+import { Coordinate, Dim2D, PixelCoordinate } from "../gameboard/game_board";
+import { OccupiesBoard } from "../gameboard/model";
 let GLOBAL_ID = 0;
 export interface TowerSummary {
     type: TowerType;

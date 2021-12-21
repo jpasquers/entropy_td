@@ -32,6 +32,9 @@ export class ActionHandler {
         if (!this.playerState.canAfford(towerType.baseCost)) {
             throw new ActionError("Cannot afford tower. Stop being broke.")
         }
+        if (!this.gameBoard.spaceForTowerAt(towerType, tlCoord)) {
+            throw new ActionError("Cannot place towers on blocked sections");
+        }
         try {
             this.gameBoard.addTowerWithRollback(tlCoord, towerType);
             this.playerState.makePurchase(towerType.baseCost);

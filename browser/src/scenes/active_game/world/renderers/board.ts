@@ -3,6 +3,7 @@ import { ActiveCreep } from "entropy-td-core";
 import { LiveTower, TowerType } from "entropy-td-core";
 import { Coordinate, PixelCoordinate, Tile, TileType } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
+import { OccupiesBoard } from "entropy-td-core/lib/gameboard/model";
 import { Game } from "phaser";
 import { GameStateObjectRenderer } from ".";
 import { GameObjectLike, ObjectRendererWithSync } from "../../../../common/renderer";
@@ -12,14 +13,14 @@ import { forSubScene, CanSetPos, DisplayContext } from "../../../../phaser/exten
 import { SubScene } from "../../../../phaser/extensions/sub_scene";
 
 export class Terrain implements GameObjectLike {
-    terrainTiles: (Phaser.GameObjects.Image )[][];
-    constructor(terrainTiles: (Phaser.GameObjects.Image )[][]) {
+    terrainTiles: (Phaser.GameObjects.Image )[];
+    constructor(terrainTiles: (Phaser.GameObjects.Image )[]) {
         this.terrainTiles = terrainTiles;
     }
 
     destroy() {
-        this.terrainTiles.forEach(row => {
-            row.forEach(tile => tile.destroy());
+        this.terrainTiles.forEach(tile => {
+            tile.destroy();
         })
     }
 }
@@ -36,6 +37,7 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
     }
 
     renderBackgroundTerrain() {
+        console.log(this.displayContext.getInternalBoundWidth());
         this.displayContext.addImage(
             {pxCol: 0, pxRow: 0},
             this.displayContext.getInternalBoundWidth(),
@@ -45,16 +47,28 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
     }
     
     create(board: GameBoard): Terrain {
-        let tiles =  board.terrain.map((tileRow, rowNum) => {
-            return tileRow.map((tile, colNum) => {
-                let terrainPiece = this.renderTile({
-                    row: rowNum,
-                    col: colNum
-                }, tile);
-                terrainPiece.setInteractive();
-                return terrainPiece;
-            })
-        })
+        console.log(board.config.tilesColCount);
+        let tiles = [];
+        tiles.push(...board.noBuildBlockers.map(blocker => {
+            let image = this.renderImage(blocker, 'nobuild');
+            image.setAlpha(0.5);
+            return image;
+        }))
+        tiles.push(this.renderImageAtTileCoord(board.start, 'start'));
+        tiles.push(...board.checkpoints.map((checkpoint, i) => {
+            return this.renderImageAtTileCoord(checkpoint, `checkpoint_${i+1}`)
+        }));
+        tiles.push(this.renderImageAtTileCoord(board.finish, 'finish'));
+        tiles.push(...board.getAllRockCoords().map(rock => {
+            return this.renderImageAtTileCoord(rock, 'rock');
+        }));
+        tiles.push(...board.getFullyEmptyTiles().map(empty => {
+            let image = this.renderImageAtTileCoord(empty, 'empty');
+            image.setAlpha(0.01);
+            return image;
+        }))
+
+        tiles.forEach(tile => tile.setInteractive());
         return new Terrain(tiles);
     }
 
@@ -92,25 +106,20 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
     tileCenterY (rowNum: number): number {
         return rowNum*this.tileDim + 0.5*this.tileDim;
     }
-    
-    renderTile(coord: Coordinate, tile: Tile): Phaser.GameObjects.Image {
-        if (tile.type === TileType.Start) return this.renderImageAtTileCoord(coord, 'start');
-        else if (tile.type === TileType.Checkpoint) return this.renderImageAtTileCoord(coord, `checkpoint_${tile.checkPointNum}`);
-        else if (tile.type === TileType.Finish) return this.renderImageAtTileCoord(coord, 'finish');
-        else if (tile.type === TileType.Rock) return this.renderImageAtTileCoord(coord, 'rock');
-        else {
-            let image = this.renderImageAtTileCoord(coord, 'empty');
-            image.setAlpha(0.01);
-            return image;
-        }
-    }
-
 
 
     renderImageAtTileCoord(coord: Coordinate,imageKey: string): Phaser.GameObjects.Image {
         return this.displayContext.addImage(
             tileTopLeft(coord.row, coord.col), 
             this.tileDim, this.tileDim,
+            imageKey
+        );
+    }
+
+    renderImage(obj: OccupiesBoard, imageKey: string): Phaser.GameObjects.Image {
+        return this.displayContext.addImage(
+            tileTopLeft(obj.tlCoord.row, obj.tlCoord.col),
+            this.tileDim*obj.size.width, this.tileDim*obj.size.height,
             imageKey
         );
     }

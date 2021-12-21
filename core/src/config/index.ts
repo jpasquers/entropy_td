@@ -5,7 +5,9 @@ import {deRandomize, FullDeRandomized, RandomizableCount, RandomizableRange} fro
 export interface ConfigType {} 
 
 
-export interface RandomizableGameBoardConfiguration extends RandomizableBonusIncomeTilesConfiguration {
+export interface RandomizableGameBoardConfiguration 
+    extends RandomizableBonusIncomeTilesConfiguration,
+        RandomizableNoBuildBlockersConfiguration {
     tilesColCount: RandomizableRange | number;
     tilesRowCount: RandomizableRange | number;
     tilePixelDim: RandomizableRange | number;
@@ -14,6 +16,16 @@ export interface RandomizableGameBoardConfiguration extends RandomizableBonusInc
 }
 
 export type GameBoardConfiguration = FullDeRandomized<RandomizableGameBoardConfiguration>;
+
+export interface RandomizableNoBuildBlockersConfiguration {
+    noBuildBlockers: RandomizableCount<RandomizableNoBuildBlockerConfiguration>;
+}
+
+export interface RandomizableNoBuildBlockerConfiguration {
+    dim: RandomizableRange;
+}
+
+export type NoBuilderBlockersConfiguration = FullDeRandomized<RandomizableNoBuildBlockersConfiguration>;
 
 export interface RandomizableBonusIncomeTilesConfiguration {
     bonusIncomeTiles: RandomizableCount<RandomizableBonusIncomeTileConfiguration>;
