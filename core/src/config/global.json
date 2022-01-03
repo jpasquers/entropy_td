@@ -3,8 +3,11 @@
         "simple_1": {
             "name": "simple_1",
             "potentialUpgrades": [{
+                "name": "Upgrade Damage",
+                "description": "Upgrades the tower's damage by a flat amount",
                 "type": "DAMAGE",
                 "mode": "INCREMENTAL",
+                "hotkey": "D",
                 "cost": {
                     "base": 1,
                     "mult": 1,
@@ -15,27 +18,53 @@
                 },
                 "purchasable": true
             }, {
+                "name": "Range Upgrade",
+                "description": "Upgrade the tower's range by a flat amount",
                 "type": "RANGE",
                 "mode": "INCREMENTAL",
+                "hotkey": "R",
                 "cost": {
                     "base": 1,
                     "mult": 1,
                     "exp": 2
                 },
                 "effectiveness": {
-                    "flat": 1
+                    "flat": 0.5
                 },
                 "purchasable": true
             }, {
+                "name": "Attack Speed",
+                "description": "Upgrade the tower's attack speed by a compounding %",
                 "type": "ATTK_SPEED",
                 "mode": "INCREMENTAL",
+                "hotkey": "A",
                 "cost": {
-                    "base": 1,
-                    "mult": 1,
-                    "exp": 2
+                    "base": {
+                        "minValIncl": 3,
+                        "maxValIncl": 6,
+                        "stepper": 1,
+                        "weightFnKey": "EVEN"
+                    },
+                    "mult": {
+                        "minValIncl": 1,
+                        "maxValIncl": 2,
+                        "stepper": 0.1,
+                        "weightFnKey": "EVEN"
+                    },
+                    "exp": {
+                        "minValIncl": 1,
+                        "maxValIncl": 2,
+                        "stepper": 0.1,
+                        "weightFnKey": "EVEN"
+                    }
                 },
                 "effectiveness": {
-                    "flat": 1
+                    "pct": {
+                        "minValIncl": 3,
+                        "maxValIncl": 6,
+                        "stepper": 1,
+                        "weightFnKey": "EVEN"
+                    }
                 },
                 "purchasable": true
             }],

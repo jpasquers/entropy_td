@@ -1,9 +1,9 @@
-import { ActionError, GameOrchestrator, TowerType } from "entropy-td-core";
+import { ActionError, GameOrchestrator, LiveTower, TowerType } from "entropy-td-core";
 import { ActiveGameEventListener } from "..";
 import { BasicScene } from "../..";
 import { GameStatePublisher } from "../gamestate_publisher";
 import { BorderedSubSceneRenderer } from "../world/renderers/scene_grid";
-import { CommandCard, TowerListCommandCard } from "./command_card";
+import { CommandCard, GlobalCommandCard, TowerCommandCard } from "./command_card";
 import { CommandCardRenderer } from "./renderers/command_card";
 import { ErrorRenderer } from "./renderers/error";
 import { MoneyRenderer, TimeRenderer } from "./renderers/timer";
@@ -40,17 +40,27 @@ export class ActiveGameHudScene extends BasicScene {
         this.commandCardRenderer!.synchronizeItems(this.currentCommandCard);
     }
 
-    private buildTowerListCommandCard() {
-        this.changeCommandCard(new TowerListCommandCard(
+    public resetToGlobal() {
+        this.changeCommandCard(new GlobalCommandCard(
             this.gameController.getEffectiveTowersList(),
             (towerType: TowerType) => {
-                this.eventListener.preSelectTower(towerType);
+                this.eventListener.preSelectTowerForPlacement(towerType);
             }
         ));
     }
 
     public towerPlaced() {
-        this.buildTowerListCommandCard();
+        this.resetToGlobal();
+    }
+
+    public selectTower(tower: LiveTower) {
+        this.changeCommandCard(
+            new TowerCommandCard(tower, (tower) => {
+                this.eventListener.sellTowerAction(tower);
+            }, (tower, upgrade) => {
+                //TODODODODODODO.
+            })
+        );
     }
 
     public towerPreSelect(towerType: TowerType) {
@@ -59,6 +69,7 @@ export class ActiveGameHudScene extends BasicScene {
 
     public preload() {
         this.load.atlas("tower_simple_1_command_card", "/assets/tower_simple_1_command_card.png", "/assets/tower_simple_1_command_card.json");
+        this.load.image('sell_tower', '/assets/sell_tower.png');
     }
 
     public create() {
@@ -68,8 +79,8 @@ export class ActiveGameHudScene extends BasicScene {
         this.sceneGridRenderer = new BorderedSubSceneRenderer(this);
         this.sceneGridRenderer.synchronizeItems(...this.hudGrid.getBorderedSections());
 
-        this.timeRenderer = new TimeRenderer(this.hudGrid.navigationSection);
-        this.moneyRenderer = new MoneyRenderer(this.hudGrid.navigationSection);
+        this.timeRenderer = new TimeRenderer(this.hudGrid.gamePlayerStatsSection);
+        this.moneyRenderer = new MoneyRenderer(this.hudGrid.gamePlayerStatsSection);
         this.errorRenderer = new ErrorRenderer(this.hudGrid.notificationSection);
         this.commandCardRenderer = new CommandCardRenderer(this.hudGrid.commandCardSection);
 
@@ -78,8 +89,10 @@ export class ActiveGameHudScene extends BasicScene {
             this.moneyRenderer
         );
 
+        
+
         //Default to this at first.
-        this.buildTowerListCommandCard();
+        this.resetToGlobal();
     }
 
     handleActionError(e: ActionError): void {

@@ -4,7 +4,6 @@ import { LiveTower, TowerType } from "entropy-td-core";
 import { Coordinate, PixelCoordinate, Tile, TileType } from "entropy-td-core";
 import { GameState } from "entropy-td-core";
 import { OccupiesBoard } from "entropy-td-core/lib/gameboard/model";
-import { Game } from "phaser";
 import { GameStateObjectRenderer } from ".";
 import { GameObjectLike, ObjectRendererWithSync } from "../../../../common/renderer";
 import { calculateAngleRad } from "../../../../common/util";
@@ -38,7 +37,7 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
 
     renderBackgroundTerrain() {
         console.log(this.displayContext.getInternalBoundWidth());
-        this.displayContext.addImage(
+        let spaceBackground = this.displayContext.addImage(
             {pxCol: 0, pxRow: 0},
             this.displayContext.getInternalBoundWidth(),
             this.displayContext.getInternalBoundHeight(),
@@ -54,11 +53,16 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
             image.setAlpha(0.5);
             return image;
         }))
-        tiles.push(this.renderImageAtTileCoord(board.start, 'start'));
+        tiles.push(this.renderImage(board.start, 'start'));
         tiles.push(...board.checkpoints.map((checkpoint, i) => {
-            return this.renderImageAtTileCoord(checkpoint, `checkpoint_${i+1}`)
+            return this.renderImage(checkpoint, `checkpoint_${i+1}`);
+            // let checkpt = this.renderImageAtTileCoord(checkpoint, `tp-test1`);
+            // //TODO temporary, we will eventually make checkpoint an occupies board
+            // checkpt.displayWidth = 100;
+            // checkpt.displayHeight = 100;
+            // return checkpt;
         }));
-        tiles.push(this.renderImageAtTileCoord(board.finish, 'finish'));
+        tiles.push(this.renderImage(board.finish, 'finish'));
         tiles.push(...board.getAllRockCoords().map(rock => {
             return this.renderImageAtTileCoord(rock, 'rock');
         }));
@@ -117,6 +121,8 @@ export class TerrainRenderer extends ObjectRendererWithSync<GameBoard, Terrain> 
     }
 
     renderImage(obj: OccupiesBoard, imageKey: string): Phaser.GameObjects.Image {
+        console.log(imageKey);
+        console.log(obj.size);
         return this.displayContext.addImage(
             tileTopLeft(obj.tlCoord.row, obj.tlCoord.col),
             this.tileDim*obj.size.width, this.tileDim*obj.size.height,
@@ -202,8 +208,6 @@ export class TowerRenderer extends GameStateObjectRenderer<LiveTower, LiveTowerD
     }
 
     updateTowerSilhoutte(tlCoord: Coordinate, display: StaticTowerDisplay): void {
-        console.log(tlCoord);
-        console.log(getPxCenter(tlCoord, display.towerType.dim));
         this.displayContext.setXPos(display, getPxCenter(tlCoord, display.towerType.dim).pxCol);
         this.displayContext.setYPos(display, getPxCenter(tlCoord, display.towerType.dim).pxRow);
     }

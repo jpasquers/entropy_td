@@ -1,7 +1,7 @@
 import Phaser, { Scene } from "phaser";
 import { GameOrchestrator, TowerType } from "entropy-td-core";
 import { CommandCardRenderer } from "../hud/renderers/command_card";
-import { CommandCard, TowerListCommandCard } from "../hud/command_card";
+import { CommandCard, GlobalCommandCard } from "../hud/command_card";
 import { ActionError } from "entropy-td-core";
 import { ActiveGameWorldGrid, getInternalGameplayHeight, getInternalGameplayWidth } from "../scene_grid";
 import { GameStatePublisher } from "../gamestate_publisher";
@@ -19,6 +19,7 @@ import { ProjectileRenderer } from "./renderers/projectile";
 import { ActiveGameEventListener } from "..";
 import { TowerSilhoutteRenderer } from "./renderers/tower_silhoutte";
 import { Observer } from "../../../common/publishers";
+import { TowerSelectListener } from "./tower_select_listener";
 
 
 export class ActiveGameWorldScene extends BasicScene {
@@ -39,6 +40,7 @@ export class ActiveGameWorldScene extends BasicScene {
     gameStatePublisher: GameStatePublisher;
     eventListener: ActiveGameEventListener;
     towerSilhoutteRenderer?: TowerSilhoutteRenderer;
+    towerSelectListener?: TowerSelectListener;
     towerPlacementListener?: ClickObserver;
 
     constructor(gameController: GameOrchestrator, gameStatePublisher: GameStatePublisher,
@@ -55,6 +57,7 @@ export class ActiveGameWorldScene extends BasicScene {
         this.load.image('checkpoint_1', '/assets/checkpoint_1.png');
         this.load.image('checkpoint_2', '/assets/checkpoint_2.png');
         this.load.image('checkpoint_3', '/assets/checkpoint_3.png');
+        this.load.image('tp-test1', '/assets/tp-test1.png');
         this.load.image('finish', '/assets/finish.jpeg');
         this.load.image('rock', '/assets/rock.jpeg');
         this.load.image('empty', '/assets/empty.jpeg');
@@ -71,7 +74,7 @@ export class ActiveGameWorldScene extends BasicScene {
             onEvent: (event: ClickEvent) => {
                 if (this.terrainRenderer!.isPixelRelated(event.targetWorldPos)) {
                     let coord = this.terrainRenderer!.getTileCoordForRenderedPixel(event.targetWorldPos);
-                    this.eventListener.attemptToPlaceTower(towerType, coord);
+                    this.eventListener.placeTowerAction(towerType, coord);
                 }
             }
         }
@@ -110,6 +113,7 @@ export class ActiveGameWorldScene extends BasicScene {
         );
         this.mainCameraAdapter?.enableCameraDrag(this.mouseMovementTracker!);
         this.mainCameraAdapter?.enableZoom(this.mouseScrollTracker!);
+        this.mainCameraAdapter?.defaultZoom(0.5);
         
         this.worldGrid = new ActiveGameWorldGrid(this);
         this.terrainRenderer = new TerrainRenderer(this.worldGrid.gameplaySection, this.gameController.config.tilePixelDim);
@@ -120,6 +124,11 @@ export class ActiveGameWorldScene extends BasicScene {
         this.sceneGridRenderer = new BorderedSubSceneRenderer(this);
 
         this.pathRenderer = new PathRenderer(this.worldGrid.gameplaySection, this.tweenDelegate!);
+
+        this.towerSelectListener = new TowerSelectListener((tower) => this.eventListener.selectTower(tower),
+            this.terrainRenderer, this.gameStatePublisher);
+
+        this.clickTracker?.addObserver(this.towerSelectListener);
 
         this.gameStatePublisher.addObservers(
             this.towerRenderer,

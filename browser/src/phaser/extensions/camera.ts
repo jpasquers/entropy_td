@@ -70,6 +70,10 @@ export class CameraAdapter extends Publisher<CameraState>{
         this.setScrollY(ifNegativeZero(halfGlobHeight - halfCameraHeight));
     }
 
+    defaultZoom(zoom: number) {
+        this.camera.zoom = zoom;
+    }
+
     
     enableCameraDrag(mouseMovementPublisher: MouseMovementPublisher) {
         mouseMovementPublisher.addObserver({

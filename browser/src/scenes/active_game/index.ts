@@ -1,11 +1,13 @@
-import { ActionError, Coordinate, GameOrchestrator, TowerType } from "entropy-td-core";
+import { ActionError, Coordinate, GameOrchestrator, LiveTower, TowerType } from "entropy-td-core";
 import { GameStateSceneBridge } from "./gamestate_publisher";
 import { ActiveGameHudScene } from "./hud";
 import { ActiveGameWorldScene } from "./world";
 
 export interface ActiveGameEventListener {
-    preSelectTower(towerType: TowerType): void;
-    attemptToPlaceTower(towerType: TowerType, coord: Coordinate): void;
+    preSelectTowerForPlacement(towerType: TowerType): void;
+    placeTowerAction(towerType: TowerType, coord: Coordinate): void;
+    sellTowerAction(tower: LiveTower): void;
+    selectTower(tower: LiveTower): void;
 }
 
 export class ActiveGameSceneComposite implements ActiveGameEventListener{
@@ -20,6 +22,9 @@ export class ActiveGameSceneComposite implements ActiveGameEventListener{
         this.activeGameWorld = new ActiveGameWorldScene(gameController, this.gameStateBridge.getPublisher(), this),
         this.activeGameHUD =  new ActiveGameHudScene(gameController, this.gameStateBridge.getPublisher(), this)
     }
+    selectTower(tower: LiveTower): void {
+        this.activeGameHUD.selectTower(tower);
+    }
 
     attemptAction(action: ()=>void) {
         try {
@@ -32,7 +37,14 @@ export class ActiveGameSceneComposite implements ActiveGameEventListener{
         }
     }
 
-    attemptToPlaceTower(towerType: TowerType, coord: Coordinate): void {
+    sellTowerAction(tower: LiveTower): void {
+        this.attemptAction(() => {
+            this.gameController.actor().sellTower(tower);
+            this.activeGameHUD.resetToGlobal();
+        })
+    }
+
+    placeTowerAction(towerType: TowerType, coord: Coordinate): void {
         if (this.gameController.gameBoard.spaceForTowerAt(towerType, coord) && towerType) {
             this.attemptAction(() => {
                 this.gameController.actor().addTower(coord, towerType);
@@ -42,7 +54,9 @@ export class ActiveGameSceneComposite implements ActiveGameEventListener{
         }
     }
 
-    preSelectTower(towerType: TowerType): void {
+    
+
+    preSelectTowerForPlacement(towerType: TowerType): void {
         this.activeGameWorld.towerPreSelect(towerType);
         this.activeGameHUD.towerPreSelect(towerType);
     }

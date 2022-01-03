@@ -1,5 +1,5 @@
 import { Coordinate, PixelCoordinate, getPxCenter } from "..";
-import { getAllCoordinates } from "../common/utils";
+import { getFullObjectSpace } from "../common/utils";
 import { Dim2D } from "./game_board";
 
 export class OccupiesBoard {
@@ -11,7 +11,11 @@ export class OccupiesBoard {
     constructor(tlCoord: Coordinate, size: Dim2D) {
         this.tlCoord = tlCoord;
         this.size = size;
-        this.coords = getAllCoordinates(tlCoord, size);
+        this.coords = getFullObjectSpace(tlCoord, size);
         this.pxCenter = getPxCenter(tlCoord, size);
+    }
+
+    public containsCoord(coord: Coordinate): boolean {
+        return this.coords.includes(coord);
     }
 }

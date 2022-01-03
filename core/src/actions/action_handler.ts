@@ -1,4 +1,4 @@
-import { GameBoard, TowerType } from "..";
+import { GameBoard, LiveTower, TowerType } from "..";
 import { Coordinate } from "../gameboard/game_board";
 import { PlayerGameState } from "../friendly/player";
 import { Timeline } from "../timeline";
@@ -23,6 +23,14 @@ export class ActionHandler {
         this.playerState = playerState;
         this.gameBoard = gameBoard;
         this.timeline = timeline;
+    }
+
+    sellTower(tower: LiveTower) {
+        let idx = this.gameBoard.towers.findIndex((activeTower) => activeTower.id === tower.id);
+        if (idx >= 0) {
+            this.gameBoard.towers.splice(idx,1);
+            this.playerState.giveMoney(tower.type.baseCost);
+        }
     }
 
     addTower(tlCoord: Coordinate, towerType: TowerType) {

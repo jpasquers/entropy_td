@@ -3,6 +3,8 @@ export interface Observer<EventType> {
     onEvent(event: EventType):void;
 }
 
+
+
 export class Publisher<EventType> {
     observers: Observer<EventType>[];
 
@@ -32,4 +34,21 @@ export class Publisher<EventType> {
         this.observers.forEach(observer => observer.onEvent(event));
     }
 
+}
+
+export class PublisherWithReference<EventType> extends Publisher<EventType> {
+    latestEvent?: EventType;
+
+    constructor(observers?: Observer<EventType>[]) {
+        super(observers);
+    }
+
+    public getReference(): EventType | undefined{
+        return this.latestEvent;
+    }
+
+    publishEvent(event: EventType): void {
+        super.publishEvent(event);
+        this.latestEvent = event;
+    }
 }

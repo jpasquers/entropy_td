@@ -1,3 +1,4 @@
+import { TILE_SIZE_PX } from "..";
 import { getPxCenter } from "../common/utils";
 import { ConfigType, IncrementalUpgradeConfig, isIncremental, OneTimeUpgradeConfig, TowerType, UpgradeConfig } from "../config";
 import { ActiveCreep } from "../enemy/creep";
@@ -25,6 +26,12 @@ export interface IncrementalUpgrade {
     config: IncrementalUpgradeConfig;
 }
 
+export interface Stats {
+    damage: number;
+    attkSpeed: number;
+    range: number;
+}
+
 const availableUpgradesFromConfig = (upgradeConfigs: (OneTimeUpgradeConfig | IncrementalUpgradeConfig)[]): Upgrade[] => {
     return upgradeConfigs.map((config) => {
         if (isIncremental(config)) return {
@@ -45,8 +52,9 @@ export class LiveTower extends OccupiesBoard  implements TowerSummary {
     id: string;
     framesReloading: number;
     targettedCreep?: ActiveCreep;
-    currentUpgrades: Upgrade[];
-    availableUpgrades: Upgrade[];
+    upgrades: Upgrade[];
+    baseStats: Stats;
+    currentStats!: Stats;
 
     constructor(tlCoord: Coordinate, towerType: TowerType) {
         super(tlCoord, towerType.dim);
@@ -54,12 +62,24 @@ export class LiveTower extends OccupiesBoard  implements TowerSummary {
         this.tlCoord = tlCoord;
         this.id = (GLOBAL_ID++).toString();
         this.framesReloading = 0;
-        this.currentUpgrades = [];
-        this.availableUpgrades = availableUpgradesFromConfig(towerType.potentialUpgrades);
+        this.upgrades = availableUpgradesFromConfig(towerType.potentialUpgrades);
+        this.baseStats = {
+            damage: towerType.baseDamage,
+            attkSpeed: towerType.baseFramesPerAttk,
+            range: towerType.baseRangePx / TILE_SIZE_PX
+        }
+        this.synchronizeStats();
     }
 
+    public synchronizeStats(): void {
+        this.currentStats = this.applyModifiers(this.applyUpgrades(this.baseStats));
+    }
 
-    public getOutboundDamageInstance(): number {
-        return this.type.baseDamage;
+    public applyUpgrades(inBound: Stats): Stats {
+        return inBound;
+    }
+
+    public applyModifiers(inBound: Stats): Stats {
+        return inBound;
     }
 }

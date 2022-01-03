@@ -1,25 +1,6 @@
 import { Graph, alg } from "graphlib";
 import { Coordinate } from "..";
-import { Dim2D, Rock } from "./game_board";
-
-const coordinateKey = (coord: Coordinate): string => {
-    return coord.row + "," + coord.col;
-}
-
-const getSurroundingKeys = (inputKey: string): string[] => {
-    let [row, col] = inputKey.split(",").map(val => parseInt(val));
-    let up = {row: row-1, col: col};
-    let down = {row: row+1, col: col};
-    let left = {row: row, col: col-1};
-    let right = {row: row, col: col+1};
-    let options = [up,down,left,right]; // You don't have to worry about bounds because they won't be available.
-    return options.map(coord => coordinateKey(coord));
-}
-
-const coordFromKey = (coordKey: string): Coordinate => {
-    let [row, col] = coordKey.split(",").map(val => parseInt(val));
-    return {row,col};
-}
+import { coordinateKey, getSurroundingKeys, coordFromKey } from "./coordinate_map";
 
 export const buildConnectedGraph = (availableCoordinates: Coordinate[]): Graph => {
     let graph = new Graph({

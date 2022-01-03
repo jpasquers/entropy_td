@@ -1,10 +1,11 @@
-import { calculateDistance, coordsEqual, getAllCoordinates, getPxCenter, getTileCenterPx, randomItemIn, randomSpotInArray } from "../common/utils";
+import { calculateDistance, coordsEqual, getFullObjectSpace, getPxCenter, getTileCenterPx, randomItemIn, randomSpotInArray } from "../common/utils";
 import { getSearchAlgorithmInclusive } from "../pathfinder";
 import { LiveTower } from "../friendly/tower";
 import { GameOrchestrator, TowerType } from "..";
 import { BonusIncomeTilesConfiguration, GameBoardConfiguration } from "../config";
-import { getLargestConnectedGrid } from "./connected_component";
 import { OccupiesBoard } from "./model";
+import { getLargestConnectedGrid } from "./component_graph";
+import { coordFromKey, coordinateKey, getCoordinateMap } from "./coordinate_map";
 
 export enum TileType {
     Grass,
@@ -35,11 +36,16 @@ export interface PixDim2D {
     pxHeight: number;
 }
 
+const MONEY_TILE_SIZE: Dim2D = {
+    width: 1,
+    height: 1
+}
+
 export class MoneyTile extends OccupiesBoard {
     waveMultValue: number;
 
     constructor(tlCoord: Coordinate, waveMultValue: number) {
-        super(tlCoord, {width: 1, height: 1});
+        super(tlCoord, MONEY_TILE_SIZE);
         this.waveMultValue = waveMultValue;
     }
 }
@@ -53,6 +59,38 @@ export class Rock extends OccupiesBoard {
     }
 }
 
+const LANDMARK_SIZE: Dim2D = {
+    width: 2,
+    height: 2
+}
+
+const START_SIZE: Dim2D = {
+    width: 1, height: 1
+}
+
+const FINISH_SIZE: Dim2D = {
+    width: 1, height: 1
+}
+
+export class Landmark extends OccupiesBoard {
+    constructor(tlCoord: Coordinate) {
+        super(tlCoord, LANDMARK_SIZE);
+    }
+}
+
+export class Start extends OccupiesBoard {
+    constructor(tlCoord: Coordinate) {
+        super(tlCoord, START_SIZE);
+    }
+}
+
+export class Finish extends OccupiesBoard {
+    constructor(tlCoord: Coordinate) {
+        super(tlCoord, FINISH_SIZE);
+    }
+}
+
+
 export class NoPathAvailable extends Error {}
 
 export class GameBoard {
@@ -62,9 +100,9 @@ export class GameBoard {
     noBuildBlockers!: NoBuildBlocker[];
     moneyTiles!: MoneyTile[];
     towers: LiveTower[];
-    start!: Coordinate;
-    checkpoints!: Coordinate[];
-    finish!: Coordinate;
+    start!: Start;
+    checkpoints!: Landmark[];
+    finish!: Finish;
     fullyBlockedTiles!: Coordinate[];
     playerBlockedTiles!: Coordinate[];
     id: string;
@@ -114,7 +152,7 @@ export class GameBoard {
         this.walkingBestFullPathPx = this.walkingBestFullPath.map(coord => getTileCenterPx(coord));
     }
 
-    forEachSegment(fn: (start: Coordinate, end: Coordinate)=>void): void {
+    forEachSegment(fn: (start: Landmark, end: Landmark)=>void): void {
         fn(this.start, this.checkpoints[0]);
         this.checkpoints.forEach((checkpoint, idx) => {
             if (idx === this.checkpoints.length-1) fn(checkpoint, this.finish);
@@ -124,22 +162,34 @@ export class GameBoard {
 
     findOptimalPaths(): Coordinate[][] {
         let paths: Coordinate[][] = [];
-        this.forEachSegment((start,end) => {
-            paths.push(this.findOptimalPath(start,end));
+        paths.push(this.findOptimalPath(this.start.tlCoord, this.checkpoints[0].coords));
+        this.checkpoints.forEach((checkpoint, idx) => {
+            //Required because the previous segment could end on any of the checkpoint coords.
+            let lastPath = paths[paths.length-1];
+            let leftOffCoord = lastPath[lastPath.length-1];
+            if (idx === this.checkpoints.length-1) {
+                paths.push(this.findOptimalPath(leftOffCoord, this.finish.coords));
+            }
+            else {
+                paths.push(this.findOptimalPath(leftOffCoord, this.checkpoints[idx+1].coords));
+            }
         })
         return paths;
     }
 
     
 
-    findOptimalPath(start: Coordinate, end:Coordinate): Coordinate[] {
-        let path = getSearchAlgorithmInclusive().search(
+    findOptimalPath(start: Coordinate, endOptions:Coordinate[]): Coordinate[] {
+        let pathOptions = endOptions.map(end => getSearchAlgorithmInclusive().search(
             this.generatePathFindingGrid(),
             start,
             end
-        );
-        if (path.length === 0) throw new NoPathAvailable();
-        return path;
+        ));
+        let viablePaths = pathOptions.filter(pathOption => pathOption.length !== 0);
+        if (viablePaths.length === 0) throw new NoPathAvailable();
+        let pathLengths = viablePaths.map(viablePath => viablePath.length);
+        let bestPathIdx = pathLengths.indexOf(Math.min(...pathLengths));
+        return viablePaths[bestPathIdx];
     }
     
     buildTiles(): void {
@@ -148,13 +198,16 @@ export class GameBoard {
         this.noBuildBlockers = this.generateBlockers();
         let availableCoordinates = allCoordinates.filter((coord) => !this.isFullyBlocked(coord))
         let largestComponent = getLargestConnectedGrid(availableCoordinates);
-        this.start = pickRandomAndRemove(largestComponent);
+        let startCornerstone = pickRandomCornerstone(largestComponent, START_SIZE, false);
+        this.start = new Start(startCornerstone);
         this.checkpoints = Array.from({length: this.config.checkpointCount}, (v,index) => {
-            return pickRandomAndRemove(largestComponent);
-        });
-        this.finish = pickRandomAndRemove(largestComponent);
+            return pickRandomCornerstone(largestComponent, LANDMARK_SIZE, false);
+        }).map(cornerstone => new Landmark(cornerstone));
+        let finishCornerstone = pickRandomCornerstone(largestComponent, FINISH_SIZE, false);
+        this.finish = new Finish(finishCornerstone);
         this.moneyTiles = this.config.bonusIncomeTiles.map((bonus) => {
-            return new MoneyTile(pickRandomAndRemove(largestComponent), bonus.waveMultValue);
+            let tileCornerstone = pickRandomCornerstone(largestComponent,MONEY_TILE_SIZE,false);
+            return new MoneyTile(tileCornerstone, bonus.waveMultValue);
         })
     }
 
@@ -175,7 +228,7 @@ export class GameBoard {
     }
 
     public getStartCenterPx(): PixelCoordinate {
-        return getTileCenterPx(this.start);
+        return this.start.pxCenter;
     }
 
     public numCols(): number {
@@ -192,7 +245,7 @@ export class GameBoard {
     }
     
     public spaceForTowerAt(towerType: TowerType, tlCoord: Coordinate): boolean {
-        return getAllCoordinates(tlCoord, towerType.dim)
+        return getFullObjectSpace(tlCoord, towerType.dim)
             .every(coord => this.isOpenForTower(coord));
     }
 
@@ -250,9 +303,9 @@ export class GameBoard {
     }
 
     public isPivotTile(coord: Coordinate): boolean {
-        return coordsEqual(coord, this.start) ||
-            this.checkpoints.some(checkpoint => coordsEqual(coord, checkpoint)) ||
-            coordsEqual(coord, this.finish);
+        return this.start.containsCoord(coord) ||
+            this.checkpoints.some(checkpoint => checkpoint.containsCoord(coord)) ||
+            this.finish.containsCoord(coord);
     }
 
     public listAllCoordinates(): Coordinate[] {
@@ -268,7 +321,9 @@ export class GameBoard {
     
     private generateBlockers (): NoBuildBlocker[] {
         return this.config.noBuildBlockers.map((blocker => {
-            return new NoBuildBlocker(randomCoordinate(this.config), {
+            //Since we always use top left coordinate, that top left coordinate must 
+            //be dim-1 from the edge.
+            return new NoBuildBlocker(randomCoordinate(this.config, blocker.dim-1), {
                width: blocker.dim,
                height: blocker.dim
             });
@@ -297,42 +352,58 @@ export interface Tile {
     bonusIncomeWaveMult?: number;
 }
 
-export const pickRandomAndRemove = (coordinates: Coordinate[]): Coordinate => {
-    let selectedIdx = randomSpotInArray(coordinates.length);
-    let coord = coordinates[selectedIdx];
-    coordinates.splice(selectedIdx,1);
-    return coord;
+export const pickRandomCornerstone = (coordinates: Coordinate[], requiredSize: Dim2D, withReplacement: boolean): Coordinate => {
+    let viableCornerstones = getViableCornerstones(coordinates, requiredSize);
+    let selectedIdx = randomSpotInArray(viableCornerstones.length);
+    let cornerstone = viableCornerstones[selectedIdx];
+    if (!withReplacement) {
+        removeInPlace(coordinates, getFullObjectSpace(cornerstone, requiredSize));
+    }
+    return cornerstone;
 }
 
-export const randomCoordinate = (config: GameBoardConfiguration): Coordinate => {
-    let coords = listAllCoordinates(config);
+//meh feels like a code smell.
+//inefficient but just for one time generation.
+export const removeInPlace = (from: Coordinate[], toRemoves: Coordinate[]): void => {
+    toRemoves.forEach(toRemove => {
+        let idxToRemove = from.findIndex(coord => coordsEqual(toRemove,coord));
+        from.splice(idxToRemove,1);
+    })
+}
+
+/**
+ * 
+ * All coordinates that have the sufficient free space to serve as the top left tile of the corresponding object.
+ */
+export const getViableCornerstones =(allFreeSpace: Coordinate[], requiredSize: Dim2D): Coordinate[] => {
+    let freeSpaceMap = getCoordinateMap(allFreeSpace);
+    return allFreeSpace.filter(freeSpot => {
+        let requiredAllocatedSpace = getFullObjectSpace(freeSpot, requiredSize);
+        let keysForRequiredAllocatedSpace: string[] = 
+            requiredAllocatedSpace.map(piece => coordinateKey(piece));
+        return keysForRequiredAllocatedSpace.every(
+            key => key in freeSpaceMap
+        );
+    })
+}
+
+export const randomCoordinate = (config: GameBoardConfiguration, restrictedBorder: number = 0): Coordinate => {
+    let coords = listAllCoordinates(config,restrictedBorder);
     return randomItemIn(coords);
 }
 
-export const listAllCoordinates = (config: GameBoardConfiguration): Coordinate[] => {
+export const listAllCoordinates = (config: GameBoardConfiguration, restrictedBorder: number = 0): Coordinate[] => {
     let coords = [];
-    for (let row=0; row<config.tilesRowCount; row++) {
-        for (let col=0; col<config.tilesColCount; col++) {
+    for (let row=restrictedBorder; row<config.tilesRowCount-restrictedBorder; row++) {
+        for (let col=restrictedBorder; col<config.tilesColCount-restrictedBorder; col++) {
             coords.push({row,col});
         }
     }
     return coords;
 }
 
-export const typeIsTraversable = (type: TileType): boolean => {
-    return type === TileType.Grass
-    || type === TileType.Checkpoint
-    || type === TileType.Finish
-    || type === TileType.Start;
-}
-
-export const listAllTraversableCoordinates = (config: GameBoardConfiguration, tiles: Tile[][]): Coordinate[] => {
-    return listAllCoordinates(config).filter(coord => typeIsTraversable(tiles[coord.row][coord.col].type));
-}
-
-
 const towerIncludesCoord = (tower: LiveTower, coord: Coordinate): boolean => {
-    return getAllCoordinates(tower.tlCoord, tower.type.dim).some(coordB => coordsEqual(coord,coordB));
+    return getFullObjectSpace(tower.tlCoord, tower.type.dim).some(coordB => coordsEqual(coord,coordB));
 }
 
 

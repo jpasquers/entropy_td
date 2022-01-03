@@ -58,6 +58,7 @@ export abstract class ObjectRendererWithSync<Model extends WithIdentifier,
             for(let id in this.store) {
                 if (!items.find(item => item.id === id)) {
                     this.cleanup(this.store[id]);
+                    delete this.store[id];
                 }
             }
         }

@@ -5,7 +5,7 @@ import { GameObjectLike, SimpleRenderer } from "../../../../common/renderer";
 import { WALKING_PATH_LAYER } from "../../../../common/z_layers";
 import { forSubScene, DisplayContext } from "../../../../phaser/extensions/display_context";
 import { SubScene } from "../../../../phaser/extensions/sub_scene";
-import { TweenDelegate } from "../../../../phaser/extensions/tween";
+import { ObjectAnimator } from "../../../../phaser/extensions/tween";
 import { GameStateObserver } from "../../gamestate_publisher";
 
 
@@ -25,7 +25,7 @@ class OptimalPathSet implements GameObjectLike {
 class OptimalPath implements GameObjectLike {
     lines: Phaser.GameObjects.Line[];
     
-    constructor(lines: Phaser.GameObjects.Line[], tweenDelegate: TweenDelegate) {
+    constructor(lines: Phaser.GameObjects.Line[], tweenDelegate: ObjectAnimator) {
         this.lines = lines;
         tweenDelegate.blink(this.lines);
     }
@@ -48,9 +48,9 @@ export class PathRenderer extends SimpleRenderer<OptimalPathSet> implements Game
     id: string;
     currentPaths: PixelCoordinate[][];
     optimalPathSet?: OptimalPathSet;
-    tweenDelegate: TweenDelegate;
+    tweenDelegate: ObjectAnimator;
 
-    constructor(sceneSection: SubScene, tweenDelegate: TweenDelegate) {
+    constructor(sceneSection: SubScene, tweenDelegate: ObjectAnimator) {
         super(forSubScene(sceneSection));
         this.currentPaths = [];
         this.id = "path_renderer";
@@ -85,7 +85,7 @@ const pathsAreTheSame = (current: PixelCoordinate[][], next: PixelCoordinate[][]
 }
 
 const generateLines = (displayContext: DisplayContext,
-    paths: PixelCoordinate[][], tweenDelegate: TweenDelegate): OptimalPath[] => {
+    paths: PixelCoordinate[][], tweenDelegate: ObjectAnimator): OptimalPath[] => {
 
     return paths.map((path,segmentIdx) => {
         let segmentLines: Phaser.GameObjects.Line[] = [];

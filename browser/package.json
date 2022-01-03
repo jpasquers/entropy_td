@@ -5,6 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
+    "develop:offline": "webpack --env INSTANCE=development && http-server -c-1 ./build",
     "develop": "yarn prepare && webpack --env INSTANCE=development && http-server -c-1 ./build",
     "build": "yarn prepare && webpack --env INSTANCE=production",
     "prepare": "yarn clean && yarn upgrade ../core",

@@ -1,12 +1,10 @@
 import { GameOrchestrator, GameState } from "entropy-td-core/lib/orchestrator";
-import { Observer, Publisher } from "../../common/publishers";
+import { Observer, Publisher, PublisherWithReference } from "../../common/publishers";
 import { FrameDeltaEvent, FrameDeltaObserver } from "../../common/publishers/frame_delta";
 
 export type GameStateObserver = Observer<GameState>;
 
-//TODO there's a fundamental problem of when do i update the actual game.
-//When the game relies on multiple seemingly frame independent items.
-export class GameStatePublisher extends Publisher<GameState> {
+export class GameStatePublisher extends PublisherWithReference<GameState> {
     id: string;
     gameOrchestrator: GameOrchestrator;
 

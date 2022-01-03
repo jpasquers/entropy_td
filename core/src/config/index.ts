@@ -89,6 +89,10 @@ export interface RandomizableUpgradeConfig {
     type: string;
     //Effectiveness is per upgrade if incremental.
     effectiveness: RandomizablePctEffectiveness | RandomizableFlatEffectiveness | RandomizableScalingEffectiveness;
+    name: string;
+    description: string;
+    assetKey?: string;
+    hotkey: string;
 }
 
 export type UpgradeConfig = FullDeRandomized<RandomizableUpgradeConfig>;

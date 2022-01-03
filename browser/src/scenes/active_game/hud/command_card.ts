@@ -1,4 +1,6 @@
 import { LiveTower, TowerType } from "entropy-td-core";
+import { isIncremental } from "entropy-td-core/lib/config";
+import { Upgrade } from "entropy-td-core/lib/friendly/tower";
 import { KeyDownEvent, KeyDownObserver } from "../../../common/publishers/input";
 
 export abstract class CommandCard implements KeyDownObserver{
@@ -14,20 +16,33 @@ export abstract class CommandCard implements KeyDownObserver{
 
 }
 
-export class UpgradeTowerCommandCard extends CommandCard {
+export class TowerCommandCard extends CommandCard {
 
     tower: LiveTower;
-    constructor(tower: LiveTower) {
-        super(`upgrade_tower_${tower.id}`,[]);
+    sellCardItem: CommandCardItem;
+    sellTower: (tower: LiveTower)=>void;
+    upgradeTower: (tower: LiveTower, upgrade: Upgrade)=>void;
+    constructor(tower: LiveTower,
+        sellTower: (tower: LiveTower)=>void,
+        upgradeTower: (tower: LiveTower, upgrade: Upgrade)=>void) {
+        let sellCardItem = sellTowerCardItem(tower);
+        super(`tower_card_${tower.id}`,[sellCardItem]);
+        this.sellCardItem = sellCardItem;
+        this.sellTower = sellTower;
+        this.upgradeTower = upgradeTower;
         this.tower = tower;
     }
 
     onEvent(event: KeyDownEvent): void {
-        throw new Error("Method not implemented.");
+        if (event.key.toLowerCase() === this.sellCardItem.hotkey.toLowerCase()) {
+            this.sellTower(this.tower);
+        }
+        //AHHHH
+        let upgrade = this.tower.availableUpgrades.find((availableUpgrade => true))
     }
 }
 
-export class TowerListCommandCard extends CommandCard {
+export class GlobalCommandCard extends CommandCard {
     towerTypes: TowerType[];
     onTowerSelected: (type: TowerType)=>void;
 
@@ -49,20 +64,43 @@ export class TowerListCommandCard extends CommandCard {
     }
 }
 
+export enum Orientation {
+    TopLeft,
+    BottomRight
+}
+
 export interface CommandCardItem {
     id: string;
     hotkey: string;
+    subText?: string;
     assetKey: string;
+    orientation: Orientation;
 }
+
+export const sellTowerCardItem = (tower: LiveTower): CommandCardItem => {
+    return {
+        id: `sell_tower_${tower.id}`,
+        hotkey: 'S', //personal settings?
+        orientation: Orientation.BottomRight,
+        assetKey: 'sell_tower'
+    }
+}
+
+// export const upgradeTower = (upgrade: Upgrade): CommandCardItem => {
+//     if (isIncremental(upgrade.config)) {
+        
+//     }
+//     else {
+
+//     }
+//     return null;
+// }
 
 export const towerCommandCardItem = (tower: TowerType): CommandCardItem => {
     return {
         id: `tower_${tower.name}`,
         hotkey: tower.hotkey,
-        assetKey: `tower_${tower.name}_command_card`
+        assetKey: `tower_${tower.name}_command_card`,
+        orientation: Orientation.TopLeft
     }
 }
-
-// export const upgradeCommandCardItem = (upgrade: IncrementalUpgrade | OneTimeUpgrade): CommandCardItem => {
-
-// }

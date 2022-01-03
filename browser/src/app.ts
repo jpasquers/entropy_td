@@ -14,8 +14,8 @@ class PhaserGameDelegate {
         this.gameView = new Phaser.Game({
             input: true,
             scene: activeGame.getAll(),
-            width: getEffectiveGameWidth(gameController.config),
-            height: getEffectiveGameHeight(gameController.config),
+            width: Math.max(getEffectiveGameWidth(gameController.config), window.innerWidth),
+            height: Math.max(getEffectiveGameHeight(gameController.config), window.innerHeight),
             type: CANVAS,
             backgroundColor: BG_COLOR,
             roundPixels: true,

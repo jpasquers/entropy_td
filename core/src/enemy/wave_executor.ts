@@ -72,7 +72,7 @@ export class WaveExecutor {
         let currentCoord = getCurrentTile(creep.pxPos, this.board.config.tilePixelDim);
         let currentIndexInSegment = activeSegment.findIndex(coord => 
             coord.col === currentCoord.col && coord.row === currentCoord.row);
-        if (coordsEqual(currentCoord, this.board.finish) && creep.checkpointsCrossed === walkingPaths.length-1) {
+        if (this.board.finish.containsCoord(currentCoord) && creep.checkpointsCrossed === walkingPaths.length-1) {
             this.removeActiveCreep(creep.id);
         }
         else if (currentIndexInSegment === activeSegment.length-1 && this.board.isPivotTile(currentCoord)) {

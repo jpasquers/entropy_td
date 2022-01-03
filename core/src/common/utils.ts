@@ -34,7 +34,7 @@ export const coordsEqual = (a: Coordinate, b: Coordinate): boolean => {
     return a.col === b.col && a.row === b.row;
 }
 
-export const getAllCoordinates = (tlCoord: Coordinate, dim: Dim2D): Coordinate[] => {
+export const getFullObjectSpace = (tlCoord: Coordinate, dim: Dim2D): Coordinate[] => {
     let coords: Coordinate[] = [];
     for (let row=tlCoord.row; row < tlCoord.row + dim.height; row++) {
         for (let col=tlCoord.col; col < tlCoord.col + dim.width; col++) {
